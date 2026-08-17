@@ -1230,7 +1230,7 @@ function Staff() {
       points: newPoints
     });
 
-    setAmount('');
+        setAmount('');
 
     setMsg(
       `Success! ${points.toFixed(2)} points added.`
