@@ -113,7 +113,7 @@ input{
   border-radius:11px;
   outline:none;
   background:#181818;
-  color:#fff
+  color:#fff;
 }
 
 input:focus{border-color:#c9a45c}
