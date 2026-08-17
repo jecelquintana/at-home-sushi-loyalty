@@ -48,8 +48,10 @@ button,input{font:inherit}
 .brand h1{
   margin:5px 0 0;
   letter-spacing:4px;
-  font-size:24px;
-  color:#fff
+  font-size:27px;
+  font-family:"Cormorant Garamond",serif;
+  font-weight:600;
+  color:#fff;
 }
 
 .brand p{
