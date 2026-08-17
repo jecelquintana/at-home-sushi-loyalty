@@ -124,10 +124,10 @@ input:focus{border-color:#c9a45c}
   border-radius:11px;
   padding:13px;
   margin-top:18px;
-  background:linear-gradient(135deg,#d4af6a,#a9823e);
-  color:#080808;
-  font-weight:900;
-  cursor:pointer
+  background:#c9a227;
+  color:#000;
+  font-weight:800;
+  cursor:pointer;
 }
 
 .primary:disabled{opacity:.6}
