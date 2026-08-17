@@ -155,15 +155,15 @@ input:focus{
 .switch{
   text-align:center;
   font-size:13px;
-  color:#888
+  color:#aaa;
 }
 
 .switch button{
   border:0;
   background:none;
-  color:#d4af6a;
+  color:#c9a227;
   font-weight:800;
-  cursor:pointer
+  cursor:pointer;
 }
 
 .footer{
