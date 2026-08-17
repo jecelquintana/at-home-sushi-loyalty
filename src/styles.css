@@ -116,7 +116,9 @@ input{
   color:#fff;
 }
 
-input:focus{border-color:#c9a45c}
+input:focus{
+  border-color:#c9a227;
+}
 
 .primary{
   width:100%;
