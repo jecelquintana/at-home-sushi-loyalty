@@ -497,6 +497,47 @@ function Dashboard({
   session,
   profile
 }) {
+  const [birthdayReward, setBirthdayReward] = useState(null);
+
+useEffect(() => {
+  async function checkBirthdayReward() {
+    if (!profile?.birthday) return;
+
+    const today = new Date();
+    const birthday = new Date(profile.birthday);
+
+    const isBirthday =
+      today.getMonth() === birthday.getMonth() &&
+      today.getDate() === birthday.getDate();
+
+    if (!isBirthday) return;
+
+    const year = today.getFullYear();
+
+    const { data: alreadyClaimed } = await supabase
+      .from('birthday_claims')
+      .select('id')
+      .eq('customer_id', profile.id)
+      .eq('birthday_year', year)
+      .maybeSingle();
+
+    if (alreadyClaimed) return;
+
+    const { data: reward } = await supabase
+      .from('birthday_rewards')
+      .select('*')
+      .eq('active', true)
+      .order('id', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (reward) {
+      setBirthdayReward(reward);
+    }
+  }
+
+  checkBirthdayReward();
+}, [profile]);
   const [rewards, setRewards] = useState([]);
   const [tx, setTx] = useState([]);
   const [tab, setTab] = useState('home');
@@ -562,6 +603,16 @@ function Dashboard({
       </header>
 
       <main>
+        {birthdayReward && (
+  <div className="birthday-banner">
+    <div>
+      <span className="eyebrow">🎂 BIRTHDAY REWARD</span>
+      <h2>{birthdayReward.name}</h2>
+      <p>{birthdayReward.description}</p>
+      <strong>{birthdayReward.reward_text}</strong>
+    </div>
+  </div>
+)}
 
         {tab === 'home' && (
           <Home
