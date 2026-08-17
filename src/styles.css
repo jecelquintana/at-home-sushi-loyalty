@@ -95,7 +95,10 @@ button,input{font:inherit}
   box-shadow:0 2px 8px rgba(0,0,0,.3)
 }
 
-h2{margin:0 0 7px;color:#fff}
+h2{
+  margin:0 0 7px;
+  color:#fff;
+}
 
 label{
   display:block;
