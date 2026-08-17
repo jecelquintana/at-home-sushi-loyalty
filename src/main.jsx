@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createClient } from '@supabase/supabase-js';
 import { QRCodeSVG } from 'qrcode.react';
+import { ScanLine, DollarSign, PlusCircle } from 'lucide-react';
 import { Gift, LogIn, LogOut, Mail, UserPlus, Star, Ticket, History, QrCode, ChevronRight } from 'lucide-react';
 import './styles.css';
 import logo from '../logo.jpg';
