@@ -456,4 +456,8 @@ input:focus{
     width:95px;
     height:95px
   }
+.auth-wrap .logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
 }
