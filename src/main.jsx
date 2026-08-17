@@ -27,7 +27,7 @@ import logo from './logo.jpg';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-export const supabase = createClient(
+const supabase = createClient(
   supabaseUrl,
   supabaseKey,
   {
@@ -60,7 +60,7 @@ function PasswordField({
           value={value}
           onChange={onChange}
           required
-          minLength="8"
+          minLength={8}
           placeholder={placeholder}
           style={{ paddingRight: '48px' }}
         />
@@ -167,7 +167,6 @@ function App() {
     <Dashboard
       session={session}
       profile={profile}
-      refresh={() => loadProfile(session.user.id)}
     />
   );
 }
@@ -211,6 +210,7 @@ function Auth({ mode, setMode }) {
           'rememberLogin',
           'true'
         );
+
         localStorage.setItem(
           'savedLoginEmail',
           email
@@ -234,8 +234,6 @@ function Auth({ mode, setMode }) {
       return;
     }
 
-    /* SIGN UP */
-
     const { data, error } =
       await supabase.auth.signUp({
         email,
@@ -256,10 +254,11 @@ function Auth({ mode, setMode }) {
     }
 
     if (data.user) {
-      const customerCode = Math.random()
-        .toString(16)
-        .substring(2, 12)
-        .toUpperCase();
+      const customerCode =
+        Math.random()
+          .toString(16)
+          .substring(2, 12)
+          .toUpperCase();
 
       const { error: profileError } =
         await supabase
@@ -280,6 +279,13 @@ function Auth({ mode, setMode }) {
           'Customer creation error:',
           profileError
         );
+
+        setMsg(
+          'Account created, but customer profile could not be created. Please contact staff.'
+        );
+
+        setBusy(false);
+        return;
       }
     }
 
@@ -454,6 +460,7 @@ function Auth({ mode, setMode }) {
           <button
             className="primary"
             disabled={busy}
+            type="submit"
           >
             {busy
               ? 'Please wait...'
@@ -497,9 +504,28 @@ function Dashboard({
   session,
   profile
 }) {
-  const [birthdayReward, setBirthdayReward] = useState(null);
+  const [birthdayReward, setBirthdayReward] =
+    useState(null);
 
-useEffect(() => {
+  const [rewards, setRewards] =
+    useState([]);
+
+  const [tx, setTx] =
+    useState([]);
+
+  const [tab, setTab] =
+    useState('home');
+
+  useEffect(() => {
+    if (profile) {
+      checkBirthdayReward();
+    }
+  }, [profile]);
+
+  useEffect(() => {
+    loadDashboard();
+  }, [session.user.id]);
+
   async function checkBirthdayReward() {
     if (!profile?.birthday) return;
 
@@ -514,37 +540,31 @@ useEffect(() => {
 
     const year = today.getFullYear();
 
-    const { data: alreadyClaimed } = await supabase
-      .from('birthday_claims')
-      .select('id')
-      .eq('customer_id', profile.id)
-      .eq('birthday_year', year)
-      .maybeSingle();
+    const { data: alreadyClaimed } =
+      await supabase
+        .from('birthday_claims')
+        .select('id')
+        .eq('customer_id', profile.id)
+        .eq('birthday_year', year)
+        .maybeSingle();
 
     if (alreadyClaimed) return;
 
-    const { data: reward } = await supabase
-      .from('birthday_rewards')
-      .select('*')
-      .eq('active', true)
-      .order('id', { ascending: true })
-      .limit(1)
-      .maybeSingle();
+    const { data: reward } =
+      await supabase
+        .from('birthday_rewards')
+        .select('*')
+        .eq('active', true)
+        .order('id', {
+          ascending: true
+        })
+        .limit(1)
+        .maybeSingle();
 
     if (reward) {
       setBirthdayReward(reward);
     }
   }
-
-  checkBirthdayReward();
-}, [profile]);
-  const [rewards, setRewards] = useState([]);
-  const [tx, setTx] = useState([]);
-  const [tab, setTab] = useState('home');
-
-  useEffect(() => {
-    loadDashboard();
-  }, [session.user.id]);
 
   async function loadDashboard() {
     const { data: rewardsData } =
@@ -603,16 +623,28 @@ useEffect(() => {
       </header>
 
       <main>
+
         {birthdayReward && (
-  <div className="birthday-banner">
-    <div>
-      <span className="eyebrow">🎂 BIRTHDAY REWARD</span>
-      <h2>{birthdayReward.name}</h2>
-      <p>{birthdayReward.description}</p>
-      <strong>{birthdayReward.reward_text}</strong>
-    </div>
-  </div>
-)}
+          <div className="birthday-banner">
+            <div>
+              <span className="eyebrow">
+                🎂 BIRTHDAY REWARD
+              </span>
+
+              <h2>
+                {birthdayReward.name}
+              </h2>
+
+              <p>
+                {birthdayReward.description}
+              </p>
+
+              <strong>
+                {birthdayReward.reward_text}
+              </strong>
+            </div>
+          </div>
+        )}
 
         {tab === 'home' && (
           <Home
@@ -889,7 +921,7 @@ function DigitalCard({ profile }) {
         <div className="qr">
 
           <QRCodeSVG
-            value={profile.customer_code}
+            value={profile.customer_code || ''}
             size={210}
             includeMargin
           />
@@ -991,7 +1023,7 @@ function Rewards({
             </div>
 
             <strong>
-              {reward.points_required}
+              {reward.points_required} pts
             </strong>
 
           </div>
@@ -1076,31 +1108,51 @@ function HistoryTab({ tx }) {
    STAFF PANEL
 ===================================================== */
 
-```jsx
 function Staff() {
-  const [staffSession, setStaffSession] = useState(null);
-  const [checking, setChecking] = useState(true);
+  const [staffSession, setStaffSession] =
+    useState(null);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [checking, setChecking] =
+    useState(true);
 
-  const [remember, setRemember] = useState(
-    localStorage.getItem('staffRemember') === 'true'
-  );
+  const [email, setEmail] =
+    useState('');
 
-  const [customerCode, setCustomerCode] = useState('');
-  const [customer, setCustomer] = useState(null);
-  const [amount, setAmount] = useState('');
-  const [notes, setNotes] = useState('');
-  const [msg, setMsg] = useState('');
-  const [busy, setBusy] = useState(false);
+  const [password, setPassword] =
+    useState('');
+
+  const [remember, setRemember] =
+    useState(
+      localStorage.getItem(
+        'staffRemember'
+      ) === 'true'
+    );
+
+  const [customerCode, setCustomerCode] =
+    useState('');
+
+  const [customer, setCustomer] =
+    useState(null);
+
+  const [amount, setAmount] =
+    useState('');
+
+  const [notes, setNotes] =
+    useState('');
+
+  const [msg, setMsg] =
+    useState('');
+
+  const [busy, setBusy] =
+    useState(false);
 
   useEffect(() => {
     checkStaffSession();
   }, []);
 
   async function checkStaffSession() {
-    const { data } = await supabase.auth.getSession();
+    const { data } =
+      await supabase.auth.getSession();
 
     setStaffSession(data.session);
     setChecking(false);
@@ -1110,11 +1162,17 @@ function Staff() {
     e.preventDefault();
 
     setMsg('');
+    setBusy(true);
 
     if (remember) {
-      localStorage.setItem('staffRemember', 'true');
+      localStorage.setItem(
+        'staffRemember',
+        'true'
+      );
     } else {
-      localStorage.removeItem('staffRemember');
+      localStorage.removeItem(
+        'staffRemember'
+      );
     }
 
     const { data, error } =
@@ -1125,10 +1183,12 @@ function Staff() {
 
     if (error) {
       setMsg(error.message);
+      setBusy(false);
       return;
     }
 
     setStaffSession(data.session);
+    setBusy(false);
   }
 
   async function staffLogout() {
@@ -1136,14 +1196,21 @@ function Staff() {
     setStaffSession(null);
   }
 
+  /* =====================================================
+     FIND CUSTOMER
+  ===================================================== */
+
   async function findCustomer() {
     setMsg('');
     setCustomer(null);
 
-    const code = customerCode.trim();
+    const code =
+      customerCode.trim();
 
     if (!code) {
-      setMsg('Please enter the customer QR code.');
+      setMsg(
+        'Please enter the customer QR code.'
+      );
       return;
     }
 
@@ -1154,29 +1221,57 @@ function Staff() {
         .from('customers')
         .select('*')
         .eq('customer_code', code)
-        .single();
+        .maybeSingle();
 
     setBusy(false);
 
-    if (error || !data) {
-      setMsg('Customer not found.');
+    if (error) {
+      console.error(
+        'Find customer error:',
+        error
+      );
+
+      setMsg(error.message);
+      return;
+    }
+
+    if (!data) {
+      setMsg(
+        'Customer not found.'
+      );
       return;
     }
 
     setCustomer(data);
     setNotes(data.notes || '');
+
+    setMsg(
+      `Customer found: ${data.full_name}`
+    );
   }
+
+  /* =====================================================
+     ADD POINTS
+  ===================================================== */
 
   async function addPoints() {
     if (!customer) {
-      setMsg('Find a customer first.');
+      setMsg(
+        'Find a customer first.'
+      );
       return;
     }
 
-    const purchase = parseFloat(amount);
+    const purchase =
+      parseFloat(amount);
 
-    if (Number.isNaN(purchase) || purchase <= 0) {
-      setMsg('Enter a valid purchase amount.');
+    if (
+      Number.isNaN(purchase) ||
+      purchase <= 0
+    ) {
+      setMsg(
+        'Enter a valid purchase amount.'
+      );
       return;
     }
 
@@ -1184,17 +1279,19 @@ function Staff() {
       POINT SYSTEM
 
       ₱100 = 1 point
-      ₱50  = 0.50 point
-      ₱850 = 8.50 points
+      ₱500 = 5 points
+      ₱1,000 = 10 points
     */
 
-    const points = purchase / 100;
+    const points =
+      purchase / 100;
 
     setBusy(true);
     setMsg('');
 
     const newPoints =
-      Number(customer.points || 0) + points;
+      Number(customer.points || 0) +
+      points;
 
     const { error: updateError } =
       await supabase
@@ -1205,7 +1302,15 @@ function Staff() {
         .eq('id', customer.id);
 
     if (updateError) {
-      setMsg(updateError.message);
+      console.error(
+        'Points update error:',
+        updateError
+      );
+
+      setMsg(
+        updateError.message
+      );
+
       setBusy(false);
       return;
     }
@@ -1214,13 +1319,26 @@ function Staff() {
       await supabase
         .from('transactions')
         .insert({
-          customer_id: customer.id,
-          transaction_type: 'purchase',
-          points_earned: points
+          customer_id:
+            customer.id,
+
+          transaction_type:
+            'purchase',
+
+          points_earned:
+            points
         });
 
     if (transactionError) {
-      setMsg(transactionError.message);
+      console.error(
+        'Transaction error:',
+        transactionError
+      );
+
+      setMsg(
+        transactionError.message
+      );
+
       setBusy(false);
       return;
     }
@@ -1230,7 +1348,7 @@ function Staff() {
       points: newPoints
     });
 
-        setAmount('');
+    setAmount('');
 
     setMsg(
       `Success! ${points.toFixed(2)} points added.`
@@ -1239,9 +1357,15 @@ function Staff() {
     setBusy(false);
   }
 
+  /* =====================================================
+     SAVE NOTES
+  ===================================================== */
+
   async function saveNotes() {
     if (!customer) {
-      setMsg('Find a customer first.');
+      setMsg(
+        'Find a customer first.'
+      );
       return;
     }
 
@@ -1252,7 +1376,7 @@ function Staff() {
       await supabase
         .from('customers')
         .update({
-          notes: notes
+          notes
         })
         .eq('id', customer.id);
 
@@ -1264,50 +1388,81 @@ function Staff() {
         notes
       });
 
-      setMsg('Customer notes saved.');
+      setMsg(
+        'Customer notes saved.'
+      );
     }
 
     setBusy(false);
   }
 
+  /* =====================================================
+     BIRTHDAY REWARD
+  ===================================================== */
+
   async function claimBirthdayReward() {
     if (!customer) {
-      setMsg('Find a customer first.');
+      setMsg(
+        'Find a customer first.'
+      );
       return;
     }
 
     if (!customer.birthday) {
-      setMsg('This customer has no birthday saved.');
+      setMsg(
+        'This customer has no birthday saved.'
+      );
       return;
     }
 
-    const today = new Date();
-    const birthday = new Date(customer.birthday);
+    const today =
+      new Date();
+
+    const birthday =
+      new Date(
+        customer.birthday
+      );
 
     const isBirthday =
-      today.getMonth() === birthday.getMonth() &&
-      today.getDate() === birthday.getDate();
+      today.getMonth() ===
+        birthday.getMonth() &&
+      today.getDate() ===
+        birthday.getDate();
 
     if (!isBirthday) {
-      setMsg('Today is not this customer’s birthday.');
+      setMsg(
+        'Today is not this customer’s birthday.'
+      );
       return;
     }
 
-    const year = today.getFullYear();
+    const year =
+      today.getFullYear();
 
     setBusy(true);
     setMsg('');
 
-    const { data: alreadyClaimed, error: checkError } =
-      await supabase
-        .from('birthday_claims')
-        .select('id')
-        .eq('customer_id', customer.id)
-        .eq('birthday_year', year)
-        .maybeSingle();
+    const {
+      data: alreadyClaimed,
+      error: checkError
+    } = await supabase
+      .from('birthday_claims')
+      .select('id')
+      .eq(
+        'customer_id',
+        customer.id
+      )
+      .eq(
+        'birthday_year',
+        year
+      )
+      .maybeSingle();
 
     if (checkError) {
-      setMsg(checkError.message);
+      setMsg(
+        checkError.message
+      );
+
       setBusy(false);
       return;
     }
@@ -1316,41 +1471,59 @@ function Staff() {
       setMsg(
         'Birthday reward has already been claimed this year.'
       );
+
       setBusy(false);
       return;
     }
 
-    const { data: reward, error: rewardError } =
-      await supabase
-        .from('birthday_rewards')
-        .select('*')
-        .eq('active', true)
-        .order('id', { ascending: true })
-        .limit(1)
-        .maybeSingle();
+    const {
+      data: reward,
+      error: rewardError
+    } = await supabase
+      .from('birthday_rewards')
+      .select('*')
+      .eq('active', true)
+      .order('id', {
+        ascending: true
+      })
+      .limit(1)
+      .maybeSingle();
 
     if (rewardError) {
-      setMsg(rewardError.message);
+      setMsg(
+        rewardError.message
+      );
+
       setBusy(false);
       return;
     }
 
     if (!reward) {
-      setMsg('No active birthday reward found.');
+      setMsg(
+        'No active birthday reward found.'
+      );
+
       setBusy(false);
       return;
     }
 
-    const { error: claimError } =
-      await supabase
-        .from('birthday_claims')
-        .insert({
-          customer_id: customer.id,
-          birthday_year: year
-        });
+    const {
+      error: claimError
+    } = await supabase
+      .from('birthday_claims')
+      .insert({
+        customer_id:
+          customer.id,
+
+        birthday_year:
+          year
+      });
 
     if (claimError) {
-      setMsg(claimError.message);
+      setMsg(
+        claimError.message
+      );
+
       setBusy(false);
       return;
     }
@@ -1362,16 +1535,29 @@ function Staff() {
     setBusy(false);
   }
 
+  /* =====================================================
+     CHECKING
+  ===================================================== */
+
   if (checking) {
     return (
       <div className="screen">
-        <div className="loader">🍣</div>
-        <p>Checking staff access...</p>
+
+        <div className="loader">
+          🍣
+        </div>
+
+        <p>
+          Checking staff access...
+        </p>
+
       </div>
     );
   }
 
-  /* STAFF LOGIN */
+  /* =====================================================
+     STAFF LOGIN
+  ===================================================== */
 
   if (!staffSession) {
     return (
@@ -1405,7 +1591,9 @@ function Staff() {
             Sign in to manage customer points.
           </p>
 
-          <form onSubmit={staffLogin}>
+          <form
+            onSubmit={staffLogin}
+          >
 
             <label>
               Email
@@ -1414,7 +1602,9 @@ function Staff() {
                 type="email"
                 value={email}
                 onChange={(e) =>
-                  setEmail(e.target.value)
+                  setEmail(
+                    e.target.value
+                  )
                 }
                 required
                 placeholder="Staff email"
@@ -1424,7 +1614,9 @@ function Staff() {
             <PasswordField
               value={password}
               onChange={(e) =>
-                setPassword(e.target.value)
+                setPassword(
+                  e.target.value
+                )
               }
               placeholder="Staff password"
             />
@@ -1445,7 +1637,9 @@ function Staff() {
                 type="checkbox"
                 checked={remember}
                 onChange={(e) =>
-                  setRemember(e.target.checked)
+                  setRemember(
+                    e.target.checked
+                  )
                 }
               />
 
@@ -1464,11 +1658,13 @@ function Staff() {
               className="primary"
               disabled={busy}
             >
+
               <LogIn size={18} />
 
               {busy
                 ? 'Logging in...'
                 : 'Log in'}
+
             </button>
 
           </form>
@@ -1479,7 +1675,9 @@ function Staff() {
     );
   }
 
-  /* STAFF DASHBOARD */
+  /* =====================================================
+     STAFF DASHBOARD
+  ===================================================== */
 
   return (
     <div className="app">
@@ -1526,7 +1724,9 @@ function Staff() {
 
         <div
           className="card"
-          style={{ padding: 20 }}
+          style={{
+            padding: 20
+          }}
         >
 
           <label>
@@ -1536,7 +1736,9 @@ function Staff() {
           <input
             value={customerCode}
             onChange={(e) =>
-              setCustomerCode(e.target.value)
+              setCustomerCode(
+                e.target.value
+              )
             }
             placeholder="Enter customer code"
           />
@@ -1547,11 +1749,13 @@ function Staff() {
             onClick={findCustomer}
             disabled={busy}
           >
+
             <ScanLine size={18} />
 
             {busy
               ? 'Finding...'
               : 'Find Customer'}
+
           </button>
 
         </div>
@@ -1587,34 +1791,63 @@ function Staff() {
               </p>
             )}
 
-            <p className="muted">
-              Current points:{' '}
-              <b>
-                {Number(
-                  customer.points || 0
-                ).toFixed(2)}
-              </b>
-            </p>
+            <div
+              className="balance-grid"
+              style={{
+                marginTop: 15
+              }}
+            >
 
-            <p className="muted">
-              Current stamps:{' '}
-              <b>
-                {customer.stamps || 0}
-              </b>
-            </p>
+              <div className="balance">
+
+                <Star />
+
+                <small>
+                  CURRENT POINTS
+                </small>
+
+                <strong>
+                  {Number(
+                    customer.points || 0
+                  ).toFixed(2)}
+                </strong>
+
+              </div>
+
+              <div className="balance">
+
+                <Ticket />
+
+                <small>
+                  STAMPS
+                </small>
+
+                <strong>
+                  {customer.stamps || 0}
+                </strong>
+
+              </div>
+
+            </div>
 
             {customer.birthday && (
               <p className="muted">
+
                 <Cake
                   size={15}
                   style={{
-                    verticalAlign: 'middle'
+                    verticalAlign:
+                      'middle'
                   }}
-                />{' '}
+                />
+
+                {' '}
                 Birthday:{' '}
+
                 {new Date(
                   customer.birthday
                 ).toLocaleDateString()}
+
               </p>
             )}
 
@@ -1630,7 +1863,9 @@ function Staff() {
               step="0.01"
               value={amount}
               onChange={(e) =>
-                setAmount(e.target.value)
+                setAmount(
+                  e.target.value
+                )
               }
               placeholder="₱0.00"
             />
@@ -1638,12 +1873,16 @@ function Staff() {
             {amount &&
               Number(amount) > 0 && (
                 <p className="muted">
+
                   Points to add:{' '}
+
                   <b>
                     {(
-                      Number(amount) / 100
+                      Number(amount) /
+                      100
                     ).toFixed(2)}
                   </b>
+
                 </p>
               )}
 
@@ -1653,11 +1892,15 @@ function Staff() {
               onClick={addPoints}
               disabled={busy}
             >
-              <PlusCircle size={18} />
+
+              <PlusCircle
+                size={18}
+              />
 
               {busy
                 ? 'Updating...'
                 : 'Add Points'}
+
             </button>
 
             {/* BIRTHDAY */}
@@ -1665,7 +1908,9 @@ function Staff() {
             <button
               type="button"
               className="birthday-button"
-              onClick={claimBirthdayReward}
+              onClick={
+                claimBirthdayReward
+              }
               disabled={busy}
             >
               🎂 Claim Birthday Reward
@@ -1683,19 +1928,26 @@ function Staff() {
             >
 
               <label>
+
                 <FileText
                   size={14}
                   style={{
-                    verticalAlign: 'middle'
+                    verticalAlign:
+                      'middle'
                   }}
-                />{' '}
+                />
+
+                {' '}
                 Customer Notes
+
               </label>
 
               <textarea
                 value={notes}
                 onChange={(e) =>
-                  setNotes(e.target.value)
+                  setNotes(
+                    e.target.value
+                  )
                 }
                 placeholder="Add notes about this customer..."
               />
@@ -1706,9 +1958,11 @@ function Staff() {
                 onClick={saveNotes}
                 disabled={busy}
               >
+
                 {busy
                   ? 'Saving...'
                   : 'Save Notes'}
+
               </button>
 
             </div>
@@ -1732,8 +1986,6 @@ function Staff() {
     </div>
   );
 }
-```
-
 
 /* =====================================================
    ROUTING
