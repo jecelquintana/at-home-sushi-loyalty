@@ -1161,168 +1161,85 @@ function Staff() {
     setStaffSession(null);
   }
 
-  async function findCustomer() {
-    setMsg('');
-    setCustomer(null);
-
-    const code =
-      customerCode.trim();
-
-    if (!code) {
-      setMsg(
-        'Please enter the customer QR code.'
-      );
-      return;
-    }
-
-    const { data, error } =
-      await supabase
-        .from('customers')
-        .select('*')
-        .eq('customer_code', code)
-        .single();
-
-    if (error || !data) {
-      setMsg('Customer not found.');
-      return;
-    }
-
-    setCustomer(data);
-    setNotes(data.notes || '');
-  }
-
-  async function addPoints() {
+  async function claimBirthdayReward() {
     if (!customer) {
-      setMsg(
-        'Find a customer first.'
-      );
+      setMsg('Find a customer first.');
       return;
     }
 
-    const purchase =
-      parseFloat(amount);
-
-    if (
-      Number.isNaN(purchase) ||
-      purchase <= 0
-    ) {
-      setMsg(
-        'Enter a valid purchase amount.'
-      );
+    if (!customer.birthday) {
+      setMsg('This customer has no birthday saved.');
       return;
     }
 
-    /*
-      POINT SYSTEM
+    const today = new Date();
+    const birthday = new Date(customer.birthday);
 
-      ₱100 = 1 point
-      ₱50  = 0.50 point
-      ₱850 = 8.50 points
-    */
+    const isBirthday =
+      today.getMonth() === birthday.getMonth() &&
+      today.getDate() === birthday.getDate();
 
-    const points =
-      purchase / 100;
+    if (!isBirthday) {
+      setMsg('Today is not this customer’s birthday.');
+      return;
+    }
 
-    setBusy(true);
-    setMsg('');
+    const year = today.getFullYear();
 
-    const newPoints =
-      Number(customer.points || 0) +
-      points;
-
-    const { error: updateError } =
+    const { data: alreadyClaimed, error: checkError } =
       await supabase
-        .from('customers')
-        .update({
-          points: newPoints
-        })
-        .eq('id', customer.id);
+        .from('birthday_claims')
+        .select('id')
+        .eq('customer_id', customer.id)
+        .eq('birthday_year', year)
+        .maybeSingle();
 
-    if (updateError) {
-      setMsg(updateError.message);
-      setBusy(false);
+    if (checkError) {
+      setMsg(checkError.message);
       return;
     }
 
-    const { error: transactionError } =
+    if (alreadyClaimed) {
+      setMsg('Birthday reward has already been claimed this year.');
+      return;
+    }
+
+    const { data: reward, error: rewardError } =
       await supabase
-        .from('transactions')
+        .from('birthday_rewards')
+        .select('*')
+        .eq('active', true)
+        .order('id', { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+    if (rewardError) {
+      setMsg(rewardError.message);
+      return;
+    }
+
+    if (!reward) {
+      setMsg('No active birthday reward found.');
+      return;
+    }
+
+    const { error: claimError } =
+      await supabase
+        .from('birthday_claims')
         .insert({
           customer_id: customer.id,
-          transaction_type: 'purchase',
-          points_earned: points
+          birthday_year: year
         });
 
-    if (transactionError) {
-      setMsg(
-        transactionError.message
-      );
-      setBusy(false);
+    if (claimError) {
+      setMsg(claimError.message);
       return;
     }
 
-    setCustomer({
-      ...customer,
-      points: newPoints
-    });
-
-    setAmount('');
-
     setMsg(
-      `Success! ${points.toFixed(
-        2
-      )} points added.`
-    );
-
-    setBusy(false);
-  }
-
-  async function saveNotes() {
-    if (!customer) return;
-
-    setBusy(true);
-    setMsg('');
-
-    const { error } =
-      await supabase
-        .from('customers')
-        .update({
-          notes: notes
-        })
-        .eq('id', customer.id);
-
-    if (error) {
-      setMsg(error.message);
-    } else {
-      setCustomer({
-        ...customer,
-        notes
-      });
-
-      setMsg(
-        'Customer notes saved.'
-      );
-    }
-
-    setBusy(false);
-  }
-
-  if (checking) {
-    return (
-      <div className="screen">
-
-        <div className="loader">
-          🍣
-        </div>
-
-        <p>
-          Checking staff access...
-        </p>
-
-      </div>
+      `🎂 Birthday reward claimed: ${reward.reward_text}`
     );
   }
-
   /* STAFF LOGIN */
 
   if (!staffSession) {
@@ -1585,6 +1502,14 @@ function Staff() {
                 ? 'Updating...'
                 : 'Add Points'}
             </button>
+            <button
+  type="button"
+  className="birthday-button"
+  onClick={claimBirthdayReward}
+  disabled={busy}
+>
+  🎂 Claim Birthday Reward
+</button>
 
             {/* NOTES */}
 
