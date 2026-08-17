@@ -21,14 +21,7 @@ button,input{font:inherit}
 
 .loader{font-size:42px}
 
-.auth-wrap{
-  min-height:100vh;
-  display:grid;
-  place-items:center;
-  align-content:center;
-  padding:28px;
-  background:
-    radial-gradient(circle at top,#24201a 0%,#0d0d0d 38%,#050505 100%)
+.auth-wrap{min-height:100vh;display:grid;place-items:center;align-content:center;padding:28px;background:#0a0a0a}
 }
 
 .brand{
