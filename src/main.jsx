@@ -77,7 +77,58 @@ function Dashboard({session,profile,refresh}){
  useEffect(()=>{supabase.from('rewards').select('*').eq('active',true).order('points_required').then(({data})=>setRewards(data||[])); supabase.from('transactions').select('*').eq('customer_id',session.user.id).order('created_at',{ascending:false}).limit(10).then(({data})=>setTx(data||[]))},[session.user.id]);
  async function logout(){await supabase.auth.signOut()}
  if(!profile) return <div className="screen"><p>Creating your loyalty card...</p></div>;
- return <div className="app">
+ if(checking){
+  return <div className="screen">
+    <div className="loader">🍣</div>
+    <p>Checking staff access...</p>
+  </div>;
+}
+
+if(!staffSession){
+  return <div className="auth-wrap">
+    <div className="brand">
+      <img src={logo} className="logo" alt="At Home Sushi" />
+      <h1>AT HOME SUSHI</h1>
+      <p>STAFF ACCESS</p>
+    </div>
+
+    <div className="card auth-card">
+      <h2>Staff Login</h2>
+      <p className="muted">Sign in to manage customer points.</p>
+
+      <form onSubmit={staffLogin}>
+        <label>
+          Email
+          <input
+            type="email"
+            value={email}
+            onChange={e=>setEmail(e.target.value)}
+            required
+            placeholder="Staff email"
+          />
+        </label>
+
+        <label>
+          Password
+          <input
+            type="password"
+            value={password}
+            onChange={e=>setPassword(e.target.value)}
+            required
+            placeholder="Password"
+          />
+        </label>
+
+        {msg && <div className="notice">{msg}</div>}
+
+        <button className="primary">
+          Log in
+        </button>
+      </form>
+    </div>
+  </div>;
+}
+  return <div className="app">
    <header className="topbar"><div><b>🍣 AT HOME SUSHI</b><span>LOYALTY CLUB</span></div><button className="iconbtn" onClick={logout}><LogOut size={19}/></button></header>
    <main>
     {tab==='home' && <Home profile={profile} rewards={rewards}/>}
@@ -107,6 +158,41 @@ function Rewards({profile,rewards}){return <div className="container"><h1>Reward
 function HistoryTab({tx}){return <div className="container"><h1>History</h1>{tx.length===0?<div className="card empty"><History/><p>No transactions yet.</p></div>:<div className="reward-list">{tx.map(t=><div className="card reward" key={t.id}><div><b>{t.transaction_type}</b><p>{new Date(t.created_at).toLocaleString()}</p></div><strong>+{t.points_earned}</strong></div>)}</div>}</div>}
 
 function Staff(){
+  const [staffSession,setStaffSession]=useState(null);
+  const [checking,setChecking]=useState(true);
+  const [email,setEmail]=useState('');
+  const [password,setPassword]=useState('');
+  const [msg,setMsg]=useState('');
+
+  useEffect(()=>{
+    supabase.auth.getSession().then(({data})=>{
+      setStaffSession(data.session);
+      setChecking(false);
+    });
+  },[]);
+
+  async function staffLogin(e){
+    e.preventDefault();
+    setMsg('');
+
+    const {data,error}=await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if(error){
+      setMsg(error.message);
+      return;
+    }
+
+    setStaffSession(data.session);
+  }
+
+  async function staffLogout(){
+    await supabase.auth.signOut();
+    setStaffSession(null);
+  }
+
   const [customerCode,setCustomerCode]=useState('');
   const [customer,setCustomer]=useState(null);
   const [amount,setAmount]=useState('');
