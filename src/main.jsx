@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 
 import './styles.css';
-import logo from './logo.jpg';
+const logo = '/logo.jpg';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
