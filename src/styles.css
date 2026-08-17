@@ -27,15 +27,22 @@ button,input{font:inherit}
   place-items:center;
   align-content:center;
   padding:28px;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(201,162,39,.06), transparent 30%),
-    radial-gradient(circle at 80% 80%, rgba(255,255,255,.03), transparent 30%),
+  background-color:#080808;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(201,162,39,.12), transparent 35%),
     repeating-linear-gradient(
-      45deg,
-      #090909 0px,
-      #090909 2px,
-      #0d0d0d 2px,
-      #0d0d0d 4px
+      0deg,
+      rgba(255,255,255,.025) 0px,
+      rgba(255,255,255,.025) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,.018) 0px,
+      rgba(255,255,255,.018) 1px,
+      transparent 1px,
+      transparent 4px
     );
 }
 
