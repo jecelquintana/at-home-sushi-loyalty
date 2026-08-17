@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import { QRCodeSVG } from 'qrcode.react';
 import { Gift, LogIn, LogOut, Mail, UserPlus, Star, Ticket, History, QrCode, ChevronRight } from 'lucide-react';
 import './styles.css';
+import logo from '../logo.jpg';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -50,7 +51,7 @@ function Auth({mode,setMode}){
    setBusy(false);
  }
  return <div className="auth-wrap">
-   <div className="brand"><div className="logo">🍣</div><h1>AT HOME SUSHI</h1><p>LOYALTY CLUB</p></div>
+  <div className="brand"><img src={logo} className="logo" alt="At Home Sushi" /><h1>AT HOME SUSHI</h1><p>LOYALTY CLUB</p></div>
    <div className="card auth-card">
      <div className="tabs"><button className={mode==='login'?'active':''} onClick={()=>setMode('login')}><LogIn size={17}/> Log in</button><button className={mode==='signup'?'active':''} onClick={()=>setMode('signup')}><UserPlus size={17}/> Join</button></div>
      <h2>{mode==='signup'?'Join the Loyalty Club':'Welcome back!'}</h2>
