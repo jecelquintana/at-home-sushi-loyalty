@@ -1062,3 +1062,54 @@ input[type="date"] {
     font-size: 9px;
   }
 }
+.birthday-button {
+  width: 100%;
+  border: 1px solid #c9a227;
+  border-radius: 11px;
+  padding: 12px 13px;
+  margin-top: 10px;
+  background: transparent;
+  color: #d4af6a;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.birthday-button:hover {
+  background: rgba(201, 162, 39, .10);
+}
+
+.birthday-button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.birthday-banner {
+  width: min(900px, calc(100% - 36px));
+  margin: 18px auto 0;
+  padding: 20px;
+  border: 1px solid rgba(201, 162, 39, .45);
+  border-radius: 18px;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(201, 162, 39, .16),
+      transparent 45%
+    ),
+    #141414;
+  box-shadow: 0 15px 35px rgba(0,0,0,.35);
+}
+
+.birthday-banner h2 {
+  margin: 6px 0;
+}
+
+.birthday-banner p {
+  margin: 5px 0 10px;
+  color: #aaa;
+}
+
+.birthday-banner strong {
+  color: #d4af6a;
+  font-size: 18px;
+}
