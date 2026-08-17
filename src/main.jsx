@@ -1121,6 +1121,95 @@ function Staff() {
   async function checkStaffSession() {
     const { data } =
       await supabase.auth.getSession();
+    
+    async function findCustomer() {
+  setMsg('');
+  setCustomer(null);
+
+  const code = customerCode.trim();
+
+  if (!code) {
+    setMsg('Please enter the customer QR code.');
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from('customers')
+    .select('*')
+    .eq('customer_code', code)
+    .single();
+
+  if (error || !data) {
+    setMsg('Customer not found.');
+    return;
+  }
+
+  setCustomer(data);
+  setNotes(data.notes || '');
+}
+      async function addPoints() {
+    if (!customer) {
+      setMsg('Find a customer first.');
+      return;
+    }
+
+    const purchase = parseFloat(amount);
+
+    if (Number.isNaN(purchase) || purchase <= 0) {
+      setMsg('Enter a valid purchase amount.');
+      return;
+    }
+
+    const points = purchase / 100;
+
+    setBusy(true);
+    setMsg('');
+
+    const newPoints =
+      Number(customer.points || 0) + points;
+
+    const { error: updateError } =
+      await supabase
+        .from('customers')
+        .update({
+          points: newPoints
+        })
+        .eq('id', customer.id);
+
+    if (updateError) {
+      setMsg(updateError.message);
+      setBusy(false);
+      return;
+    }
+
+    const { error: transactionError } =
+      await supabase
+        .from('transactions')
+        .insert({
+          customer_id: customer.id,
+          transaction_type: 'purchase',
+          points_earned: points
+        });
+
+    if (transactionError) {
+      setMsg(transactionError.message);
+      setBusy(false);
+      return;
+    }
+
+    setCustomer({
+      ...customer,
+      points: newPoints
+    });
+
+    setAmount('');
+
+    setMsg(
+      `Success! ${points.toFixed(2)} points added.`
+    );
+
+    setBusy(false);
+  }
 
     setStaffSession(data.session);
     setChecking(false);
