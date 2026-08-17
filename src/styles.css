@@ -71,10 +71,11 @@ button,input{font:inherit}
 }
 
 .card{
-  background:#111111;
-  border:1px solid #2a2a2a;
+  background:rgba(18,18,18,.88);
+  border:1px solid rgba(255,255,255,.10);
   border-radius:20px;
-  box-shadow:0 15px 45px rgba(0,0,0,.5);
+  box-shadow:0 20px 50px rgba(0,0,0,.55);
+  backdrop-filter:blur(12px);
 }
 
 .auth-card{
