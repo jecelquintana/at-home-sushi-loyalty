@@ -1,42 +1,89 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createClient } from '@supabase/supabase-js';
 import { QRCodeSVG } from 'qrcode.react';
-import { Html5Qrcode } from 'html5-qrcode';
+
 import {
-  Gift, LogIn, LogOut, UserPlus, Star, Ticket, History,
-  QrCode, ChevronRight, ScanLine, PlusCircle, Eye, EyeOff,
-  Bell, Settings, Upload, Save, Search, MessageSquare,
-  Cake, Palette, CheckCircle, X, Menu, Users
+  Gift,
+  LogIn,
+  LogOut,
+  UserPlus,
+  Star,
+  Ticket,
+  History,
+  QrCode,
+  ChevronRight,
+  ScanLine,
+  PlusCircle,
+  Eye,
+  EyeOff,
+  Cake,
+  FileText
 } from 'lucide-react';
+
 import './styles.css';
-import logo from '../logo.jpg';
+import logo from './logo.jpg';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-export const supabase = createClient(supabaseUrl, supabaseKey);
 
-const DEFAULT_DESIGN = {
-  business_name: 'AT HOME SUSHI',
-  card_title: 'LOYALTY CARD',
-  card_subtitle: 'QUICK ROLLS. BOLD FLAVORS. GREAT REWARDS.',
-  background_type: 'color',
-  background_color: '#111111',
-  background_image_url: '',
-  primary_color: '#111111',
-  secondary_color: '#1c1c1c',
-  accent_color: '#c9a227',
-  text_color: '#ffffff',
-  font_family: 'Inter',
-  logo_url: '',
-  stamp_icon: '🍣',
-  empty_stamp_icon: '○',
-  stamp_count: 8,
-  show_points: true,
-  show_stamps: true,
-  show_customer_code: true,
-  show_qr: true
-};
+export const supabase = createClient(
+  supabaseUrl,
+  supabaseKey
+);
+
+/* =====================================================
+   PASSWORD FIELD
+===================================================== */
+
+function PasswordField({
+  value,
+  onChange,
+  placeholder = 'At least 8 characters'
+}) {
+  const [show, setShow] = useState(false);
+
+  return (
+    <div>
+      <label>Password</label>
+
+      <div style={{ position: 'relative' }}>
+        <input
+          type={show ? 'text' : 'password'}
+          value={value}
+          onChange={onChange}
+          required
+          minLength="8"
+          placeholder={placeholder}
+          style={{ paddingRight: '48px' }}
+        />
+
+        <button
+          type="button"
+          onClick={() => setShow(!show)}
+          title={show ? 'Hide password' : 'Show password'}
+          style={{
+            position: 'absolute',
+            right: '10px',
+            top: '50%',
+            transform: 'translateY(-35%)',
+            border: '0',
+            background: 'transparent',
+            color: '#999',
+            padding: '5px',
+            cursor: 'pointer'
+          }}
+        >
+          {show ? <EyeOff size={18} /> : <Eye size={18} />}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* =====================================================
+   CUSTOMER APP
+===================================================== */
 
 function App() {
   const [session, setSession] = useState(null);
@@ -45,34 +92,49 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      if (data.session) loadProfile(data.session.user.id);
-      else setLoading(false);
-    });
+    checkSession();
 
-    const { data: { subscription } } =
-      supabase.auth.onAuthStateChange((_event, session) => {
-        setSession(session);
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange(
+      (_event, currentSession) => {
+        setSession(currentSession);
 
-        if (session) loadProfile(session.user.id);
-        else {
+        if (currentSession) {
+          loadProfile(currentSession.user.id);
+        } else {
           setProfile(null);
           setLoading(false);
         }
-      });
+      }
+    );
 
     return () => subscription.unsubscribe();
   }, []);
 
+  async function checkSession() {
+    const { data } = await supabase.auth.getSession();
+
+    if (data.session) {
+      setSession(data.session);
+      await loadProfile(data.session.user.id);
+    } else {
+      setLoading(false);
+    }
+  }
+
   async function loadProfile(id) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('customers')
       .select('*')
       .eq('id', id)
       .single();
 
-    setProfile(data);
+    if (error) {
+      console.error('Customer profile:', error);
+    }
+
+    setProfile(data || null);
     setLoading(false);
   }
 
@@ -86,11 +148,16 @@ function App() {
   }
 
   if (!session) {
-    return <Auth mode={mode} setMode={setMode} />;
+    return (
+      <Auth
+        mode={mode}
+        setMode={setMode}
+      />
+    );
   }
 
   return (
-    <CustomerDashboard
+    <Dashboard
       session={session}
       profile={profile}
       refresh={() => loadProfile(session.user.id)}
@@ -98,97 +165,177 @@ function App() {
   );
 }
 
+/* =====================================================
+   CUSTOMER LOGIN / SIGNUP
+===================================================== */
+
 function Auth({ mode, setMode }) {
   const [name, setName] = useState('');
-  const [birthday, setBirthday] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [birthday, setBirthday] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(true);
+
+  const [remember, setRemember] = useState(
+    localStorage.getItem('rememberLogin') === 'true'
+  );
+
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
 
+  useEffect(() => {
+    const savedEmail =
+      localStorage.getItem('savedLoginEmail');
+
+    if (savedEmail) {
+      setEmail(savedEmail);
+    }
+  }, []);
+
   async function submit(e) {
     e.preventDefault();
+
     setBusy(true);
     setMsg('');
 
-    try {
-      if (mode === 'signup') {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              full_name: name,
-              phone,
-              birthday
-            }
-          }
-        });
-
-        if (error) throw error;
-
-        if (data.user) {
-          await supabase.from('customers').upsert({
-            id: data.user.id,
-            full_name: name,
-            email,
-            phone,
-            birthday,
-            points: 0,
-            stamps: 0
-          });
-        }
-
-        setMsg(
-          'Account created! Check your email if confirmation is required, then log in.'
+    if (mode === 'login') {
+      if (remember) {
+        localStorage.setItem(
+          'rememberLogin',
+          'true'
+        );
+        localStorage.setItem(
+          'savedLoginEmail',
+          email
         );
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        localStorage.removeItem('rememberLogin');
+        localStorage.removeItem('savedLoginEmail');
+      }
+
+      const { error } =
+        await supabase.auth.signInWithPassword({
           email,
           password
         });
 
-        if (error) throw error;
-
-        if (!remember) {
-          localStorage.setItem('athome_no_remember', '1');
-        } else {
-          localStorage.removeItem('athome_no_remember');
-        }
+      if (error) {
+        setMsg(error.message);
       }
-    } catch (error) {
-      setMsg(error.message);
+
+      setBusy(false);
+      return;
     }
+
+    /* SIGN UP */
+
+    const { data, error } =
+      await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+            phone,
+            birthday
+          }
+        }
+      });
+
+    if (error) {
+      setMsg(error.message);
+      setBusy(false);
+      return;
+    }
+
+    if (data.user) {
+      const customerCode = Math.random()
+        .toString(16)
+        .substring(2, 12)
+        .toUpperCase();
+
+      const { error: profileError } =
+        await supabase
+          .from('customers')
+          .insert({
+            id: data.user.id,
+            full_name: name,
+            phone: phone || null,
+            email,
+            birthday: birthday || null,
+            points: 0,
+            stamps: 0,
+            customer_code: customerCode
+          });
+
+      if (profileError) {
+        console.error(
+          'Customer creation error:',
+          profileError
+        );
+      }
+    }
+
+    setMsg(
+      'Account created! Check your email to confirm your account, then log in.'
+    );
 
     setBusy(false);
   }
 
   return (
     <div className="auth-wrap">
+
       <div className="brand">
-        <img src={logo} className="logo" alt="At Home Sushi" />
+
+        <img
+          src={logo}
+          className="logo"
+          alt="At Home Sushi"
+        />
+
         <h1>AT HOME SUSHI</h1>
+
         <p>LOYALTY CLUB</p>
+
       </div>
 
       <div className="card auth-card">
+
         <div className="tabs">
+
           <button
-            className={mode === 'login' ? 'active' : ''}
-            onClick={() => setMode('login')}
+            type="button"
+            className={
+              mode === 'login'
+                ? 'active'
+                : ''
+            }
+            onClick={() => {
+              setMode('login');
+              setMsg('');
+            }}
           >
-            <LogIn size={17} /> Log in
+            <LogIn size={17} />
+            Log in
           </button>
 
           <button
-            className={mode === 'signup' ? 'active' : ''}
-            onClick={() => setMode('signup')}
+            type="button"
+            className={
+              mode === 'signup'
+                ? 'active'
+                : ''
+            }
+            onClick={() => {
+              setMode('signup');
+              setMsg('');
+            }}
           >
-            <UserPlus size={17} /> Join
+            <UserPlus size={17} />
+            Join
           </button>
+
         </div>
 
         <h2>
@@ -204,33 +351,43 @@ function Auth({ mode, setMode }) {
         </p>
 
         <form onSubmit={submit}>
+
           {mode === 'signup' && (
             <>
               <label>
                 Full name
+
                 <input
                   value={name}
-                  onChange={e => setName(e.target.value)}
+                  onChange={(e) =>
+                    setName(e.target.value)
+                  }
                   required
                   placeholder="Your name"
                 />
               </label>
 
               <label>
-                Birthday
+                Phone number
+
                 <input
-                  type="date"
-                  value={birthday}
-                  onChange={e => setBirthday(e.target.value)}
+                  value={phone}
+                  onChange={(e) =>
+                    setPhone(e.target.value)
+                  }
+                  placeholder="09xxxxxxxxx"
                 />
               </label>
 
               <label>
-                Phone number
+                Birthday
+
                 <input
-                  value={phone}
-                  onChange={e => setPhone(e.target.value)}
-                  placeholder="09xxxxxxxxx"
+                  type="date"
+                  value={birthday}
+                  onChange={(e) =>
+                    setBirthday(e.target.value)
+                  }
                 />
               </label>
             </>
@@ -238,132 +395,130 @@ function Auth({ mode, setMode }) {
 
           <label>
             Email
+
             <input
               type="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={(e) =>
+                setEmail(e.target.value)
+              }
               required
               placeholder="you@email.com"
             />
           </label>
 
-          <label>
-            Password
-            <div className="password-field">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                minLength="8"
-                placeholder="At least 8 characters"
-              />
-
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                {showPassword ? 'Hide' : 'Show'}
-              </button>
-            </div>
-          </label>
+          <PasswordField
+            value={password}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
+          />
 
           {mode === 'login' && (
-            <label className="remember">
+            <label
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginTop: '14px',
+                fontWeight: '500',
+                color: '#999',
+                cursor: 'pointer'
+              }}
+            >
               <input
                 type="checkbox"
                 checked={remember}
-                onChange={e => setRemember(e.target.checked)}
+                onChange={(e) =>
+                  setRemember(e.target.checked)
+                }
               />
+
               Remember me
             </label>
           )}
 
-          {msg && <div className="notice">{msg}</div>}
+          {msg && (
+            <div className="notice">
+              {msg}
+            </div>
+          )}
 
-          <button className="primary" disabled={busy}>
+          <button
+            className="primary"
+            disabled={busy}
+          >
             {busy
               ? 'Please wait...'
               : mode === 'signup'
-                ? 'Create my account'
-                : 'Log in'}
+              ? 'Create my account'
+              : 'Log in'}
           </button>
+
         </form>
 
         {mode === 'login' && (
           <p className="switch">
             New here?{' '}
-            <button onClick={() => setMode('signup')}>
+            <button
+              type="button"
+              onClick={() => {
+                setMode('signup');
+                setMsg('');
+              }}
+            >
               Join the club
             </button>
           </p>
         )}
+
       </div>
 
       <p className="footer">
-        Quick Rolls. Bold Flavors. Great Rewards. 🍣
+        Quick Rolls. Bold Flavors. Great Rewards.
       </p>
+
     </div>
   );
 }
 
-function CustomerDashboard({ session, profile, refresh }) {
+/* =====================================================
+   CUSTOMER DASHBOARD
+===================================================== */
+
+function Dashboard({
+  session,
+  profile
+}) {
   const [rewards, setRewards] = useState([]);
   const [tx, setTx] = useState([]);
-  const [notifications, setNotifications] = useState([]);
-  const [design, setDesign] = useState(DEFAULT_DESIGN);
   const [tab, setTab] = useState('home');
 
   useEffect(() => {
-    loadData();
+    loadDashboard();
   }, [session.user.id]);
 
-  async function loadData() {
-    const [
-      rewardsResult,
-      txResult,
-      notificationResult,
-      designResult
-    ] = await Promise.all([
-      supabase
+  async function loadDashboard() {
+    const { data: rewardsData } =
+      await supabase
         .from('rewards')
         .select('*')
         .eq('active', true)
-        .order('points_required'),
+        .order('points_required');
 
-      supabase
+    setRewards(rewardsData || []);
+
+    const { data: transactions } =
+      await supabase
         .from('transactions')
         .select('*')
         .eq('customer_id', session.user.id)
-        .order('created_at', { ascending: false })
-        .limit(20),
+        .order('created_at', {
+          ascending: false
+        })
+        .limit(20);
 
-      supabase
-        .from('notifications')
-        .select('*')
-        .eq('customer_id', session.user.id)
-        .order('created_at', { ascending: false })
-        .limit(20),
-
-      supabase
-        .from('card_design')
-        .select('*')
-        .eq('id', 1)
-        .maybeSingle()
-    ]);
-
-    setRewards(rewardsResult.data || []);
-    setTx(txResult.data || []);
-    setNotifications(notificationResult.data || []);
-
-    if (designResult.data) {
-      setDesign({
-        ...DEFAULT_DESIGN,
-        ...designResult.data
-      });
-    }
+    setTx(transactions || []);
   }
 
   async function logout() {
@@ -373,45 +528,44 @@ function CustomerDashboard({ session, profile, refresh }) {
   if (!profile) {
     return (
       <div className="screen">
-        <p>Creating your loyalty card...</p>
+        <p>
+          Creating your loyalty card...
+        </p>
       </div>
     );
   }
 
   return (
     <div className="app">
+
       <header className="topbar">
-        <div className="brand-mini">
-          <img
-            src={design.logo_url || logo}
-            alt="At Home Sushi"
-          />
-          <div>
-            <b>{design.business_name}</b>
-            <span>LOYALTY CLUB</span>
-          </div>
+
+        <div>
+          <b>🍣 AT HOME SUSHI</b>
+          <span>LOYALTY CLUB</span>
         </div>
 
-        <button className="iconbtn" onClick={logout}>
+        <button
+          className="iconbtn"
+          onClick={logout}
+        >
           <LogOut size={19} />
         </button>
+
       </header>
 
       <main>
+
         {tab === 'home' && (
           <Home
             profile={profile}
             rewards={rewards}
-            notifications={notifications}
-            design={design}
-            setTab={setTab}
           />
         )}
 
         {tab === 'card' && (
           <DigitalCard
             profile={profile}
-            design={design}
           />
         )}
 
@@ -426,427 +580,436 @@ function CustomerDashboard({ session, profile, refresh }) {
           <HistoryTab tx={tx} />
         )}
 
-        {tab === 'notifications' && (
-          <Notifications
-            notifications={notifications}
-            refresh={loadData}
-          />
-        )}
       </main>
 
       <nav className="nav">
+
         <button
-          className={tab === 'home' ? 'sel' : ''}
+          className={
+            tab === 'home'
+              ? 'sel'
+              : ''
+          }
           onClick={() => setTab('home')}
         >
-          <Star /> Home
+          <Star />
+          Home
         </button>
 
         <button
-          className={tab === 'card' ? 'sel' : ''}
+          className={
+            tab === 'card'
+              ? 'sel'
+              : ''
+          }
           onClick={() => setTab('card')}
         >
-          <QrCode /> My Card
+          <QrCode />
+          My Card
         </button>
 
         <button
-          className={tab === 'rewards' ? 'sel' : ''}
+          className={
+            tab === 'rewards'
+              ? 'sel'
+              : ''
+          }
           onClick={() => setTab('rewards')}
         >
-          <Gift /> Rewards
+          <Gift />
+          Rewards
         </button>
 
         <button
-          className={tab === 'history' ? 'sel' : ''}
+          className={
+            tab === 'history'
+              ? 'sel'
+              : ''
+          }
           onClick={() => setTab('history')}
         >
-          <History /> History
+          <History />
+          History
         </button>
 
-        <button
-          className={tab === 'notifications' ? 'sel' : ''}
-          onClick={() => setTab('notifications')}
-        >
-          <Bell />
-          {notifications.some(n => !n.read) && (
-            <i className="notification-dot" />
-          )}
-          Alerts
-        </button>
       </nav>
+
     </div>
   );
 }
 
+/* =====================================================
+   HOME
+===================================================== */
+
 function Home({
   profile,
-  rewards,
-  notifications,
-  design,
-  setTab
+  rewards
 }) {
+  const points =
+    Number(profile.points || 0);
+
   const next = rewards.find(
-    r => Number(r.points_required) > Number(profile.points || 0)
+    (reward) =>
+      Number(reward.points_required) > points
   );
 
   return (
     <div className="container">
+
       <div className="hero">
+
         <p>
           Hello,{' '}
-          {profile.full_name?.split(' ')[0] || 'Sushi Lover'} 👋
+          {profile.full_name?.split(' ')[0] ||
+            'Sushi Lover'} 👋
         </p>
-        <h1>Your rewards are waiting.</h1>
-      </div>
 
-      {notifications.some(n => !n.read) && (
-        <button
-          className="card notification-banner"
-          onClick={() => setTab('notifications')}
-        >
-          <Bell />
-          <div>
-            <b>You have new updates</b>
-            <p className="muted">
-              Tap to see your latest loyalty activity.
-            </p>
-          </div>
-          <ChevronRight />
-        </button>
-      )}
+        <h1>
+          Your rewards are waiting.
+        </h1>
+
+      </div>
 
       <div className="balance-grid">
+
         <div className="balance">
+
           <Star />
+
           <small>POINTS</small>
+
           <strong>
-            {Number(profile.points || 0).toFixed(2)}
+            {points.toFixed(2)}
           </strong>
+
         </div>
 
         <div className="balance">
+
           <Ticket />
+
           <small>STAMPS</small>
-          <strong>{profile.stamps || 0}</strong>
+
+          <strong>
+            {profile.stamps || 0}
+          </strong>
+
         </div>
+
       </div>
 
-      <div
-        className="card quick"
-        onClick={() => setTab('card')}
-      >
+      <div className="card quick">
+
         <div>
-          <span className="eyebrow">YOUR DIGITAL CARD</span>
-          <h3>Show your QR at checkout</h3>
+
+          <span className="eyebrow">
+            YOUR DIGITAL CARD
+          </span>
+
+          <h3>
+            Show your QR at checkout
+          </h3>
+
           <p className="muted">
             We'll add your points to your account.
           </p>
+
         </div>
+
         <ChevronRight />
+
       </div>
 
       {next && (
         <div className="card progress">
-          <div className="row">
-            <b>Next reward</b>
-            <span>
-              {(
-                Number(next.points_required) -
-                Number(profile.points || 0)
-              ).toFixed(2)}{' '}
-              points to go
-            </span>
+
+          <div style={{ width: '100%' }}>
+
+            <div className="row">
+
+              <b>Next reward</b>
+
+              <span>
+                {(
+                  Number(next.points_required) -
+                  points
+                ).toFixed(2)}{' '}
+                points to go
+              </span>
+
+            </div>
+
+            <div className="bar">
+
+              <i
+                style={{
+                  width: `${Math.min(
+                    100,
+                    (points /
+                      Number(next.points_required)) *
+                      100
+                  )}%`
+                }}
+              />
+
+            </div>
+
+            <b>
+              {next.name}
+            </b>
+
           </div>
 
-          <div className="bar">
-            <i
-              style={{
-                width: `${Math.min(
-                  100,
-                  (Number(profile.points || 0) /
-                    Number(next.points_required)) *
-                    100
-                )}%`
-              }}
-            />
-          </div>
-
-          <b>{next.name}</b>
         </div>
       )}
-
-      <DigitalStamps
-        stamps={profile.stamps || 0}
-        design={design}
-      />
 
       <h3 className="section-title">
         Available rewards
       </h3>
 
       <div className="reward-list">
-        {rewards.slice(0, 3).map(r => (
-          <div className="card reward" key={r.id}>
-            <div className="reward-icon">
-              <Gift />
+
+        {rewards
+          .slice(0, 3)
+          .map((reward) => (
+
+            <div
+              className="card reward"
+              key={reward.id}
+            >
+
+              <div className="reward-icon">
+                <Gift />
+              </div>
+
+              <div>
+
+                <b>
+                  {reward.name}
+                </b>
+
+                <p>
+                  {reward.description ||
+                    'Use your points for this reward.'}
+                </p>
+
+              </div>
+
+              <strong>
+                {reward.points_required} pts
+              </strong>
+
             </div>
 
-            <div>
-              <b>{r.name}</b>
-              <p>
-                {r.description ||
-                  'Use your points for this reward.'}
-              </p>
-            </div>
+          ))}
 
-            <strong>{r.points_required} pts</strong>
-          </div>
-        ))}
       </div>
+
     </div>
   );
 }
 
-function DigitalStamps({ stamps, design }) {
-  const total = Number(design.stamp_count || 8);
+/* =====================================================
+   DIGITAL CARD
+===================================================== */
 
-  return (
-    <div className="card stamp-card">
-      <div className="row">
-        <div>
-          <span className="eyebrow">LOYALTY STAMPS</span>
-          <h3>Your progress</h3>
-        </div>
-
-        <b>
-          {stamps}/{total}
-        </b>
-      </div>
-
-      <div className="stamp-grid">
-        {Array.from({ length: total }).map((_, index) => (
-          <span key={index} className={index < stamps ? 'filled' : ''}>
-            {index < stamps
-              ? design.stamp_icon
-              : design.empty_stamp_icon}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function DigitalCard({ profile, design }) {
-  const background =
-    design.background_type === 'image' &&
-    design.background_image_url
-      ? `url("${design.background_image_url}")`
-      : design.background_color;
-
+function DigitalCard({ profile }) {
   return (
     <div className="container center">
-      <div
-        className="premium-card"
-        style={{
-          backgroundImage:
-            design.background_type === 'image'
-              ? background
-              : 'none',
-          backgroundColor:
-            design.background_type === 'color'
-              ? design.background_color
-              : '#111',
-          color: design.text_color,
-          fontFamily: design.font_family,
-          borderColor: design.accent_color
-        }}
-      >
-        <div className="card-overlay" />
 
-        <div className="premium-card-content">
-          <div className="premium-card-top">
-            <div>
-              <span
-                className="card-business"
-                style={{ color: design.accent_color }}
-              >
-                {design.business_name}
-              </span>
+      <div className="card digital">
 
-              <h2>{design.card_title}</h2>
+        <span className="eyebrow">
+          AT HOME SUSHI
+        </span>
 
-              <p>{design.card_subtitle}</p>
-            </div>
+        <h2>
+          LOYALTY CARD
+        </h2>
 
-            <img
-              className="card-logo"
-              src={design.logo_url || logo}
-              alt=""
-            />
-          </div>
+        <div className="qr">
 
-          {design.show_qr && (
-            <div className="premium-qr">
-              <QRCodeSVG
-                value={profile.customer_code}
-                size={155}
-                includeMargin
-              />
-            </div>
-          )}
+          <QRCodeSVG
+            value={profile.customer_code}
+            size={210}
+            includeMargin
+          />
 
-          <div className="premium-card-bottom">
-            <div>
-              <small>CARD MEMBER</small>
-              <strong>{profile.full_name}</strong>
-            </div>
-
-            {design.show_points && (
-              <div>
-                <small>POINTS</small>
-                <strong>
-                  {Number(profile.points || 0).toFixed(2)}
-                </strong>
-              </div>
-            )}
-          </div>
-
-          {design.show_customer_code && (
-            <p className="premium-code">
-              {profile.customer_code}
-            </p>
-          )}
-
-          {design.show_stamps && (
-            <DigitalStamps
-              stamps={profile.stamps || 0}
-              design={design}
-            />
-          )}
         </div>
+
+        <h3>
+          {profile.full_name}
+        </h3>
+
+        <p className="code">
+          {profile.customer_code}
+        </p>
+
+        <div className="balance-grid">
+
+          <div className="mini">
+
+            <small>POINTS</small>
+
+            <b>
+              {Number(
+                profile.points || 0
+              ).toFixed(2)}
+            </b>
+
+          </div>
+
+          <div className="mini">
+
+            <small>STAMPS</small>
+
+            <b>
+              {profile.stamps || 0}
+            </b>
+
+          </div>
+
+        </div>
+
+        <p className="muted">
+          Show this QR code at checkout.
+        </p>
+
       </div>
 
-      <p className="muted card-help">
-        Show this QR code at checkout.
-      </p>
     </div>
   );
 }
 
-function Rewards({ profile, rewards }) {
+/* =====================================================
+   REWARDS
+===================================================== */
+
+function Rewards({
+  profile,
+  rewards
+}) {
   return (
     <div className="container">
-      <h1>Rewards 🎁</h1>
+
+      <h1>
+        Rewards 🎁
+      </h1>
 
       <p className="muted">
         You have{' '}
         <b>
-          {Number(profile.points || 0).toFixed(2)} points
+          {Number(
+            profile.points || 0
+          ).toFixed(2)}{' '}
+          points
         </b>.
       </p>
 
       <div className="reward-list">
-        {rewards.map(r => (
-          <div className="card reward" key={r.id}>
+
+        {rewards.map((reward) => (
+
+          <div
+            className="card reward"
+            key={reward.id}
+          >
+
             <div className="reward-icon">
               <Gift />
             </div>
 
             <div>
-              <b>{r.name}</b>
-              <p>{r.description || ''}</p>
+
+              <b>
+                {reward.name}
+              </b>
+
+              <p>
+                {reward.description || ''}
+              </p>
+
             </div>
 
-            <strong>{r.points_required}</strong>
+            <strong>
+              {reward.points_required}
+            </strong>
+
           </div>
+
         ))}
+
       </div>
+
     </div>
   );
 }
+
+/* =====================================================
+   HISTORY
+===================================================== */
 
 function HistoryTab({ tx }) {
   return (
     <div className="container">
-      <h1>History</h1>
+
+      <h1>
+        History
+      </h1>
 
       {tx.length === 0 ? (
+
         <div className="card empty">
+
           <History />
-          <p>No transactions yet.</p>
+
+          <p>
+            No transactions yet.
+          </p>
+
         </div>
+
       ) : (
+
         <div className="reward-list">
-          {tx.map(t => (
-            <div className="card reward" key={t.id}>
+
+          {tx.map((transaction) => (
+
+            <div
+              className="card reward"
+              key={transaction.id}
+            >
+
               <div>
+
                 <b>
-                  {t.transaction_type === 'purchase'
-                    ? 'Purchase'
-                    : t.transaction_type}
+                  {transaction.transaction_type}
                 </b>
 
                 <p>
                   {new Date(
-                    t.created_at
+                    transaction.created_at
                   ).toLocaleString()}
                 </p>
+
               </div>
 
               <strong>
-                +{Number(t.points_earned || 0).toFixed(2)}
+                +
+                {Number(
+                  transaction.points_earned || 0
+                ).toFixed(2)}
               </strong>
+
             </div>
+
           ))}
+
         </div>
+
       )}
-    </div>
-  );
-}
 
-function Notifications({ notifications, refresh }) {
-  async function markRead(id) {
-    await supabase
-      .from('notifications')
-      .update({ read: true })
-      .eq('id', id);
-
-    refresh();
-  }
-
-  return (
-    <div className="container">
-      <h1>Updates 🔔</h1>
-
-      {notifications.length === 0 ? (
-        <div className="card empty">
-          <Bell />
-          <p>No notifications yet.</p>
-        </div>
-      ) : (
-        <div className="reward-list">
-          {notifications.map(n => (
-            <button
-              className={`card notification-item ${
-                n.read ? '' : 'unread'
-              }`}
-              key={n.id}
-              onClick={() => markRead(n.id)}
-            >
-              <Bell />
-              <div>
-                <b>{n.title}</b>
-                <p>{n.message}</p>
-                <small>
-                  {new Date(
-                    n.created_at
-                  ).toLocaleString()}
-                </small>
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
@@ -856,52 +1019,70 @@ function Notifications({ notifications, refresh }) {
 ===================================================== */
 
 function Staff() {
-  const [staffSession, setStaffSession] = useState(null);
-  const [checking, setChecking] = useState(true);
+  const [staffSession, setStaffSession] =
+    useState(null);
+
+  const [checking, setChecking] =
+    useState(true);
+
+  const [email, setEmail] =
+    useState('');
+
+  const [password, setPassword] =
+    useState('');
+
+  const [remember, setRemember] =
+    useState(
+      localStorage.getItem(
+        'staffRemember'
+      ) === 'true'
+    );
+
+  const [customerCode, setCustomerCode] =
+    useState('');
+
+  const [customer, setCustomer] =
+    useState(null);
+
+  const [amount, setAmount] =
+    useState('');
+
+  const [notes, setNotes] =
+    useState('');
+
+  const [msg, setMsg] =
+    useState('');
+
+  const [busy, setBusy] =
+    useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setStaffSession(data.session);
-      setChecking(false);
-    });
+    checkStaffSession();
   }, []);
 
-  if (checking) {
-    return (
-      <div className="screen">
-        <div className="loader">🍣</div>
-        <p>Checking staff access...</p>
-      </div>
-    );
+  async function checkStaffSession() {
+    const { data } =
+      await supabase.auth.getSession();
+
+    setStaffSession(data.session);
+    setChecking(false);
   }
 
-  if (!staffSession) {
-    return <StaffLogin onLogin={setStaffSession} />;
-  }
-
-  return (
-    <StaffPanel
-      session={staffSession}
-      logout={async () => {
-        await supabase.auth.signOut();
-        setStaffSession(null);
-      }}
-    />
-  );
-}
-
-function StaffLogin({ onLogin }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [show, setShow] = useState(false);
-  const [remember, setRemember] = useState(true);
-  const [msg, setMsg] = useState('');
-  const [busy, setBusy] = useState(false);
-
-  async function login(e) {
+  async function staffLogin(e) {
     e.preventDefault();
-    setBusy(true);
+
     setMsg('');
+
+    if (remember) {
+      localStorage.setItem(
+        'staffRemember',
+        'true'
+      );
+    } else {
+      localStorage.removeItem(
+        'staffRemember'
+      );
+    }
 
     const { data, error } =
       await supabase.auth.signInWithPassword({
@@ -911,190 +1092,37 @@ function StaffLogin({ onLogin }) {
 
     if (error) {
       setMsg(error.message);
-    } else {
-      onLogin(data.session);
-
-      if (!remember) {
-        localStorage.setItem('staff_no_remember', '1');
-      }
-    }
-
-    setBusy(false);
-  }
-
-  return (
-    <div className="auth-wrap">
-      <div className="brand">
-        <img src={logo} className="logo" alt="At Home Sushi" />
-        <h1>AT HOME SUSHI</h1>
-        <p>STAFF ACCESS</p>
-      </div>
-
-      <div className="card auth-card">
-        <h2>Staff Login</h2>
-
-        <p className="muted">
-          Sign in to manage customer loyalty accounts.
-        </p>
-
-        <form onSubmit={login}>
-          <label>
-            Email
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              placeholder="Staff email"
-            />
-          </label>
-
-          <label>
-            Password
-
-            <div className="password-field">
-              <input
-                type={show ? 'text' : 'password'}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                placeholder="Password"
-              />
-
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShow(!show)}
-              >
-                {show ? <EyeOff size={18} /> : <Eye size={18} />}
-                {show ? 'Hide' : 'Show'}
-              </button>
-            </div>
-          </label>
-
-          <label className="remember">
-            <input
-              type="checkbox"
-              checked={remember}
-              onChange={e => setRemember(e.target.checked)}
-            />
-            Remember me
-          </label>
-
-          {msg && <div className="notice">{msg}</div>}
-
-          <button className="primary" disabled={busy}>
-            {busy ? 'Logging in...' : 'Log in'}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-function StaffPanel({ session, logout }) {
-  const [page, setPage] = useState('points');
-
-  return (
-    <div className="app">
-      <header className="topbar">
-        <div className="brand-mini">
-          <img src={logo} alt="At Home Sushi" />
-          <div>
-            <b>AT HOME SUSHI</b>
-            <span>STAFF PANEL</span>
-          </div>
-        </div>
-
-        <button
-          className="iconbtn"
-          onClick={logout}
-        >
-          <LogOut size={19} />
-        </button>
-      </header>
-
-      <main>
-        {page === 'points' && (
-          <StaffPoints />
-        )}
-
-        {page === 'customers' && (
-          <StaffCustomers />
-        )}
-
-        {page === 'designer' && (
-          <CardDesigner />
-        )}
-
-        {page === 'birthday' && (
-          <BirthdaySettings />
-        )}
-      </main>
-
-      <nav className="nav staff-nav">
-        <button
-          className={page === 'points' ? 'sel' : ''}
-          onClick={() => setPage('points')}
-        >
-          <ScanLine />
-          Points
-        </button>
-
-        <button
-          className={page === 'customers' ? 'sel' : ''}
-          onClick={() => setPage('customers')}
-        >
-          <Users />
-          Customers
-        </button>
-
-        <button
-          className={page === 'designer' ? 'sel' : ''}
-          onClick={() => setPage('designer')}
-        >
-          <Palette />
-          Card
-        </button>
-
-        <button
-          className={page === 'birthday' ? 'sel' : ''}
-          onClick={() => setPage('birthday')}
-        >
-          <Cake />
-          Birthday
-        </button>
-      </nav>
-    </div>
-  );
-}
-
-function StaffPoints() {
-  const [code, setCode] = useState('');
-  const [customer, setCustomer] = useState(null);
-  const [amount, setAmount] = useState('');
-  const [msg, setMsg] = useState('');
-  const [scanner, setScanner] = useState(false);
-  const [busy, setBusy] = useState(false);
-
-  const scannerRef = useRef(null);
-
-  async function findCustomer(value = code) {
-    setMsg('');
-    setCustomer(null);
-
-    const clean = value.trim();
-
-    if (!clean) {
-      setMsg('Please enter or scan a customer QR code.');
       return;
     }
 
-    const { data, error } = await supabase
-      .from('customers')
-      .select('*')
-      .eq('customer_code', clean)
-      .single();
+    setStaffSession(data.session);
+  }
+
+  async function staffLogout() {
+    await supabase.auth.signOut();
+    setStaffSession(null);
+  }
+
+  async function findCustomer() {
+    setMsg('');
+    setCustomer(null);
+
+    const code =
+      customerCode.trim();
+
+    if (!code) {
+      setMsg(
+        'Please enter the customer QR code.'
+      );
+      return;
+    }
+
+    const { data, error } =
+      await supabase
+        .from('customers')
+        .select('*')
+        .eq('customer_code', code)
+        .single();
 
     if (error || !data) {
       setMsg('Customer not found.');
@@ -1102,76 +1130,47 @@ function StaffPoints() {
     }
 
     setCustomer(data);
-  }
-
-  async function startScanner() {
-    setMsg('');
-    setScanner(true);
-
-    setTimeout(async () => {
-      const scanner = new Html5Qrcode('qr-reader');
-      scannerRef.current = scanner;
-
-      try {
-        await scanner.start(
-          { facingMode: 'environment' },
-          {
-            fps: 10,
-            qrbox: { width: 250, height: 250 }
-          },
-          async decodedText => {
-            setCode(decodedText);
-
-            await scanner.stop();
-            scanner.clear();
-            scannerRef.current = null;
-            setScanner(false);
-
-            findCustomer(decodedText);
-          },
-          () => {}
-        );
-      } catch (error) {
-        setScanner(false);
-        setMsg(
-          'Camera could not be opened. Please allow camera access or enter the code manually.'
-        );
-      }
-    }, 100);
-  }
-
-  async function stopScanner() {
-    try {
-      if (scannerRef.current) {
-        await scannerRef.current.stop();
-        scannerRef.current.clear();
-        scannerRef.current = null;
-      }
-    } catch {}
-
-    setScanner(false);
+    setNotes(data.notes || '');
   }
 
   async function addPoints() {
-    const purchase = Number(amount);
-
     if (!customer) {
-      setMsg('Find a customer first.');
+      setMsg(
+        'Find a customer first.'
+      );
       return;
     }
 
-    if (!purchase || purchase <= 0) {
-      setMsg('Enter a valid purchase amount.');
+    const purchase =
+      parseFloat(amount);
+
+    if (
+      Number.isNaN(purchase) ||
+      purchase <= 0
+    ) {
+      setMsg(
+        'Enter a valid purchase amount.'
+      );
       return;
     }
 
-    const points = purchase / 100;
+    /*
+      POINT SYSTEM
+
+      ₱100 = 1 point
+      ₱50  = 0.50 point
+      ₱850 = 8.50 points
+    */
+
+    const points =
+      purchase / 100;
 
     setBusy(true);
     setMsg('');
 
     const newPoints =
-      Number(customer.points || 0) + points;
+      Number(customer.points || 0) +
+      points;
 
     const { error: updateError } =
       await supabase
@@ -1197,25 +1196,12 @@ function StaffPoints() {
         });
 
     if (transactionError) {
-      setMsg(transactionError.message);
+      setMsg(
+        transactionError.message
+      );
       setBusy(false);
       return;
     }
-
-    await supabase
-      .from('notifications')
-      .insert({
-        customer_id: customer.id,
-        title: 'Points Added! 🍣',
-        message: `You earned ${points.toFixed(
-          2
-        )} points from your ₱${purchase.toFixed(
-          2
-        )} purchase. Your new balance is ${newPoints.toFixed(
-          2
-        )} points.`,
-        type: 'points'
-      });
 
     setCustomer({
       ...customer,
@@ -1223,842 +1209,383 @@ function StaffPoints() {
     });
 
     setAmount('');
+
     setMsg(
       `Success! ${points.toFixed(
         2
-      )} points added to ${customer.full_name}.`
+      )} points added.`
     );
 
     setBusy(false);
   }
 
-  return (
-    <div className="container">
-      <div className="hero">
-        <p>STAFF</p>
-        <h1>Add Customer Points</h1>
-      </div>
+  async function saveNotes() {
+    if (!customer) return;
 
-      <div className="card staff-action-card">
-        <button
-          className="primary"
-          onClick={startScanner}
-        >
-          <ScanLine size={18} />
-          Scan Customer QR
-        </button>
+    setBusy(true);
+    setMsg('');
 
-        {scanner && (
-          <>
-            <div id="qr-reader" className="qr-reader" />
+    const { error } =
+      await supabase
+        .from('customers')
+        .update({
+          notes: notes
+        })
+        .eq('id', customer.id);
 
-            <button
-              className="secondary"
-              onClick={stopScanner}
-            >
-              Cancel Scanner
-            </button>
-          </>
-        )}
+    if (error) {
+      setMsg(error.message);
+    } else {
+      setCustomer({
+        ...customer,
+        notes
+      });
 
-        <div className="divider">
-          <span>OR ENTER CODE</span>
+      setMsg(
+        'Customer notes saved.'
+      );
+    }
+
+    setBusy(false);
+  }
+
+  if (checking) {
+    return (
+      <div className="screen">
+
+        <div className="loader">
+          🍣
         </div>
 
-        <label>
-          Customer QR / Code
-          <input
-            value={code}
-            onChange={e => setCode(e.target.value)}
-            placeholder="Example: 254D39A2A2"
-          />
-        </label>
+        <p>
+          Checking staff access...
+        </p>
 
-        <button
-          className="secondary"
-          onClick={() => findCustomer()}
-        >
-          <Search size={18} />
-          Find Customer
-        </button>
       </div>
+    );
+  }
 
-      {customer && (
-        <div className="card customer-result">
-          <span className="eyebrow">CUSTOMER</span>
+  /* STAFF LOGIN */
 
-          <h2>{customer.full_name}</h2>
+  if (!staffSession) {
+    return (
+      <div className="auth-wrap">
 
-          <p className="muted">
-            Current points:{' '}
-            <b>
-              {Number(customer.points || 0).toFixed(2)}
-            </b>
+        <div className="brand">
+
+          <img
+            src={logo}
+            className="staff-logo"
+            alt="At Home Sushi"
+          />
+
+          <h1>
+            AT HOME SUSHI
+          </h1>
+
+          <p>
+            STAFF ACCESS
           </p>
 
+        </div>
+
+        <div className="card auth-card">
+
+          <h2>
+            Staff Login
+          </h2>
+
+          <p className="muted">
+            Sign in to manage customer points.
+          </p>
+
+          <form onSubmit={staffLogin}>
+
+            <label>
+              Email
+
+              <input
+                type="email"
+                value={email}
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
+                required
+                placeholder="Staff email"
+              />
+            </label>
+
+            <PasswordField
+              value={password}
+              onChange={(e) =>
+                setPassword(e.target.value)
+              }
+              placeholder="Staff password"
+            />
+
+            <label
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontWeight: '500',
+                color: '#999',
+                cursor: 'pointer'
+              }}
+            >
+
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) =>
+                  setRemember(
+                    e.target.checked
+                  )
+                }
+              />
+
+              Remember me
+
+            </label>
+
+            {msg && (
+              <div className="notice">
+                {msg}
+              </div>
+            )}
+
+            <button className="primary">
+              <LogIn size={18} />
+              Log in
+            </button>
+
+          </form>
+
+        </div>
+
+      </div>
+    );
+  }
+
+  /* STAFF DASHBOARD */
+
+  return (
+    <div className="app">
+
+      <header className="topbar">
+
+        <div>
+
+          <b>
+            🍣 AT HOME SUSHI
+          </b>
+
+          <span>
+            STAFF PANEL
+          </span>
+
+        </div>
+
+        <button
+          className="iconbtn"
+          onClick={staffLogout}
+          title="Log out"
+        >
+          <LogOut size={19} />
+        </button>
+
+      </header>
+
+      <main className="container">
+
+        <div className="hero">
+
+          <p>
+            STAFF
+          </p>
+
+          <h1>
+            Add Customer Points
+          </h1>
+
+        </div>
+
+        {/* FIND CUSTOMER */}
+
+        <div
+          className="card"
+          style={{ padding: 20 }}
+        >
+
           <label>
-            Purchase Amount
+            Customer QR / Code
+          </label>
+
+          <input
+            value={customerCode}
+            onChange={(e) =>
+              setCustomerCode(
+                e.target.value
+              )
+            }
+            placeholder="Enter customer code"
+          />
+
+          <button
+            className="primary"
+            onClick={findCustomer}
+          >
+            <ScanLine size={18} />
+            Find Customer
+          </button>
+
+        </div>
+
+        {/* CUSTOMER */}
+
+        {customer && (
+          <div
+            className="card"
+            style={{
+              padding: 20,
+              marginTop: 14
+            }}
+          >
+
+            <span className="eyebrow">
+              CUSTOMER
+            </span>
+
+            <h2>
+              {customer.full_name}
+            </h2>
+
+            <p className="muted">
+              Current points:{' '}
+              <b>
+                {Number(
+                  customer.points || 0
+                ).toFixed(2)}
+              </b>
+            </p>
+
+            {customer.birthday && (
+              <p className="muted">
+                <Cake
+                  size={15}
+                  style={{
+                    verticalAlign:
+                      'middle'
+                  }}
+                />{' '}
+                Birthday:{' '}
+                {new Date(
+                  customer.birthday
+                ).toLocaleDateString()}
+              </p>
+            )}
+
+            {/* ADD POINTS */}
+
+            <label>
+              Purchase Amount
+            </label>
+
             <input
               type="number"
               min="0"
               step="0.01"
               value={amount}
-              onChange={e => setAmount(e.target.value)}
+              onChange={(e) =>
+                setAmount(
+                  e.target.value
+                )
+              }
               placeholder="₱0.00"
             />
-          </label>
 
-          {amount && Number(amount) > 0 && (
-            <div className="points-preview">
-              <span>Points to add</span>
-              <strong>
-                {(Number(amount) / 100).toFixed(2)}
-              </strong>
-            </div>
-          )}
-
-          <button
-            className="primary"
-            onClick={addPoints}
-            disabled={busy}
-          >
-            <PlusCircle size={18} />
-            {busy ? 'Updating...' : 'Add Points'}
-          </button>
-        </div>
-      )}
-
-      {msg && (
-        <div className="notice staff-message">
-          {msg}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function StaffCustomers() {
-  const [customers, setCustomers] = useState([]);
-  const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState(null);
-  const [note, setNote] = useState('');
-  const [msg, setMsg] = useState('');
-
-  async function loadCustomers() {
-    const { data } = await supabase
-      .from('customers')
-      .select('*')
-      .order('created_at', {
-        ascending: false
-      });
-
-    setCustomers(data || []);
-  }
-
-  useEffect(() => {
-    loadCustomers();
-  }, []);
-
-  async function saveNote() {
-    if (!selected || !note.trim()) return;
-
-    const { error } = await supabase
-      .from('customer_notes')
-      .insert({
-        customer_id: selected.id,
-        note: note.trim()
-      });
-
-    if (error) {
-      setMsg(error.message);
-      return;
-    }
-
-    setNote('');
-    setMsg('Private note saved.');
-  }
-
-  const filtered = customers.filter(c =>
-    `${c.full_name} ${c.email} ${c.customer_code}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
-
-  return (
-    <div className="container">
-      <div className="hero">
-        <p>STAFF</p>
-        <h1>Customers</h1>
-      </div>
-
-      <div className="card">
-        <div className="search-box">
-          <Search size={18} />
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search customers..."
-          />
-        </div>
-      </div>
-
-      <div className="customer-list">
-        {filtered.map(customer => (
-          <button
-            className="card customer-row"
-            key={customer.id}
-            onClick={() => setSelected(customer)}
-          >
-            <div>
-              <b>{customer.full_name}</b>
-              <small>{customer.email}</small>
-            </div>
-
-            <strong>
-              {Number(customer.points || 0).toFixed(2)}
-            </strong>
-          </button>
-        ))}
-      </div>
-
-      {selected && (
-        <div className="modal-backdrop">
-          <div className="card modal">
-            <button
-              className="close-btn"
-              onClick={() => setSelected(null)}
-            >
-              <X />
-            </button>
-
-            <span className="eyebrow">
-              CUSTOMER PROFILE
-            </span>
-
-            <h2>{selected.full_name}</h2>
-
-            <p>{selected.email}</p>
-
-            <p>
-              Points:{' '}
-              <b>
-                {Number(selected.points || 0).toFixed(2)}
-              </b>
-            </p>
-
-            <p>
-              Stamps: <b>{selected.stamps || 0}</b>
-            </p>
-
-            {selected.birthday && (
-              <p>
-                Birthday: {selected.birthday}
-              </p>
-            )}
-
-            <hr />
-
-            <h3>Private Staff Note</h3>
-
-            <textarea
-              value={note}
-              onChange={e => setNote(e.target.value)}
-              placeholder="Add a private note..."
-            />
+            {amount &&
+              Number(amount) > 0 && (
+                <p className="muted">
+                  Points to add:{' '}
+                  <b>
+                    {(
+                      Number(amount) / 100
+                    ).toFixed(2)}
+                  </b>
+                </p>
+              )}
 
             <button
               className="primary"
-              onClick={saveNote}
+              onClick={addPoints}
+              disabled={busy}
             >
-              <MessageSquare size={18} />
-              Save Note
+              <PlusCircle size={18} />
+
+              {busy
+                ? 'Updating...'
+                : 'Add Points'}
             </button>
 
-            {msg && (
-              <div className="notice">{msg}</div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+            {/* NOTES */}
 
-/* =====================================================
-   CARD DESIGNER
-===================================================== */
-
-function CardDesigner() {
-  const [design, setDesign] = useState(DEFAULT_DESIGN);
-  const [saving, setSaving] = useState(false);
-  const [msg, setMsg] = useState('');
-
-  useEffect(() => {
-    loadDesign();
-  }, []);
-
-  async function loadDesign() {
-    const { data } = await supabase
-      .from('card_design')
-      .select('*')
-      .eq('id', 1)
-      .maybeSingle();
-
-    if (data) {
-      setDesign({
-        ...DEFAULT_DESIGN,
-        ...data
-      });
-    }
-  }
-
-  async function uploadAsset(file, type) {
-    if (!file) return;
-
-    const extension =
-      file.name.split('.').pop() || 'png';
-
-    const path = `${type}-${Date.now()}.${extension}`;
-
-    const { error } = await supabase.storage
-      .from('card-assets')
-      .upload(path, file, {
-        upsert: true
-      });
-
-    if (error) {
-      setMsg(error.message);
-      return;
-    }
-
-    const { data } = supabase.storage
-      .from('card-assets')
-      .getPublicUrl(path);
-
-    if (type === 'logo') {
-      setDesign(d => ({
-        ...d,
-        logo_url: data.publicUrl
-      }));
-    }
-
-    if (type === 'background') {
-      setDesign(d => ({
-        ...d,
-        background_type: 'image',
-        background_image_url: data.publicUrl
-      }));
-    }
-  }
-
-  async function save() {
-    setSaving(true);
-    setMsg('');
-
-    const { error } = await supabase
-      .from('card_design')
-      .upsert({
-        ...design,
-        id: 1,
-        updated_at: new Date().toISOString()
-      });
-
-    if (error) {
-      setMsg(error.message);
-    } else {
-      setMsg('Card design saved! 🎉');
-    }
-
-    setSaving(false);
-  }
-
-  return (
-    <div className="container">
-      <div className="hero">
-        <p>ADMIN</p>
-        <h1>Card Designer</h1>
-      </div>
-
-      <div className="designer-grid">
-        <div className="card designer-controls">
-          <h3>Branding</h3>
-
-          <label>
-            Business name
-            <input
-              value={design.business_name}
-              onChange={e =>
-                setDesign({
-                  ...design,
-                  business_name: e.target.value
-                })
-              }
-            />
-          </label>
-
-          <label>
-            Card title
-            <input
-              value={design.card_title}
-              onChange={e =>
-                setDesign({
-                  ...design,
-                  card_title: e.target.value
-                })
-              }
-            />
-          </label>
-
-          <label>
-            Card subtitle
-            <input
-              value={design.card_subtitle}
-              onChange={e =>
-                setDesign({
-                  ...design,
-                  card_subtitle: e.target.value
-                })
-              }
-            />
-          </label>
-
-          <h3>Images</h3>
-
-          <label className="upload-button">
-            <Upload size={18} />
-            Upload Logo
-            <input
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={e =>
-                uploadAsset(
-                  e.target.files?.[0],
-                  'logo'
-                )
-              }
-            />
-          </label>
-
-          <label className="upload-button">
-            <Upload size={18} />
-            Upload Card Background
-            <input
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={e =>
-                uploadAsset(
-                  e.target.files?.[0],
-                  'background'
-                )
-              }
-            />
-          </label>
-
-          <h3>Colors</h3>
-
-          <ColorInput
-            label="Background"
-            value={design.background_color}
-            onChange={value =>
-              setDesign({
-                ...design,
-                background_type: 'color',
-                background_color: value
-              })
-            }
-          />
-
-          <ColorInput
-            label="Accent"
-            value={design.accent_color}
-            onChange={value =>
-              setDesign({
-                ...design,
-                accent_color: value
-              })
-            }
-          />
-
-          <ColorInput
-            label="Text"
-            value={design.text_color}
-            onChange={value =>
-              setDesign({
-                ...design,
-                text_color: value
-              })
-            }
-          />
-
-          <h3>Stamp</h3>
-
-          <label>
-            Filled stamp
-            <input
-              value={design.stamp_icon}
-              onChange={e =>
-                setDesign({
-                  ...design,
-                  stamp_icon: e.target.value
-                })
-              }
-              placeholder="🍣"
-            />
-          </label>
-
-          <label>
-            Empty stamp
-            <input
-              value={design.empty_stamp_icon}
-              onChange={e =>
-                setDesign({
-                  ...design,
-                  empty_stamp_icon: e.target.value
-                })
-              }
-              placeholder="○"
-            />
-          </label>
-
-          <label>
-            Number of stamps
-            <input
-              type="number"
-              min="1"
-              max="20"
-              value={design.stamp_count}
-              onChange={e =>
-                setDesign({
-                  ...design,
-                  stamp_count: Number(e.target.value)
-                })
-              }
-            />
-          </label>
-
-          <h3>Show on card</h3>
-
-          <Toggle
-            label="QR Code"
-            checked={design.show_qr}
-            onChange={value =>
-              setDesign({
-                ...design,
-                show_qr: value
-              })
-            }
-          />
-
-          <Toggle
-            label="Points"
-            checked={design.show_points}
-            onChange={value =>
-              setDesign({
-                ...design,
-                show_points: value
-              })
-            }
-          />
-
-          <Toggle
-            label="Stamps"
-            checked={design.show_stamps}
-            onChange={value =>
-              setDesign({
-                ...design,
-                show_stamps: value
-              })
-            }
-          />
-
-          <button
-            className="primary"
-            onClick={save}
-            disabled={saving}
-          >
-            <Save size={18} />
-            {saving ? 'Saving...' : 'Save Card Design'}
-          </button>
-
-          {msg && (
-            <div className="notice">{msg}</div>
-          )}
-        </div>
-
-        <div>
-          <span className="eyebrow">LIVE PREVIEW</span>
-
-          <div className="designer-preview">
-            <PreviewCard design={design} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ColorInput({ label, value, onChange }) {
-  return (
-    <label className="color-input">
-      {label}
-      <span>
-        <input
-          type="color"
-          value={value}
-          onChange={e =>
-            onChange(e.target.value)
-          }
-        />
-        <code>{value}</code>
-      </span>
-    </label>
-  );
-}
-
-function Toggle({ label, checked, onChange }) {
-  return (
-    <label className="toggle">
-      <span>{label}</span>
-
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={e =>
-          onChange(e.target.checked)
-        }
-      />
-    </label>
-  );
-}
-
-function PreviewCard({ design }) {
-  const background =
-    design.background_type === 'image' &&
-    design.background_image_url
-      ? `url("${design.background_image_url}")`
-      : 'none';
-
-  return (
-    <div
-      className="premium-card preview"
-      style={{
-        backgroundImage: background,
-        backgroundColor: design.background_color,
-        color: design.text_color,
-        fontFamily: design.font_family,
-        borderColor: design.accent_color
-      }}
-    >
-      <div className="card-overlay" />
-
-      <div className="premium-card-content">
-        <div className="premium-card-top">
-          <div>
-            <span
-              className="card-business"
+            <div
               style={{
-                color: design.accent_color
+                marginTop: 25,
+                paddingTop: 20,
+                borderTop:
+                  '1px solid #292929'
               }}
             >
-              {design.business_name}
-            </span>
 
-            <h2>{design.card_title}</h2>
+              <label>
+                <FileText
+                  size={14}
+                  style={{
+                    verticalAlign:
+                      'middle'
+                  }}
+                />{' '}
+                Customer Notes
+              </label>
 
-            <p>{design.card_subtitle}</p>
-          </div>
+              <textarea
+                value={notes}
+                onChange={(e) =>
+                  setNotes(
+                    e.target.value
+                  )
+                }
+                placeholder="Add notes about this customer..."
+              />
 
-          <img
-            className="card-logo"
-            src={design.logo_url || logo}
-            alt=""
-          />
-        </div>
+              <button
+                className="primary"
+                onClick={saveNotes}
+                disabled={busy}
+              >
+                Save Notes
+              </button>
 
-        {design.show_qr && (
-          <div className="premium-qr">
-            <QRCodeSVG
-              value="AT-HOME-SUSHI-PREVIEW"
-              size={130}
-              includeMargin
-            />
-          </div>
-        )}
-
-        <div className="premium-card-bottom">
-          <div>
-            <small>CARD MEMBER</small>
-            <strong>YOUR NAME</strong>
-          </div>
-
-          {design.show_points && (
-            <div>
-              <small>POINTS</small>
-              <strong>25.50</strong>
             </div>
-          )}
-        </div>
 
-        {design.show_stamps && (
-          <DigitalStamps
-            stamps={4}
-            design={design}
-          />
+          </div>
         )}
-      </div>
-    </div>
-  );
-}
-
-/* =====================================================
-   BIRTHDAY SETTINGS
-===================================================== */
-
-function BirthdaySettings() {
-  const [settings, setSettings] = useState({
-    enabled: true,
-    reward_name: 'Birthday Sushi Treat',
-    reward_description:
-      'Enjoy a special birthday reward from At Home Sushi!',
-    validity_days: 7,
-    send_email: true,
-    send_sms: false
-  });
-
-  const [saving, setSaving] = useState(false);
-  const [msg, setMsg] = useState('');
-
-  useEffect(() => {
-    supabase
-      .from('birthday_settings')
-      .select('*')
-      .eq('id', 1)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data) setSettings(data);
-      });
-  }, []);
-
-  async function save() {
-    setSaving(true);
-
-    const { error } = await supabase
-      .from('birthday_settings')
-      .upsert({
-        id: 1,
-        ...settings,
-        updated_at: new Date().toISOString()
-      });
-
-    setMsg(
-      error
-        ? error.message
-        : 'Birthday settings saved! 🎂'
-    );
-
-    setSaving(false);
-  }
-
-  return (
-    <div className="container">
-      <div className="hero">
-        <p>LOYALTY</p>
-        <h1>Birthday Reward 🎂</h1>
-      </div>
-
-      <div className="card">
-        <Toggle
-          label="Enable birthday rewards"
-          checked={settings.enabled}
-          onChange={value =>
-            setSettings({
-              ...settings,
-              enabled: value
-            })
-          }
-        />
-
-        <label>
-          Reward name
-          <input
-            value={settings.reward_name}
-            onChange={e =>
-              setSettings({
-                ...settings,
-                reward_name: e.target.value
-              })
-            }
-          />
-        </label>
-
-        <label>
-          Reward message
-          <textarea
-            value={settings.reward_description}
-            onChange={e =>
-              setSettings({
-                ...settings,
-                reward_description: e.target.value
-              })
-            }
-          />
-        </label>
-
-        <label>
-          Valid for
-          <input
-            type="number"
-            min="1"
-            value={settings.validity_days}
-            onChange={e =>
-              setSettings({
-                ...settings,
-                validity_days: Number(
-                  e.target.value
-                )
-              })
-            }
-          />
-          <small>days after birthday</small>
-        </label>
-
-        <Toggle
-          label="Email notification"
-          checked={settings.send_email}
-          onChange={value =>
-            setSettings({
-              ...settings,
-              send_email: value
-            })
-          }
-        />
-
-        <Toggle
-          label="SMS notification"
-          checked={settings.send_sms}
-          onChange={value =>
-            setSettings({
-              ...settings,
-              send_sms: value
-            })
-          }
-        />
-
-        <button
-          className="primary"
-          onClick={save}
-          disabled={saving}
-        >
-          <Save size={18} />
-          {saving ? 'Saving...' : 'Save Birthday Settings'}
-        </button>
 
         {msg && (
-          <div className="notice">{msg}</div>
+          <div
+            className="notice"
+            style={{
+              marginTop: 14
+            }}
+          >
+            {msg}
+          </div>
         )}
-      </div>
+
+      </main>
+
     </div>
   );
 }
@@ -2067,8 +1594,13 @@ function BirthdaySettings() {
    ROUTING
 ===================================================== */
 
-const path = window.location.pathname;
+const path =
+  window.location.pathname;
 
-createRoot(document.getElementById('root')).render(
-  path === '/staff' ? <Staff /> : <App />
+createRoot(
+  document.getElementById('root')
+).render(
+  path === '/staff'
+    ? <Staff />
+    : <App />
 );
