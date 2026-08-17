@@ -1076,78 +1076,98 @@ function HistoryTab({ tx }) {
    STAFF PANEL
 ===================================================== */
 
+```jsx
 function Staff() {
-  const [staffSession, setStaffSession] =
-    useState(null);
+  const [staffSession, setStaffSession] = useState(null);
+  const [checking, setChecking] = useState(true);
 
-  const [checking, setChecking] =
-    useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const [email, setEmail] =
-    useState('');
+  const [remember, setRemember] = useState(
+    localStorage.getItem('staffRemember') === 'true'
+  );
 
-  const [password, setPassword] =
-    useState('');
-
-  const [remember, setRemember] =
-    useState(
-      localStorage.getItem(
-        'staffRemember'
-      ) === 'true'
-    );
-
-  const [customerCode, setCustomerCode] =
-    useState('');
-
-  const [customer, setCustomer] =
-    useState(null);
-
-  const [amount, setAmount] =
-    useState('');
-
-  const [notes, setNotes] =
-    useState('');
-
-  const [msg, setMsg] =
-    useState('');
-
-  const [busy, setBusy] =
-    useState(false);
+  const [customerCode, setCustomerCode] = useState('');
+  const [customer, setCustomer] = useState(null);
+  const [amount, setAmount] = useState('');
+  const [notes, setNotes] = useState('');
+  const [msg, setMsg] = useState('');
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     checkStaffSession();
   }, []);
 
   async function checkStaffSession() {
-    const { data } =
-      await supabase.auth.getSession();
-    
-    async function findCustomer() {
-  setMsg('');
-  setCustomer(null);
+    const { data } = await supabase.auth.getSession();
 
-  const code = customerCode.trim();
-
-  if (!code) {
-    setMsg('Please enter the customer QR code.');
-    return;
+    setStaffSession(data.session);
+    setChecking(false);
   }
 
-  const { data, error } = await supabase
-    .from('customers')
-    .select('*')
-    .eq('customer_code', code)
-    .single();
+  async function staffLogin(e) {
+    e.preventDefault();
 
-  if (error || !data) {
-    setMsg('Customer not found.');
-    return;
+    setMsg('');
+
+    if (remember) {
+      localStorage.setItem('staffRemember', 'true');
+    } else {
+      localStorage.removeItem('staffRemember');
+    }
+
+    const { data, error } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    if (error) {
+      setMsg(error.message);
+      return;
+    }
+
+    setStaffSession(data.session);
   }
 
-  setCustomer(data);
-  setNotes(data.notes || '');
-}
-      async function addPoints() {
+  async function staffLogout() {
+    await supabase.auth.signOut();
+    setStaffSession(null);
+  }
+
+  async function findCustomer() {
+    setMsg('');
+    setCustomer(null);
+
+    const code = customerCode.trim();
+
+    if (!code) {
+      setMsg('Please enter the customer QR code.');
+      return;
+    }
+
+    setBusy(true);
+
+    const { data, error } =
+      await supabase
+        .from('customers')
+        .select('*')
+        .eq('customer_code', code)
+        .single();
+
+    setBusy(false);
+
+    if (error || !data) {
+      setMsg('Customer not found.');
+      return;
+    }
+
+    setCustomer(data);
+    setNotes(data.notes || '');
+  }
+
+  async function addPoints() {
     if (!customer) {
       setMsg('Find a customer first.');
       return;
@@ -1159,6 +1179,14 @@ function Staff() {
       setMsg('Enter a valid purchase amount.');
       return;
     }
+
+    /*
+      POINT SYSTEM
+
+      ₱100 = 1 point
+      ₱50  = 0.50 point
+      ₱850 = 8.50 points
+    */
 
     const points = purchase / 100;
 
@@ -1211,43 +1239,35 @@ function Staff() {
     setBusy(false);
   }
 
-    setStaffSession(data.session);
-    setChecking(false);
-  }
-
-  async function staffLogin(e) {
-    e.preventDefault();
-
-    setMsg('');
-
-    if (remember) {
-      localStorage.setItem(
-        'staffRemember',
-        'true'
-      );
-    } else {
-      localStorage.removeItem(
-        'staffRemember'
-      );
-    }
-
-    const { data, error } =
-      await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-    if (error) {
-      setMsg(error.message);
+  async function saveNotes() {
+    if (!customer) {
+      setMsg('Find a customer first.');
       return;
     }
 
-    setStaffSession(data.session);
-  }
+    setBusy(true);
+    setMsg('');
 
-  async function staffLogout() {
-    await supabase.auth.signOut();
-    setStaffSession(null);
+    const { error } =
+      await supabase
+        .from('customers')
+        .update({
+          notes: notes
+        })
+        .eq('id', customer.id);
+
+    if (error) {
+      setMsg(error.message);
+    } else {
+      setCustomer({
+        ...customer,
+        notes
+      });
+
+      setMsg('Customer notes saved.');
+    }
+
+    setBusy(false);
   }
 
   async function claimBirthdayReward() {
@@ -1275,6 +1295,9 @@ function Staff() {
 
     const year = today.getFullYear();
 
+    setBusy(true);
+    setMsg('');
+
     const { data: alreadyClaimed, error: checkError } =
       await supabase
         .from('birthday_claims')
@@ -1285,11 +1308,15 @@ function Staff() {
 
     if (checkError) {
       setMsg(checkError.message);
+      setBusy(false);
       return;
     }
 
     if (alreadyClaimed) {
-      setMsg('Birthday reward has already been claimed this year.');
+      setMsg(
+        'Birthday reward has already been claimed this year.'
+      );
+      setBusy(false);
       return;
     }
 
@@ -1304,11 +1331,13 @@ function Staff() {
 
     if (rewardError) {
       setMsg(rewardError.message);
+      setBusy(false);
       return;
     }
 
     if (!reward) {
       setMsg('No active birthday reward found.');
+      setBusy(false);
       return;
     }
 
@@ -1322,13 +1351,26 @@ function Staff() {
 
     if (claimError) {
       setMsg(claimError.message);
+      setBusy(false);
       return;
     }
 
     setMsg(
       `🎂 Birthday reward claimed: ${reward.reward_text}`
     );
+
+    setBusy(false);
   }
+
+  if (checking) {
+    return (
+      <div className="screen">
+        <div className="loader">🍣</div>
+        <p>Checking staff access...</p>
+      </div>
+    );
+  }
+
   /* STAFF LOGIN */
 
   if (!staffSession) {
@@ -1392,6 +1434,7 @@ function Staff() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
+                marginTop: '14px',
                 fontWeight: '500',
                 color: '#999',
                 cursor: 'pointer'
@@ -1402,9 +1445,7 @@ function Staff() {
                 type="checkbox"
                 checked={remember}
                 onChange={(e) =>
-                  setRemember(
-                    e.target.checked
-                  )
+                  setRemember(e.target.checked)
                 }
               />
 
@@ -1418,9 +1459,16 @@ function Staff() {
               </div>
             )}
 
-            <button className="primary">
+            <button
+              type="submit"
+              className="primary"
+              disabled={busy}
+            >
               <LogIn size={18} />
-              Log in
+
+              {busy
+                ? 'Logging in...'
+                : 'Log in'}
             </button>
 
           </form>
@@ -1488,19 +1536,22 @@ function Staff() {
           <input
             value={customerCode}
             onChange={(e) =>
-              setCustomerCode(
-                e.target.value
-              )
+              setCustomerCode(e.target.value)
             }
             placeholder="Enter customer code"
           />
 
           <button
+            type="button"
             className="primary"
             onClick={findCustomer}
+            disabled={busy}
           >
             <ScanLine size={18} />
-            Find Customer
+
+            {busy
+              ? 'Finding...'
+              : 'Find Customer'}
           </button>
 
         </div>
@@ -1524,6 +1575,18 @@ function Staff() {
               {customer.full_name}
             </h2>
 
+            {customer.email && (
+              <p className="muted">
+                {customer.email}
+              </p>
+            )}
+
+            {customer.phone && (
+              <p className="muted">
+                {customer.phone}
+              </p>
+            )}
+
             <p className="muted">
               Current points:{' '}
               <b>
@@ -1533,13 +1596,19 @@ function Staff() {
               </b>
             </p>
 
+            <p className="muted">
+              Current stamps:{' '}
+              <b>
+                {customer.stamps || 0}
+              </b>
+            </p>
+
             {customer.birthday && (
               <p className="muted">
                 <Cake
                   size={15}
                   style={{
-                    verticalAlign:
-                      'middle'
+                    verticalAlign: 'middle'
                   }}
                 />{' '}
                 Birthday:{' '}
@@ -1561,9 +1630,7 @@ function Staff() {
               step="0.01"
               value={amount}
               onChange={(e) =>
-                setAmount(
-                  e.target.value
-                )
+                setAmount(e.target.value)
               }
               placeholder="₱0.00"
             />
@@ -1581,6 +1648,7 @@ function Staff() {
               )}
 
             <button
+              type="button"
               className="primary"
               onClick={addPoints}
               disabled={busy}
@@ -1591,14 +1659,17 @@ function Staff() {
                 ? 'Updating...'
                 : 'Add Points'}
             </button>
+
+            {/* BIRTHDAY */}
+
             <button
-  type="button"
-  className="birthday-button"
-  onClick={claimBirthdayReward}
-  disabled={busy}
->
-  🎂 Claim Birthday Reward
-</button>
+              type="button"
+              className="birthday-button"
+              onClick={claimBirthdayReward}
+              disabled={busy}
+            >
+              🎂 Claim Birthday Reward
+            </button>
 
             {/* NOTES */}
 
@@ -1615,8 +1686,7 @@ function Staff() {
                 <FileText
                   size={14}
                   style={{
-                    verticalAlign:
-                      'middle'
+                    verticalAlign: 'middle'
                   }}
                 />{' '}
                 Customer Notes
@@ -1625,19 +1695,20 @@ function Staff() {
               <textarea
                 value={notes}
                 onChange={(e) =>
-                  setNotes(
-                    e.target.value
-                  )
+                  setNotes(e.target.value)
                 }
                 placeholder="Add notes about this customer..."
               />
 
               <button
+                type="button"
                 className="primary"
                 onClick={saveNotes}
                 disabled={busy}
               >
-                Save Notes
+                {busy
+                  ? 'Saving...'
+                  : 'Save Notes'}
               </button>
 
             </div>
@@ -1661,6 +1732,8 @@ function Staff() {
     </div>
   );
 }
+```
+
 
 /* =====================================================
    ROUTING
