@@ -69,10 +69,11 @@ button,input{font:inherit}
 
 .tabs{
   display:flex;
-  background:#191919;
+  background:#181818;
+  border:1px solid #2a2a2a;
   border-radius:12px;
   padding:4px;
-  margin-bottom:22px
+  margin-bottom:22px;
 }
 
 .tabs button{
@@ -85,14 +86,14 @@ button,input{font:inherit}
   gap:7px;
   justify-content:center;
   align-items:center;
-  color:#888;
-  cursor:pointer
+  color:#999;
+  cursor:pointer;
 }
 
 .tabs .active{
-  background:#27231c;
-  color:#d4af6a;
-  box-shadow:0 2px 8px rgba(0,0,0,.3)
+  background:#c9a227;
+  color:#000;
+  box-shadow:0 2px 8px rgba(201,162,39,.2);
 }
 
 h2{
@@ -138,8 +139,8 @@ input:focus{
 .primary:disabled{opacity:.6}
 
 .muted{
-  color:#999;
-  font-size:13px
+  color:#b5b5b5;
+  font-size:13px;
 }
 
 .notice{
