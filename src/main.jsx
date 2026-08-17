@@ -65,7 +65,7 @@ function Auth({mode,setMode}){
      </form>
      {mode==='login' && <p className="switch">New here? <button onClick={()=>setMode('signup')}>Join the club</button></p>}
    </div>
-   <p className="footer">Fresh sushi. Good vibes. Rewards. 🍣</p>
+   <p className="footer">Quick Rolls. Bold Flavors. Great Rewards.</p>
  </div>
 }
 
