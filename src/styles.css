@@ -56,10 +56,10 @@ button,input{font:inherit}
 }
 
 .card{
-  background:#111;
-  border:1px solid #292929;
+  background:#111111;
+  border:1px solid #2a2a2a;
   border-radius:20px;
-  box-shadow:0 15px 50px rgba(0,0,0,.45)
+  box-shadow:0 15px 45px rgba(0,0,0,.5);
 }
 
 .auth-card{
