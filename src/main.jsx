@@ -106,4 +106,155 @@ function DigitalCard({profile}){return <div className="container center"><div cl
 function Rewards({profile,rewards}){return <div className="container"><h1>Rewards 🎁</h1><p className="muted">You have <b>{profile.points} points</b>.</p><div className="reward-list">{rewards.map(r=><div className="card reward" key={r.id}><div className="reward-icon"><Gift/></div><div><b>{r.name}</b><p>{r.description||''}</p></div><strong>{r.points_required}</strong></div>)}</div></div>}
 function HistoryTab({tx}){return <div className="container"><h1>History</h1>{tx.length===0?<div className="card empty"><History/><p>No transactions yet.</p></div>:<div className="reward-list">{tx.map(t=><div className="card reward" key={t.id}><div><b>{t.transaction_type}</b><p>{new Date(t.created_at).toLocaleString()}</p></div><strong>+{t.points_earned}</strong></div>)}</div>}</div>}
 
-createRoot(document.getElementById('root')).render(<App/>);
+function Staff(){
+  const [customerCode,setCustomerCode]=useState('');
+  const [customer,setCustomer]=useState(null);
+  const [amount,setAmount]=useState('');
+  const [msg,setMsg]=useState('');
+  const [busy,setBusy]=useState(false);
+
+  async function findCustomer(){
+    setMsg('');
+    setCustomer(null);
+
+    if(!customerCode.trim()){
+      setMsg('Please enter a customer QR code.');
+      return;
+    }
+
+    const {data,error}=await supabase
+      .from('customers')
+      .select('*')
+      .eq('customer_code',customerCode.trim())
+      .single();
+
+    if(error || !data){
+      setMsg('Customer not found.');
+      return;
+    }
+
+    setCustomer(data);
+  }
+
+  async function addPoints(){
+    const purchase=parseFloat(amount);
+
+    if(!customer){
+      setMsg('Find a customer first.');
+      return;
+    }
+
+    if(!purchase || purchase<=0){
+      setMsg('Enter a valid purchase amount.');
+      return;
+    }
+
+    const points=purchase/100;
+    setBusy(true);
+    setMsg('');
+
+    const {error:updateError}=await supabase
+      .from('customers')
+      .update({
+        points:Number(customer.points||0)+points
+      })
+      .eq('id',customer.id);
+
+    if(updateError){
+      setMsg(updateError.message);
+      setBusy(false);
+      return;
+    }
+
+    const {error:transactionError}=await supabase
+      .from('transactions')
+      .insert({
+        customer_id:customer.id,
+        transaction_type:'purchase',
+        points_earned:points
+      });
+
+    if(transactionError){
+      setMsg(transactionError.message);
+      setBusy(false);
+      return;
+    }
+
+    setCustomer({
+      ...customer,
+      points:Number(customer.points||0)+points
+    });
+
+    setAmount('');
+    setMsg(`Success! ${points.toFixed(2)} points added.`);
+    setBusy(false);
+  }
+
+  return <div className="app">
+    <header className="topbar">
+      <div>
+        <b>🍣 AT HOME SUSHI</b>
+        <span>STAFF PANEL</span>
+      </div>
+    </header>
+
+    <main className="container">
+      <div className="hero">
+        <p>STAFF</p>
+        <h1>Add Customer Points</h1>
+      </div>
+
+      <div className="card" style={{padding:20}}>
+        <label>Customer QR / Code</label>
+
+        <input
+          value={customerCode}
+          onChange={e=>setCustomerCode(e.target.value)}
+          placeholder="Enter customer code"
+        />
+
+        <button className="primary" onClick={findCustomer}>
+          <ScanLine size={18}/>
+          Find Customer
+        </button>
+      </div>
+
+      {customer && <div className="card" style={{padding:20,marginTop:14}}>
+        <span className="eyebrow">CUSTOMER</span>
+        <h2>{customer.full_name}</h2>
+
+        <p className="muted">
+          Current points: <b>{Number(customer.points||0).toFixed(2)}</b>
+        </p>
+
+        <label>Purchase Amount</label>
+
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          value={amount}
+          onChange={e=>setAmount(e.target.value)}
+          placeholder="₱0.00"
+        />
+
+        {amount && Number(amount)>0 && <p className="muted">
+          Points to add: <b>{(Number(amount)/100).toFixed(2)}</b>
+        </p>}
+
+        <button className="primary" onClick={addPoints} disabled={busy}>
+          <PlusCircle size={18}/>
+          {busy?'Updating...':'Add Points'}
+        </button>
+      </div>}
+
+      {msg && <div className="notice" style={{marginTop:14}}>{msg}</div>}
+    </main>
+  </div>
+}
+
+const path = window.location.pathname;
+
+createRoot(document.getElementById('root')).render(
+  path === '/staff' ? <Staff/> : <App/>
+);
