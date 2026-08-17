@@ -184,7 +184,9 @@ input:focus{
 
 .footer{
   font-size:12px;
-  color:#666
+  color:#c9a227;
+  letter-spacing:1px;
+  font-weight:600;
 }
 
 .app{
