@@ -735,174 +735,373 @@ function Dashboard({
    HOME
 ===================================================== */
 
-function Home({
-  profile,
-  rewards
-}) {
-  const points =
-    Number(profile.points || 0);
+function Home({ profile, rewards }) {
+  const points = Number(profile.points || 0);
 
   const next = rewards.find(
-    (reward) =>
-      Number(reward.points_required) > points
+    (reward) => Number(reward.points_required) > points
   );
 
+  const sushiMenu = [
+    {
+      name: 'California Roll',
+      price: '₱189',
+      pieces: '8 pcs',
+      ingredients: 'Crab • Cucumber • Japanese Mayo',
+      emoji: '🍣'
+    },
+    {
+      name: 'Volcano Roll',
+      price: '₱229',
+      pieces: '8 pcs',
+      ingredients: 'Crab • Cucumber • Spicy Sauce',
+      emoji: '🍣'
+    },
+    {
+      name: 'Cheezy Tempura Roll',
+      price: '₱219',
+      pieces: '8 pcs',
+      ingredients: 'Tempura • Cheese • Special Sauce',
+      emoji: '🍣'
+    },
+    {
+      name: 'Green Dragon Roll',
+      price: '₱249',
+      pieces: '8 pcs',
+      ingredients: 'Tempura • Avocado • Special Sauce',
+      emoji: '🍣'
+    }
+  ];
+
+  const [selectedSushi, setSelectedSushi] = useState(0);
+
+  const sushi = sushiMenu[selectedSushi];
+
+  function previousSushi() {
+    setSelectedSushi((current) =>
+      current === 0
+        ? sushiMenu.length - 1
+        : current - 1
+    );
+  }
+
+  function nextSushi() {
+    setSelectedSushi((current) =>
+      current === sushiMenu.length - 1
+        ? 0
+        : current + 1
+    );
+  }
+
   return (
-    <div className="container">
+    <div className="container sushi-home">
 
-      <div className="hero">
+      {/* =================================================
+          HERO
+      ================================================= */}
 
-        <p>
-          Hello,{' '}
-          {profile.full_name?.split(' ')[0] ||
-            'Sushi Lover'} 👋
+      <section className="sushi-hero">
+
+        <p className="sushi-kicker">
+          AT HOME SUSHI LOYALTY CLUB
         </p>
 
         <h1>
-          Your rewards are waiting.
+          GET MORE FROM
+          <br />
+          EVERY ORDER
         </h1>
 
-      </div>
+        <p className="sushi-subtitle">
+          Every order brings you closer
+          to your next reward.
+        </p>
 
-      <div className="balance-grid">
+      </section>
 
-        <div className="balance">
 
-          <Star />
+      {/* =================================================
+          SUSHI POINTS
+      ================================================= */}
 
-          <small>POINTS</small>
+      <section className="points-card">
+
+        <div className="points-content">
+
+          <span>
+            YOUR SUSHI POINTS
+          </span>
 
           <strong>
             {points.toFixed(2)}
           </strong>
 
-        </div>
-
-        <div className="balance">
-
-          <Ticket />
-
-          <small>STAMPS</small>
-
-          <strong>
-            {profile.stamps || 0}
-          </strong>
-
-        </div>
-
-      </div>
-
-      <div className="card quick">
-
-        <div>
-
-          <span className="eyebrow">
-            YOUR DIGITAL CARD
-          </span>
-
-          <h3>
-            Show your QR at checkout
-          </h3>
-
-          <p className="muted">
-            We'll add your points to your account.
+          <p>
+            Keep ordering. Keep earning.
           </p>
 
         </div>
 
-        <ChevronRight />
+        <div className="points-mark">
+          🍣
+        </div>
 
-      </div>
+      </section>
+
+
+      {/* =================================================
+          SUSHI MENU
+      ================================================= */}
+
+      <section className="menu-section">
+
+        <div className="menu-heading">
+
+          <div>
+            <span className="sushi-kicker">
+              FROM OUR MENU
+            </span>
+
+            <h2>
+              Pick your favorite
+            </h2>
+          </div>
+
+          <span className="menu-count">
+            {selectedSushi + 1} / {sushiMenu.length}
+          </span>
+
+        </div>
+
+
+        <div className="sushi-carousel">
+
+          <button
+            type="button"
+            className="sushi-arrow left"
+            onClick={previousSushi}
+          >
+            ‹
+          </button>
+
+
+          <div className="sushi-stage">
+
+            <div className="sushi-glow" />
+
+            <div
+              key={sushi.name}
+              className="sushi-placeholder"
+            >
+              <span>
+                {sushi.emoji}
+              </span>
+            </div>
+
+          </div>
+
+
+          <button
+            type="button"
+            className="sushi-arrow right"
+            onClick={nextSushi}
+          >
+            ›
+          </button>
+
+        </div>
+
+
+        <div
+          key={`${sushi.name}-info`}
+          className="sushi-info"
+        >
+
+          <h2>
+            {sushi.name}
+          </h2>
+
+          <div className="sushi-meta">
+
+            <strong>
+              {sushi.price}
+            </strong>
+
+            <span>
+              {sushi.pieces}
+            </span>
+
+          </div>
+
+          <p>
+            {sushi.ingredients}
+          </p>
+
+          <button
+            type="button"
+            className="order-button"
+            onClick={() => {
+              alert(
+                `Order ${sushi.name} — we'll connect this to your ordering system next.`
+              );
+            }}
+          >
+            ORDER THIS
+          </button>
+
+        </div>
+
+
+        <div className="sushi-dots">
+
+          {sushiMenu.map((item, index) => (
+
+            <button
+              key={item.name}
+              type="button"
+              className={
+                selectedSushi === index
+                  ? 'active'
+                  : ''
+              }
+              onClick={() =>
+                setSelectedSushi(index)
+              }
+              aria-label={`View ${item.name}`}
+            />
+
+          ))}
+
+        </div>
+
+      </section>
+
+
+      {/* =================================================
+          NEXT REWARD
+      ================================================= */}
 
       {next && (
-        <div className="card progress">
+        <section className="next-reward-card">
 
-          <div style={{ width: '100%' }}>
+          <div className="next-reward-top">
 
-            <div className="row">
-
-              <b>Next reward</b>
-
-              <span>
-                {(
-                  Number(next.points_required) -
-                  points
-                ).toFixed(2)}{' '}
-                points to go
-              </span>
-
-            </div>
-
-            <div className="bar">
-
-              <i
-                style={{
-                  width: `${Math.min(
-                    100,
-                    (points /
-                      Number(next.points_required)) *
-                      100
-                  )}%`
-                }}
-              />
-
-            </div>
+            <span>
+              NEXT REWARD
+            </span>
 
             <b>
-              {next.name}
+              {(
+                Number(next.points_required) -
+                points
+              ).toFixed(2)}{' '}
+              pts to go
             </b>
 
           </div>
 
-        </div>
+          <div className="reward-progress">
+
+            <i
+              style={{
+                width: `${Math.min(
+                  100,
+                  (points /
+                    Number(next.points_required)) *
+                    100
+                )}%`
+              }}
+            />
+
+          </div>
+
+          <h3>
+            {next.name}
+          </h3>
+
+          <p>
+            {next.description ||
+              'You are getting closer to your next reward.'}
+          </p>
+
+        </section>
       )}
 
-      <h3 className="section-title">
-        Available rewards
-      </h3>
 
-      <div className="reward-list">
+      {/* =================================================
+          HOW IT WORKS
+      ================================================= */}
 
-        {rewards
-          .slice(0, 3)
-          .map((reward) => (
+      <section className="how-section">
 
-            <div
-              className="card reward"
-              key={reward.id}
-            >
+        <span className="sushi-kicker">
+          YOUR SUSHI POINTS
+        </span>
 
-              <div className="reward-icon">
-                <Gift />
-              </div>
+        <h2>
+          Simple. Rewarding.
+        </h2>
 
-              <div>
+        <div className="how-grid">
 
-                <b>
-                  {reward.name}
-                </b>
+          <div className="how-item">
 
-                <p>
-                  {reward.description ||
-                    'Use your points for this reward.'}
-                </p>
+            <span className="how-number">
+              01
+            </span>
 
-              </div>
+            <h3>
+              ORDER
+            </h3>
 
-              <strong>
-                {reward.points_required} pts
-              </strong>
+            <p>
+              Enjoy your favorite
+              At Home Sushi.
+            </p>
 
-            </div>
+          </div>
 
-          ))}
+          <div className="how-item">
 
-      </div>
+            <span className="how-number">
+              02
+            </span>
+
+            <h3>
+              EARN
+            </h3>
+
+            <p>
+              Collect Sushi Points
+              with every purchase.
+            </p>
+
+          </div>
+
+          <div className="how-item">
+
+            <span className="how-number">
+              03
+            </span>
+
+            <h3>
+              REDEEM
+            </h3>
+
+            <p>
+              Turn your points
+              into delicious rewards.
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
 
     </div>
   );
 }
-
 /* =====================================================
    DIGITAL CARD
 ===================================================== */
