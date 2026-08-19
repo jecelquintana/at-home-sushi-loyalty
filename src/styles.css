@@ -1,25 +1,40 @@
+/* =====================================================
+   AT HOME SUSHI — CLEAN PREMIUM STYLE
+===================================================== */
+
 * {
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
+html {
   margin: 0;
+  padding: 0;
+  width: 100%;
   min-height: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+
   font-family:
     Inter,
-    system-ui,
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
 
-  background: #090909;
-  color: #f5f5f5;
+  color: #292726;
+  background: #f5f1eb;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
 }
 
 button,
@@ -33,130 +48,296 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
-.screen {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 8px;
-  color: #aaa;
-  background: #090909;
-  padding: 20px;
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-.loader {
-  font-size: 42px;
+img {
+  max-width: 100%;
 }
+
 
 /* =====================================================
-   AUTH
+   GLOBAL JAPANESE BACKGROUND
 ===================================================== */
 
-.auth-wrap {
+.app,
+.auth-wrap,
+.screen {
+  position: relative;
   min-height: 100vh;
+  overflow-x: hidden;
 
-  display: grid;
-  place-items: center;
-  align-content: center;
+  background:
+    radial-gradient(
+      circle at 15% 10%,
+      rgba(137, 38, 38, 0.055),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 85% 75%,
+      rgba(0, 0, 0, 0.045),
+      transparent 30%
+    ),
+    #f5f1eb;
+}
 
-  padding: 28px 18px;
+/* subtle Japanese-inspired wave pattern */
 
-  background-color: #080808;
+.app::before,
+.auth-wrap::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+
+  pointer-events: none;
+  z-index: 0;
+
+  opacity: 0.34;
 
   background-image:
     radial-gradient(
-      circle at 50% 0%,
-      rgba(201, 162, 39, 0.12),
-      transparent 35%
-    ),
-    repeating-linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 0.025) 0px,
-      rgba(255, 255, 255, 0.025) 1px,
-      transparent 1px,
-      transparent 4px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.018) 0px,
-      rgba(255, 255, 255, 0.018) 1px,
-      transparent 1px,
-      transparent 4px
+      ellipse at center,
+      transparent 0 58%,
+      rgba(45, 40, 36, 0.035) 59%,
+      transparent 61%
     );
+
+  background-size: 90px 45px;
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+.screen {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+
+  padding: 24px;
+
+  text-align: center;
+  color: #77716b;
+}
+
+.loader {
+  width: 58px;
+  height: 58px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.6);
+
+  border: 1px solid rgba(255, 255, 255, 0.8);
+
+  box-shadow:
+    0 12px 35px rgba(55, 45, 35, 0.08);
+
+  animation: softPulse 2s ease-in-out infinite;
+}
+
+@keyframes softPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+
+/* =====================================================
+   AUTH / LOGIN
+===================================================== */
+
+.auth-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 45px 18px;
 }
 
 .brand {
+  position: relative;
+  z-index: 1;
+
   text-align: center;
-  margin-bottom: 22px;
+
+  margin-bottom: 25px;
 }
+
+/* ACTUAL LOGO */
 
 .logo {
-  width: 80px;
-  height: 80px;
+  width: 66px;
+  height: 66px;
+
   object-fit: contain;
+
   display: block;
-  margin: 0 auto;
+
+  margin: 0 auto 13px;
+
+  border-radius: 50%;
+
+  filter:
+    drop-shadow(
+      0 7px 15px rgba(0, 0, 0, 0.08)
+    );
+
+  transition:
+    transform 0.3s ease;
 }
 
-/* Smaller logo specifically for staff login */
+.logo:hover {
+  transform: translateY(-2px);
+}
+
+/* staff logo */
+
 .staff-logo {
-  width: 58px;
-  height: 58px;
+  width: 62px;
+  height: 62px;
+
   object-fit: contain;
+
   display: block;
-  margin: 0 auto;
+
+  margin: 0 auto 13px;
+
+  border-radius: 50%;
+
+  filter:
+    drop-shadow(
+      0 7px 15px rgba(0, 0, 0, 0.08)
+    );
 }
 
 .brand h1 {
-  margin: 7px 0 0;
+  margin: 0;
 
-  letter-spacing: 4px;
-
-  font-size: 27px;
+  color: #292726;
 
   font-family:
     Georgia,
     "Times New Roman",
     serif;
 
-  font-weight: 600;
+  font-size: 24px;
 
-  color: #fff;
+  font-weight: 500;
+
+  letter-spacing: 3px;
+
+  line-height: 1.15;
 }
 
 .brand p {
-  margin: 4px 0;
+  margin: 7px 0 0;
 
-  color: #c9a227;
-
-  letter-spacing: 4px;
+  color: #8f3434;
 
   font-size: 10px;
 
-  font-weight: 800;
+  font-weight: 600;
+
+  letter-spacing: 3px;
 }
 
+
 /* =====================================================
-   CARDS
+   GENERAL CARD
 ===================================================== */
 
 .card {
-  background: rgba(18, 18, 18, 0.9);
+  position: relative;
+  z-index: 1;
 
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    rgba(255, 255, 255, 0.68);
 
-  border-radius: 20px;
+  border:
+    1px solid rgba(255, 255, 255, 0.85);
+
+  border-radius: 22px;
 
   box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.55);
+    0 18px 50px rgba(55, 45, 35, 0.08);
 
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .auth-card {
   width: min(430px, 100%);
-  padding: 25px;
+
+  padding: 27px;
+
+  animation:
+    cardAppear 0.55s ease both;
 }
+
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =====================================================
+   HEADINGS
+===================================================== */
+
+h1,
+h2,
+h3 {
+  color: #292726;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-weight: 500;
+}
+
+h1 {
+  font-size: 28px;
+}
+
+h2 {
+  font-size: 25px;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+.muted {
+  color: #817a73;
+
+  line-height: 1.6;
+}
+
 
 /* =====================================================
    LOGIN TABS
@@ -165,15 +346,17 @@ button {
 .tabs {
   display: flex;
 
-  background: rgba(255, 255, 255, 0.06);
-
-  border: 1px solid #2a2a2a;
-
-  border-radius: 12px;
-
   padding: 4px;
 
-  margin-bottom: 22px;
+  margin-bottom: 24px;
+
+  background:
+    rgba(40, 35, 30, 0.045);
+
+  border:
+    1px solid rgba(40, 35, 30, 0.07);
+
+  border-radius: 14px;
 }
 
 .tabs button {
@@ -183,69 +366,40 @@ button {
 
   background: transparent;
 
-  padding: 10px;
+  padding: 11px 10px;
 
-  border-radius: 9px;
+  border-radius: 11px;
 
   display: flex;
+  align-items: center;
+  justify-content: center;
 
   gap: 7px;
 
-  justify-content: center;
+  color: #817a73;
 
-  align-items: center;
-
-  color: #999;
+  font-size: 14px;
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  transition:
+    all 0.25s ease;
 }
 
 .tabs button:hover {
-  color: #fff;
+  color: #292726;
 }
 
-.tabs .active {
-  background: #c9a227;
+.tabs button.active {
+  background:
+    rgba(255, 255, 255, 0.85);
 
-  color: #000;
+  color: #8f3434;
 
   box-shadow:
-    0 2px 8px rgba(201, 162, 39, 0.2);
+    0 5px 16px rgba(40, 30, 25, 0.06);
 }
 
-/* =====================================================
-   TEXT
-===================================================== */
-
-h1,
-h2,
-h3,
-p {
-  word-wrap: break-word;
-}
-
-h2 {
-  margin: 0 0 7px;
-  color: #fff;
-}
-
-.muted {
-  color: #999;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.eyebrow {
-  font-size: 10px;
-
-  letter-spacing: 2px;
-
-  color: #c9a45c;
-
-  font-weight: 800;
-}
 
 /* =====================================================
    FORMS
@@ -254,13 +408,13 @@ h2 {
 label {
   display: block;
 
+  margin-bottom: 15px;
+
+  color: #4d4742;
+
   font-size: 13px;
 
-  font-weight: 700;
-
-  margin-top: 14px;
-
-  color: #f5f5f5;
+  font-weight: 500;
 }
 
 input,
@@ -270,211 +424,143 @@ select {
 
   margin-top: 7px;
 
-  padding: 12px 13px;
+  padding: 12px 14px;
 
-  border: 1px solid #333;
+  border:
+    1px solid rgba(70, 60, 50, 0.12);
 
-  border-radius: 11px;
+  border-radius: 13px;
 
   outline: none;
 
-  background: #181818;
+  background:
+    rgba(255, 255, 255, 0.72);
 
-  color: #fff;
+  color: #292726;
 
   transition:
     border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-textarea {
-  min-height: 100px;
-
-  resize: vertical;
-}
-
-input::placeholder,
-textarea::placeholder {
-  color: #666;
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: #c9a227;
+  border-color:
+    rgba(143, 52, 52, 0.45);
+
+  background: #fff;
 
   box-shadow:
-    0 0 0 2px rgba(201, 162, 39, 0.08);
+    0 0 0 4px rgba(143, 52, 52, 0.07);
 }
 
-input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
+textarea {
+  min-height: 110px;
 
-  margin: 0;
-
-  accent-color: #c9a227;
-
-  cursor: pointer;
+  resize: vertical;
 }
 
-/* Date input */
-input[type="date"] {
-  color-scheme: dark;
-}
 
 /* =====================================================
-   PASSWORD / REMEMBER ME
-===================================================== */
-
-.password-row {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  margin-top: 7px;
-}
-
-.password-toggle,
-.remember-me {
-  border: 0;
-
-  background: transparent;
-
-  color: #999;
-
-  padding: 0;
-
-  cursor: pointer;
-
-  font-size: 12px;
-}
-
-.password-toggle:hover,
-.remember-me:hover {
-  color: #c9a227;
-}
-
-.remember-me {
-  display: flex;
-
-  align-items: center;
-
-  gap: 7px;
-
-  margin-top: 14px;
-}
-
-/* =====================================================
-   BUTTONS
+   PRIMARY BUTTON
 ===================================================== */
 
 .primary {
   width: 100%;
 
-  border: 0;
-
-  border-radius: 11px;
-
-  padding: 13px;
-
-  margin-top: 18px;
-
-  background: #c9a227;
-
-  color: #000;
-
-  font-weight: 800;
-
-  cursor: pointer;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
 
   gap: 8px;
 
-  transition:
-    transform 0.15s ease,
-    background 0.15s ease,
-    box-shadow 0.15s ease;
-}
+  margin-top: 16px;
 
-.primary:hover {
-  background: #d8b13b;
+  padding: 13px 18px;
 
-  box-shadow:
-    0 8px 25px rgba(201, 162, 39, 0.18);
-}
+  border: 1px solid rgba(255, 255, 255, 0.55);
 
-.primary:active {
-  transform: translateY(1px);
-}
+  border-radius: 999px;
 
-.primary:disabled {
-  opacity: 0.6;
+  background:
+    rgba(48, 43, 39, 0.92);
 
-  cursor: not-allowed;
+  color: white;
 
-  box-shadow: none;
-}
+  font-size: 14px;
 
-.iconbtn {
-  border: 1px solid #292929;
-
-  background: #151515;
-
-  color: #ccc;
-
-  border-radius: 10px;
-
-  padding: 9px;
+  font-weight: 500;
 
   cursor: pointer;
 
-  display: grid;
+  box-shadow:
+    0 9px 24px rgba(40, 30, 25, 0.12);
 
-  place-items: center;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
-.iconbtn:hover {
-  color: #fff;
+.primary:hover {
+  transform: translateY(-2px);
 
-  border-color: #444;
+  background:
+    #3b3530;
+
+  box-shadow:
+    0 13px 28px rgba(40, 30, 25, 0.16);
 }
+
+.primary:active {
+  transform: translateY(0);
+}
+
+.primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 
 /* =====================================================
-   MESSAGES
+   NOTICES
 ===================================================== */
 
 .notice {
-  margin-top: 13px;
+  margin-top: 14px;
 
-  padding: 11px;
+  padding: 12px 14px;
 
-  border-radius: 10px;
+  border-radius: 12px;
 
-  background: #211b11;
+  background:
+    rgba(143, 52, 52, 0.07);
 
-  border: 1px solid rgba(201, 162, 39, 0.15);
+  border:
+    1px solid rgba(143, 52, 52, 0.12);
 
-  color: #d4af6a;
+  color: #783232;
 
   font-size: 13px;
 
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
+
+/* =====================================================
+   SWITCH / FOOTER
+===================================================== */
+
 .switch {
+  margin: 18px 0 0;
+
   text-align: center;
 
-  font-size: 13px;
+  color: #817a73;
 
-  color: #aaa;
+  font-size: 13px;
 }
 
 .switch button {
@@ -482,2152 +568,117 @@ input[type="date"] {
 
   background: transparent;
 
-  color: #c9a227;
-
-  font-weight: 800;
-
-  cursor: pointer;
-
-  padding: 0;
-}
-
-.switch button:hover {
-  color: #e0bd55;
-}
-
-.footer {
-  font-size: 12px;
-
-  color: #c9a227;
-
-  letter-spacing: 1px;
+  color: #8f3434;
 
   font-weight: 600;
 
-  text-align: center;
-
-  margin-top: 18px;
+  cursor: pointer;
 }
+
+.footer {
+  position: relative;
+  z-index: 1;
+
+  margin-top: 23px;
+
+  color: #938c85;
+
+  font-size: 11px;
+
+  letter-spacing: 1px;
+
+  text-align: center;
+}
+
 
 /* =====================================================
-   MAIN APP
+   TOP BAR
 ===================================================== */
-
-.app {
-  min-height: 100vh;
-
-  padding-bottom: 82px;
-
-  background: #090909;
-}
 
 .topbar {
   position: sticky;
-
   top: 0;
+  z-index: 20;
 
-  z-index: 5;
-
-  background: rgba(9, 9, 9, 0.94);
-
-  backdrop-filter: blur(12px);
-
-  border-bottom: 1px solid #252525;
-
-  padding:
-    15px
-    max(18px, calc((100% - 900px) / 2));
+  width: 100%;
 
   display: flex;
-
+  align-items: center;
   justify-content: space-between;
 
-  align-items: center;
+  padding:
+    14px
+    max(18px, calc((100vw - 1100px) / 2));
+
+  background:
+    rgba(245, 241, 235, 0.82);
+
+  border-bottom:
+    1px solid rgba(50, 40, 30, 0.07);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.topbar > div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
 }
 
 .topbar b {
-  display: block;
+  color: #292726;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 
   font-size: 15px;
 
-  letter-spacing: 1px;
+  font-weight: 500;
 
-  color: #fff;
-}
-
-.topbar span {
-  display: block;
-
-  font-size: 9px;
-
-  letter-spacing: 2px;
-
-  color: #c9a45c;
-
-  margin-top: 2px;
-}
-
-/* =====================================================
-   CONTAINER
-===================================================== */
-
-.container {
-  width: min(900px, 100%);
-
-  margin: auto;
-
-  padding: 28px 18px;
-}
-
-.hero {
-  padding: 18px 4px;
-}
-
-.hero p {
-  color: #c9a45c;
-
-  font-weight: 700;
-
-  margin: 0 0 6px;
-}
-
-.hero h1 {
-  font-size: 32px;
-
-  margin: 0 0 15px;
-
-  color: #fff;
-}
-
-/* =====================================================
-   POINT BALANCE
-===================================================== */
-
-.balance-grid {
-  display: grid;
-
-  grid-template-columns: 1fr 1fr;
-
-  gap: 12px;
-}
-
-.balance {
-  background:
-    linear-gradient(
-      145deg,
-      #1c1c1c,
-      #101010
-    );
-
-  color: #fff;
-
-  border: 1px solid #292929;
-
-  border-radius: 18px;
-
-  padding: 20px;
-
-  display: grid;
-
-  gap: 5px;
-}
-
-.balance svg {
-  color: #d4af6a;
-}
-
-.balance small,
-.mini small {
-  font-size: 10px;
-
-  letter-spacing: 2px;
-
-  opacity: 0.65;
-}
-
-.balance strong {
-  font-size: 31px;
-}
-
-/* =====================================================
-   QUICK CARD / PROGRESS
-===================================================== */
-
-.quick,
-.progress {
-  margin-top: 14px;
-
-  padding: 18px;
-
-  display: flex;
-
-  justify-content: space-between;
-
-  align-items: center;
-}
-
-.quick {
-  background: #111;
-}
-
-.quick h3 {
-  margin: 5px 0;
-
-  color: #fff;
-}
-
-.section-title {
-  margin: 25px 0 12px;
-
-  color: #fff;
-}
-
-.row {
-  display: flex;
-
-  justify-content: space-between;
-
-  gap: 15px;
-
-  margin-bottom: 10px;
-}
-
-.row span {
-  font-size: 12px;
-
-  color: #888;
-
-  text-align: right;
-}
-
-.bar {
-  height: 8px;
-
-  background: #292929;
-
-  border-radius: 99px;
-
-  overflow: hidden;
-
-  margin-bottom: 11px;
-}
-
-.bar i {
-  display: block;
-
-  height: 100%;
-
-  background:
-    linear-gradient(
-      90deg,
-      #a9823e,
-      #e1c27a
-    );
-
-  border-radius: 99px;
-}
-
-/* =====================================================
-   REWARDS
-===================================================== */
-
-.reward-list {
-  display: grid;
-
-  gap: 10px;
-}
-
-.reward {
-  padding: 15px;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 13px;
-}
-
-.reward-icon {
-  width: 42px;
-
-  height: 42px;
-
-  min-width: 42px;
-
-  border-radius: 12px;
-
-  background: #211b11;
-
-  color: #d4af6a;
-
-  display: grid;
-
-  place-items: center;
-}
-
-.reward p {
-  margin: 4px 0 0;
-
-  color: #888;
-
-  font-size: 12px;
-
-  line-height: 1.4;
-}
-
-.reward > strong {
-  margin-left: auto;
-
-  white-space: nowrap;
-
-  color: #d4af6a;
-}
-
-/* =====================================================
-   DIGITAL CARD
-===================================================== */
-
-.digital {
-  text-align: center;
-
-  padding: 28px;
-
-  max-width: 430px;
-
-  margin: auto;
-}
-
-.digital h2 {
-  margin-top: 6px;
-}
-
-.qr {
-  display: inline-block;
-
-  padding: 15px;
-
-  background: #fff;
-
-  border-radius: 16px;
-
-  margin: 18px 0;
-}
-
-.code {
-  font-family: monospace;
-
-  letter-spacing: 2px;
-
-  color: #888;
-}
-
-.mini {
-  background: #181818;
-
-  border: 1px solid #292929;
-
-  border-radius: 12px;
-
-  padding: 12px;
-
-  display: grid;
-
-  gap: 4px;
-}
-
-.mini b {
-  font-size: 22px;
-
-  color: #d4af6a;
-}
-
-.center {
-  display: grid;
-
-  place-items: center;
-}
-
-.empty {
-  text-align: center;
-
-  padding: 35px;
-
-  color: #737373;
-}
-
-/* =====================================================
-   STAFF CUSTOMER PANEL
-===================================================== */
-
-.customer-panel {
-  margin-top: 14px;
-
-  padding: 20px;
-}
-
-.customer-info {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 15px;
-}
-
-.customer-info h2 {
-  margin-bottom: 5px;
-}
-
-.customer-notes {
-  margin-top: 25px;
-
-  padding-top: 20px;
-
-  border-top: 1px solid #292929;
-}
-
-/* =====================================================
-   BOTTOM NAV
-===================================================== */
-
-.nav {
-  position: fixed;
-
-  bottom: 0;
-
-  left: 0;
-
-  right: 0;
-
-  z-index: 10;
-
-  background: rgba(9, 9, 9, 0.97);
-
-  border-top: 1px solid #252525;
-
-  display: flex;
-
-  justify-content: center;
-
-  gap: 4px;
-
-  padding: 8px;
-
-  backdrop-filter: blur(12px);
-}
-
-.nav button {
-  border: 0;
-
-  background: transparent;
-
-  padding: 7px 14px;
-
-  color: #737373;
-
-  display: grid;
-
-  gap: 3px;
-
-  place-items: center;
-
-  font-size: 10px;
-
-  cursor: pointer;
-
-  border-radius: 10px;
-
-  transition: 0.2s ease;
-}
-
-.nav button:hover {
-  color: #aaa;
-}
-
-.nav svg {
-  width: 20px;
-}
-
-.nav .sel {
-  color: #d4af6a;
-
-  font-weight: 800;
-}
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
-@media (max-width: 500px) {
-
-  .auth-wrap {
-    padding: 22px 15px;
-  }
-
-  .brand {
-    margin-bottom: 18px;
-  }
-
-  .logo {
-    width: 70px;
-    height: 70px;
-  }
-
-  .staff-logo {
-    width: 48px;
-    height: 48px;
-  }
-
-  .brand h1 {
-    font-size: 22px;
-
-    letter-spacing: 3px;
-  }
-
-  .brand p {
-    font-size: 9px;
-
-    letter-spacing: 3px;
-  }
-
-  .auth-card {
-    padding: 20px;
-  }
-
-  .hero h1 {
-    font-size: 27px;
-  }
-
-  .balance strong {
-    font-size: 27px;
-  }
-
-  .nav button {
-    padding: 7px 9px;
-  }
-
-  .digital {
-    padding: 22px 16px;
-  }
-
-  .qr {
-    padding: 12px;
-  }
-
-  .row {
-    flex-direction: column;
-
-    gap: 4px;
-  }
-
-  .row span {
-    text-align: left;
-  }
-
-  .reward {
-    align-items: flex-start;
-  }
-
-  .reward > strong {
-    font-size: 12px;
-  }
-}
-
-/* =====================================================
-   SMALL PHONES
-===================================================== */
-
-@media (max-width: 360px) {
-
-  .balance-grid {
-    gap: 8px;
-  }
-
-  .balance {
-    padding: 15px;
-  }
-
-  .balance strong {
-    font-size: 24px;
-  }
-
-  .nav {
-    gap: 0;
-  }
-
-  .nav button {
-    padding: 6px 6px;
-
-    font-size: 9px;
-  }
-}
-.birthday-button {
-  width: 100%;
-  border: 1px solid #c9a227;
-  border-radius: 11px;
-  padding: 12px 13px;
-  margin-top: 10px;
-  background: transparent;
-  color: #d4af6a;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all .2s ease;
-}
-
-.birthday-button:hover {
-  background: rgba(201, 162, 39, .10);
-}
-
-.birthday-button:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-}
-
-.birthday-banner {
-  width: min(900px, calc(100% - 36px));
-  margin: 18px auto 0;
-  padding: 20px;
-  border: 1px solid rgba(201, 162, 39, .45);
-  border-radius: 18px;
-  background:
-    radial-gradient(
-      circle at top right,
-      rgba(201, 162, 39, .16),
-      transparent 45%
-    ),
-    #141414;
-  box-shadow: 0 15px 35px rgba(0,0,0,.35);
-}
-
-.birthday-banner h2 {
-  margin: 6px 0;
-}
-
-.birthday-banner p {
-  margin: 5px 0 10px;
-  color: #aaa;
-}
-
-.birthday-banner strong {
-  color: #d4af6a;
-  font-size: 18px;
-}
-/* =====================================================
-   AT HOME SUSHI — NEW PREMIUM CUSTOMER DESIGN
-   ===================================================== */
-
-:root {
-  --ahs-cream: #f7f3ec;
-  --ahs-white: #ffffff;
-  --ahs-black: #111111;
-  --ahs-soft-black: #1b1b1b;
-  --ahs-red: #b52b2b;
-  --ahs-muted: #77716a;
-  --ahs-border: #e8e1d7;
-}
-
-/* Customer app background */
-.app {
-  background: var(--ahs-cream);
-  color: var(--ahs-black);
-}
-
-/* Top navigation */
-.topbar {
-  background: rgba(247, 243, 236, 0.94);
-  border-bottom: 1px solid var(--ahs-border);
-  color: var(--ahs-black);
-}
-
-.topbar b {
-  color: var(--ahs-black);
-}
-
-.topbar span {
-  color: var(--ahs-red);
-}
-
-/* Main headings */
-.hero p {
-  color: var(--ahs-red);
   letter-spacing: 1.5px;
-  text-transform: uppercase;
-  font-size: 11px;
 }
 
-.hero h1 {
-  color: var(--ahs-black);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(30px, 6vw, 48px);
-  line-height: 1.05;
+.topbar span {
+  color: #8f3434;
+
+  font-size: 8px;
+
+  font-weight: 600;
+
+  letter-spacing: 2px;
 }
 
-/* Premium cards */
-.card {
-  background: var(--ahs-white);
-  border: 1px solid var(--ahs-border);
-  box-shadow: 0 12px 35px rgba(30, 25, 20, 0.06);
-  backdrop-filter: none;
+.brand-name {
+  display: flex;
+  align-items: center;
+  gap: 0;
 }
 
-/* Points cards */
-.balance {
-  background: var(--ahs-black);
-  border: none;
-  color: white;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
-}
 
-.balance svg {
-  color: white;
-}
+/* =====================================================
+   ICON BUTTON
+===================================================== */
 
-.balance small {
-  color: rgba(255,255,255,.65);
-}
-
-.balance strong {
-  color: white;
-}
-
-/* Sushi Points wording */
-.balance:first-child::after {
-  content: "SUSHI POINTS";
-  display: block;
-  font-size: 9px;
-  letter-spacing: 1.8px;
-  color: rgba(255,255,255,.5);
-  margin-top: -3px;
-}
-
-/* Second balance card */
-.balance:nth-child(2) {
-  background: white;
-  color: var(--ahs-black);
-  border: 1px solid var(--ahs-border);
-}
-
-.balance:nth-child(2) svg {
-  color: var(--ahs-red);
-}
-
-.balance:nth-child(2) small {
-  color: var(--ahs-muted);
-}
-
-.balance:nth-child(2) strong {
-  color: var(--ahs-black);
-}
-
-/* Quick card */
-.quick {
-  background: white;
-}
-
-.quick h3 {
-  color: var(--ahs-black);
-}
-
-.quick .muted {
-  color: var(--ahs-muted);
-}
-
-/* Progress */
-.progress {
-  background: white;
-}
-
-.row span {
-  color: var(--ahs-muted);
-}
-
-.bar {
-  background: #e8e1d7;
-}
-
-.bar i {
-  background: var(--ahs-red);
-}
-
-/* Section titles */
-.section-title {
-  color: var(--ahs-black);
-  font-family: Georgia, "Times New Roman", serif;
-}
-
-/* Reward cards */
-.reward {
-  background: white;
-}
-
-.reward b {
-  color: var(--ahs-black);
-}
-
-.reward p {
-  color: var(--ahs-muted);
-}
-
-.reward-icon {
-  background: #f8eeee;
-  color: var(--ahs-red);
-}
-
-.reward > strong {
-  color: var(--ahs-red);
-}
-
-/* Buttons */
-.primary {
-  background: var(--ahs-black);
-  color: white;
-}
-
-.primary:hover {
-  background: #2a2a2a;
-  box-shadow: 0 10px 25px rgba(0,0,0,.12);
-}
-
-/* Bottom navigation */
-.nav {
-  background: rgba(255,255,255,.96);
-  border-top: 1px solid var(--ahs-border);
-}
-
-.nav button {
-  color: #8a847d;
-}
-
-.nav .sel {
-  color: var(--ahs-red);
-}
-
-/* Icon button */
 .iconbtn {
-  background: white;
-  border-color: var(--ahs-border);
-  color: var(--ahs-black);
-}
-
-/* Digital card */
-.digital {
-  background: white;
-}
-
-.mini {
-  background: #faf8f5;
-  border-color: var(--ahs-border);
-}
-
-.mini b {
-  color: var(--ahs-black);
-}
-
-/* =====================================================
-   SUSHI SHOWCASE
-   ===================================================== */
-
-.sushi-showcase {
-  position: relative;
-  margin: 10px -18px 30px;
-  overflow: hidden;
-  min-height: 430px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.sushi-showcase-header {
-  width: 100%;
-  padding: 0 18px;
-  text-align: center;
-  position: relative;
-  z-index: 3;
-}
-
-.sushi-showcase-header span {
-  color: var(--ahs-red);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 2px;
-}
-
-.sushi-showcase-header h2 {
-  color: var(--ahs-black);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 28px;
-  margin: 6px 0 0;
-}
-
-.sushi-carousel {
-  width: 100%;
-  height: 280px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  perspective: 1000px;
-  touch-action: pan-y;
-}
-
-.sushi-item {
-  position: absolute;
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  transition:
-    transform .55s cubic-bezier(.22,.61,.36,1),
-    opacity .4s ease,
-    filter .4s ease;
-  user-select: none;
-}
-
-.sushi-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 22px 18px rgba(0,0,0,.18));
-  pointer-events: none;
-}
-
-.sushi-item.center {
-  width: 260px;
-  height: 260px;
-  z-index: 3;
-  transform: translateX(0) scale(1);
-  opacity: 1;
-}
-
-.sushi-item.left {
-  transform: translateX(-180px) scale(.62) rotateY(25deg);
-  opacity: .45;
-  z-index: 2;
-}
-
-.sushi-item.right {
-  transform: translateX(180px) scale(.62) rotateY(-25deg);
-  opacity: .45;
-  z-index: 2;
-}
-
-.sushi-item.hidden {
-  opacity: 0;
-  transform: scale(.4);
-  pointer-events: none;
-}
-
-.sushi-details {
-  text-align: center;
-  position: relative;
-  z-index: 4;
-}
-
-.sushi-details h3 {
-  color: var(--ahs-black);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 25px;
-  margin: 0;
-}
-
-.sushi-price {
-  color: var(--ahs-red);
-  font-weight: 800;
-  margin-top: 5px;
-}
-
-.sushi-ingredients {
-  max-width: 400px;
-  margin: 8px auto 0;
-  color: var(--ahs-muted);
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.sushi-dots {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 14px;
-}
-
-.sushi-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #d7d0c7;
-  transition: .3s ease;
-}
-
-.sushi-dot.active {
-  width: 20px;
-  border-radius: 10px;
-  background: var(--ahs-red);
-}
-
-.sushi-order-btn {
-  width: min(320px, 90%);
-  margin: 18px auto 0;
-}
-
-/* Mobile */
-@media (max-width: 600px) {
-  .sushi-showcase {
-    min-height: 410px;
-  }
-
-  .sushi-item.left {
-    transform: translateX(-125px) scale(.5) rotateY(25deg);
-  }
-
-  .sushi-item.right {
-    transform: translateX(125px) scale(.5) rotateY(-25deg);
-  }
-
-  .sushi-item.center {
-    width: 230px;
-    height: 230px;
-  }
-}
-/* =====================================================
-   AT HOME SUSHI — NEW HOME EXPERIENCE
-===================================================== */
-
-.sushi-home {
-  max-width: 980px;
-}
-
-/* HERO */
-
-.sushi-hero {
-  padding: 30px 4px 22px;
-}
-
-.sushi-kicker {
-  display: block;
-  font-size: 10px;
-  letter-spacing: 2.5px;
-  font-weight: 800;
-  color: #8f8f8f;
-}
-
-.sushi-hero h1 {
-  margin: 10px 0 12px;
-  font-size: clamp(36px, 7vw, 62px);
-  line-height: .98;
-  letter-spacing: -2px;
-  font-weight: 900;
-  color: #f5f2ec;
-}
-
-.sushi-subtitle {
-  max-width: 420px;
-  margin: 0;
-  color: #8d8d8d;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-
-/* =====================================================
-   SUSHI POINTS CARD
-===================================================== */
-
-.points-card {
-  position: relative;
-  overflow: hidden;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  min-height: 145px;
-  padding: 25px;
-
-  border: 1px solid #292929;
-  border-radius: 24px;
-
-  background:
-    radial-gradient(
-      circle at 90% 10%,
-      rgba(255,255,255,.07),
-      transparent 35%
-    ),
-    linear-gradient(
-      145deg,
-      #1a1a1a,
-      #0d0d0d
-    );
-
-  box-shadow:
-    0 25px 60px rgba(0,0,0,.35);
-}
-
-.points-content span {
-  display: block;
-  color: #888;
-  font-size: 10px;
-  letter-spacing: 2px;
-  font-weight: 800;
-}
-
-.points-content strong {
-  display: block;
-  margin-top: 4px;
-
-  font-size: clamp(38px, 8vw, 56px);
-  line-height: 1;
-
-  letter-spacing: -2px;
-  color: #fff;
-}
-
-.points-content p {
-  margin: 8px 0 0;
-  color: #777;
-  font-size: 12px;
-}
-
-.points-mark {
-  width: 78px;
-  height: 78px;
+  width: 40px;
+  height: 40px;
 
   display: grid;
   place-items: center;
 
-  border-radius: 50%;
-
-  background: #f2eee7;
-
-  color: #111;
-
-  font-size: 38px;
-
-  box-shadow:
-    0 15px 35px rgba(0,0,0,.4);
-
-  transform: rotate(-8deg);
-}
-
-
-/* =====================================================
-   MENU SECTION
-===================================================== */
-
-.menu-section {
-  margin-top: 55px;
-}
-
-.menu-heading {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.menu-heading h2 {
-  margin: 7px 0 0;
-
-  font-size: clamp(25px, 5vw, 36px);
-  letter-spacing: -1px;
-
-  color: #fff;
-}
-
-.menu-count {
-  color: #666;
-  font-size: 12px;
-  white-space: nowrap;
-}
-
-
-/* =====================================================
-   SUSHI CAROUSEL
-===================================================== */
-
-.sushi-carousel {
-  position: relative;
-
-  min-height: 410px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  margin-top: 15px;
-
-  overflow: hidden;
-
-  border-radius: 28px;
-
-  background:
-    radial-gradient(
-      circle at 50% 40%,
-      rgba(255,255,255,.07),
-      transparent 32%
-    ),
-    #0e0e0e;
-
-  border: 1px solid #222;
-}
-
-.sushi-stage {
-  position: relative;
-
-  width: min(430px, 75vw);
-  height: 350px;
-
-  display: grid;
-  place-items: center;
-}
-
-
-/* glowing platform behind sushi */
-
-.sushi-glow {
-  position: absolute;
-
-  width: 230px;
-  height: 70px;
-
-  left: 50%;
-  bottom: 48px;
-
-  transform: translateX(-50%);
-
-  border-radius: 50%;
-
-  background: rgba(255,255,255,.08);
-
-  filter: blur(18px);
-
-  animation:
-    sushi-shadow 2.8s ease-in-out infinite;
-}
-
-
-/* temporary sushi */
-
-.sushi-placeholder {
-  position: relative;
-
-  width: 230px;
-  height: 230px;
-
-  display: grid;
-  place-items: center;
+  border:
+    1px solid rgba(60, 50, 40, 0.09);
 
   border-radius: 50%;
 
   background:
-    radial-gradient(
-      circle at 35% 25%,
-      #fff,
-      #e7e2da 45%,
-      #c9c2b8 75%,
-      #a49e95
-    );
+    rgba(255, 255, 255, 0.58);
 
-  box-shadow:
-    inset -18px -20px 35px rgba(0,0,0,.18),
-    inset 15px 12px 30px rgba(255,255,255,.65),
-    0 35px 50px rgba(0,0,0,.45);
-
-  animation:
-    sushi-float 3s ease-in-out infinite;
-
-  transform:
-    perspective(700px)
-    rotateX(8deg)
-    rotateY(-8deg);
-}
-
-.sushi-placeholder span {
-  font-size: 110px;
-
-  filter:
-    drop-shadow(
-      0 18px 15px rgba(0,0,0,.35)
-    );
-
-  transform:
-    rotate(-8deg);
-}
-
-
-/* =====================================================
-   ARROWS
-===================================================== */
-
-.sushi-arrow {
-  position: absolute;
-
-  top: 50%;
-  transform: translateY(-50%);
-
-  z-index: 3;
-
-  width: 46px;
-  height: 46px;
-
-  border: 1px solid #333;
-  border-radius: 50%;
-
-  background: rgba(12,12,12,.85);
-
-  color: #fff;
-
-  font-size: 30px;
-  line-height: 1;
-
-  display: grid;
-  place-items: center;
-
-  cursor: pointer;
-
-  transition:
-    transform .2s ease,
-    background .2s ease,
-    border-color .2s ease;
-}
-
-.sushi-arrow:hover {
-  background: #222;
-  border-color: #555;
-}
-
-.sushi-arrow:active {
-  transform:
-    translateY(-50%)
-    scale(.92);
-}
-
-.sushi-arrow.left {
-  left: 18px;
-}
-
-.sushi-arrow.right {
-  right: 18px;
-}
-
-
-/* =====================================================
-   SUSHI INFORMATION
-===================================================== */
-
-.sushi-info {
-  text-align: center;
-
-  padding: 24px 10px 5px;
-
-  animation:
-    sushi-info-in .35s ease;
-}
-
-.sushi-info h2 {
-  margin: 0;
-
-  font-size: clamp(25px, 5vw, 34px);
-  letter-spacing: -.7px;
-}
-
-.sushi-meta {
-  display: flex;
-
-  justify-content: center;
-  align-items: center;
-
-  gap: 12px;
-
-  margin-top: 8px;
-}
-
-.sushi-meta strong {
-  font-size: 20px;
-  color: #fff;
-}
-
-.sushi-meta span {
-  padding: 4px 8px;
-
-  border-radius: 6px;
-
-  background: #1c1c1c;
-
-  color: #999;
-
-  font-size: 11px;
-}
-
-.sushi-info > p {
-  margin: 10px auto 0;
-
-  max-width: 450px;
-
-  color: #888;
-
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-
-/* =====================================================
-   ORDER BUTTON
-===================================================== */
-
-.order-button {
-  width: min(300px, 100%);
-
-  margin-top: 18px;
-
-  padding: 14px 20px;
-
-  border: 1px solid #f1eee8;
-
-  border-radius: 12px;
-
-  background: #f1eee8;
-
-  color: #111;
-
-  font-weight: 900;
-
-  letter-spacing: 1px;
-
-  cursor: pointer;
-
-  transition:
-    transform .2s ease,
-    box-shadow .2s ease;
-}
-
-.order-button:hover {
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 12px 30px rgba(255,255,255,.1);
-}
-
-.order-button:active {
-  transform: scale(.98);
-}
-
-
-/* =====================================================
-   DOTS
-===================================================== */
-
-.sushi-dots {
-  display: flex;
-
-  justify-content: center;
-
-  gap: 6px;
-
-  margin-top: 18px;
-}
-
-.sushi-dots button {
-  width: 6px;
-  height: 6px;
-
-  padding: 0;
-
-  border: 0;
-
-  border-radius: 50%;
-
-  background: #3c3c3c;
-
-  cursor: pointer;
-
-  transition:
-    width .25s ease,
-    background .25s ease;
-}
-
-.sushi-dots button.active {
-  width: 22px;
-
-  border-radius: 99px;
-
-  background: #f1eee8;
-}
-
-
-/* =====================================================
-   NEXT REWARD
-===================================================== */
-
-.next-reward-card {
-  margin-top: 50px;
-
-  padding: 22px;
-
-  border-radius: 22px;
-
-  border: 1px solid #282828;
-
-  background: #111;
-}
-
-.next-reward-top {
-  display: flex;
-
-  justify-content: space-between;
-
-  gap: 10px;
-
-  margin-bottom: 13px;
-}
-
-.next-reward-top span {
-  font-size: 10px;
-  letter-spacing: 2px;
-  color: #777;
-  font-weight: 800;
-}
-
-.next-reward-top b {
-  font-size: 11px;
-  color: #aaa;
-}
-
-.reward-progress {
-  height: 7px;
-
-  overflow: hidden;
-
-  border-radius: 99px;
-
-  background: #292929;
-}
-
-.reward-progress i {
-  display: block;
-
-  height: 100%;
-
-  border-radius: 99px;
-
-  background: #f1eee8;
-
-  transition: width .5s ease;
-}
-
-.next-reward-card h3 {
-  margin: 15px 0 4px;
-}
-
-.next-reward-card p {
-  margin: 0;
-
-  color: #777;
-
-  font-size: 12px;
-}
-
-
-/* =====================================================
-   HOW IT WORKS
-===================================================== */
-
-.how-section {
-  margin-top: 60px;
-
-  padding-bottom: 25px;
-}
-
-.how-section h2 {
-  margin: 7px 0 22px;
-
-  font-size: 30px;
-  letter-spacing: -1px;
-}
-
-.how-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(3, 1fr);
-
-  gap: 12px;
-}
-
-.how-item {
-  min-height: 160px;
-
-  padding: 18px;
-
-  border: 1px solid #252525;
-
-  border-radius: 18px;
-
-  background: #111;
-}
-
-.how-number {
-  color: #666;
-
-  font-size: 10px;
-
-  letter-spacing: 2px;
-
-  font-weight: 900;
-}
-
-.how-item h3 {
-  margin: 30px 0 7px;
-
-  font-size: 13px;
-
-  letter-spacing: 1px;
-}
-
-.how-item p {
-  margin: 0;
-
-  color: #777;
-
-  font-size: 12px;
-
-  line-height: 1.5;
-}
-
-
-/* =====================================================
-   ANIMATIONS
-===================================================== */
-
-@keyframes sushi-float {
-
-  0%,
-  100% {
-    transform:
-      perspective(700px)
-      translateY(0)
-      rotateX(8deg)
-      rotateY(-8deg);
-  }
-
-  50% {
-    transform:
-      perspective(700px)
-      translateY(-12px)
-      rotateX(11deg)
-      rotateY(8deg);
-  }
-
-}
-
-@keyframes sushi-shadow {
-
-  0%,
-  100% {
-    transform:
-      translateX(-50%)
-      scaleX(1);
-    opacity: .6;
-  }
-
-  50% {
-    transform:
-      translateX(-50%)
-      scaleX(.75);
-    opacity: .35;
-  }
-
-}
-
-@keyframes sushi-info-in {
-
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-}
-
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
-@media (max-width: 600px) {
-
-  .sushi-home {
-    padding-top: 12px;
-  }
-
-  .sushi-hero {
-    padding-top: 18px;
-  }
-
-  .sushi-hero h1 {
-    font-size: 38px;
-  }
-
-  .points-card {
-    min-height: 125px;
-    padding: 20px;
-  }
-
-  .points-mark {
-    width: 58px;
-    height: 58px;
-    font-size: 28px;
-  }
-
-  .menu-section {
-    margin-top: 42px;
-  }
-
-  .sushi-carousel {
-    min-height: 350px;
-  }
-
-  .sushi-stage {
-    height: 310px;
-  }
-
-  .sushi-placeholder {
-    width: 190px;
-    height: 190px;
-  }
-
-  .sushi-placeholder span {
-    font-size: 90px;
-  }
-
-  .sushi-arrow {
-    width: 40px;
-    height: 40px;
-    font-size: 26px;
-  }
-
-  .sushi-arrow.left {
-    left: 10px;
-  }
-
-  .sushi-arrow.right {
-    right: 10px;
-  }
-
-  .how-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .how-item {
-    min-height: auto;
-  }
-
-  .how-item h3 {
-    margin-top: 18px;
-  }
-
-}
-
-
-/* =====================================================
-   REMOVE OLD GOLD — NEW HOME ONLY
-===================================================== */
-
-.sushi-home .eyebrow,
-.sushi-home .sushi-kicker {
-  color: #8f8f8f;
-}
-/* =====================================================
-   AT HOME SUSHI — PREMIUM CUSTOMER HOMEPAGE
-===================================================== */
-
-.sushi-home {
-  min-height: 100vh;
-  background:
-    radial-gradient(
-      circle at 50% 0%,
-      rgba(165, 72, 62, 0.08),
-      transparent 30%
-    ),
-    linear-gradient(
-      135deg,
-      #f7f5ef 0%,
-      #efede6 50%,
-      #f8f6f1 100%
-    );
-  color: #191918;
-  overflow: hidden;
-  position: relative;
-}
-
-/* subtle Japanese-inspired background pattern */
-
-.sushi-home::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.13;
-
-  background-image:
-    radial-gradient(
-      circle at 20% 20%,
-      transparent 0,
-      transparent 70px,
-      rgba(25, 25, 24, 0.08) 71px,
-      transparent 72px
-    ),
-    repeating-radial-gradient(
-      ellipse at 50% 100%,
-      transparent 0,
-      transparent 35px,
-      rgba(25, 25, 24, 0.045) 36px,
-      transparent 37px
-    );
-
-  background-size:
-    280px 280px,
-    420px 210px;
-
-  z-index: 0;
-}
-
-.sushi-home > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* =====================================================
-   HERO
-===================================================== */
-
-.sushi-hero {
-  min-height: 720px;
-
-  display: flex;
-  align-items: center;
-
-  position: relative;
-
-  padding:
-    100px
-    max(24px, calc((100% - 1180px) / 2));
-
-  overflow: hidden;
-}
-
-.sushi-hero::after {
-  content: "";
-
-  position: absolute;
-
-  width: 520px;
-  height: 520px;
-
-  right: -130px;
-  top: 100px;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(165, 72, 62, 0.10),
-      transparent 68%
-    );
-
-  filter: blur(10px);
-
-  pointer-events: none;
-}
-
-.japanese-watermark {
-  position: absolute;
-
-  right: 6%;
-  top: 50%;
-
-  transform:
-    translateY(-50%)
-    rotate(-8deg);
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: clamp(120px, 18vw, 280px);
-
-  font-weight: 400;
-
-  letter-spacing: -12px;
-
-  color: rgba(25, 25, 24, 0.035);
-
-  white-space: nowrap;
-
-  user-select: none;
-}
-
-.hero-content {
-  max-width: 720px;
-}
-
-.hero-label,
-.section-kicker {
-  font-size: 10px;
-
-  letter-spacing: 3px;
-
-  color: #8f4038;
-
-  font-weight: 500;
-
-  margin-bottom: 15px;
-}
-
-.hero-content h1 {
-  margin: 0;
-
-  max-width: 700px;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: clamp(48px, 7vw, 92px);
-
-  line-height: 0.98;
-
-  letter-spacing: -3px;
-
-  font-weight: 400;
-
-  color: #191918;
-}
-
-.hero-content h1 span {
-  display: block;
-
-  color: #8f4038;
-
-  font-weight: 400;
-}
-
-.hero-content > p {
-  max-width: 450px;
-
-  margin:
-    25px 0 0;
-
-  font-size: 16px;
-
-  line-height: 1.7;
-
-  color: #66635d;
-
-  font-weight: 400;
-}
-
-/* =====================================================
-   GLASS BUTTONS
-===================================================== */
-
-.hero-actions {
-  display: flex;
-
-  gap: 10px;
-
-  flex-wrap: wrap;
-
-  margin-top: 30px;
-}
-
-.glass-button {
-  border: 1px solid rgba(25, 25, 24, 0.14);
-
-  border-radius: 999px;
-
-  padding:
-    13px
-    18px;
-
-  display: inline-flex;
-
-  align-items: center;
-
-  gap: 8px;
-
-  cursor: pointer;
-
-  font-size: 12px;
-
-  letter-spacing: 0.5px;
-
-  font-weight: 500;
-
-  backdrop-filter: blur(18px);
-
-  -webkit-backdrop-filter: blur(18px);
-
-  transition:
-    transform 0.25s ease,
-    background 0.25s ease,
-    box-shadow 0.25s ease;
-}
-
-.glass-button:hover {
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 12px 30px rgba(25, 25, 24, 0.10);
-}
-
-.dark-glass {
-  background:
-    rgba(25, 25, 24, 0.88);
-
-  color: white;
-}
-
-.light-glass {
-  background:
-    rgba(255, 255, 255, 0.45);
-
-  color: #242320;
-}
-
-/* =====================================================
-   POINTS SECTION
-===================================================== */
-
-.points-section,
-.menu-section,
-.rewards-section {
-  width: min(1050px, calc(100% - 36px));
-
-  margin: auto;
-
-  padding:
-    110px 0;
-}
-
-.points-section h2,
-.menu-section h2,
-.rewards-section h2 {
-  margin: 0;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: clamp(38px, 5vw, 64px);
-
-  font-weight: 400;
-
-  letter-spacing: -2px;
-
-  color: #191918;
-}
-
-.section-intro {
-  margin:
-    12px 0 30px;
-
-  color: #706d67;
-
-  font-size: 14px;
-
-  font-weight: 400;
-}
-
-/* =====================================================
-   POINTS GLASS CARD
-===================================================== */
-
-.points-glass-card {
-  margin-top: 35px;
-
-  padding: 30px;
-
-  border-radius: 28px;
-
-  border: 1px solid rgba(255, 255, 255, 0.75);
-
-  background:
-    rgba(255, 255, 255, 0.48);
-
-  box-shadow:
-    0 25px 70px rgba(40, 37, 31, 0.09);
-
-  backdrop-filter: blur(25px);
-
-  -webkit-backdrop-filter: blur(25px);
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-}
-
-.points-glass-card span,
-.points-glass-card small {
-  display: block;
-
-  color: #77736b;
-
-  font-size: 9px;
-
-  letter-spacing: 2px;
-
-  font-weight: 500;
-}
-
-.points-glass-card strong {
-  display: block;
-
-  margin:
-    4px 0;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 58px;
-
-  font-weight: 400;
-
-  line-height: 1;
-}
-
-.bubble-arrow {
-  width: 48px;
-
-  height: 48px;
-
-  border-radius: 50%;
-
-  border: 1px solid rgba(25, 25, 24, 0.12);
-
-  background:
-    rgba(255, 255, 255, 0.48);
-
-  color: #292825;
-
-  display: grid;
-
-  place-items: center;
+  color: #4b4540;
 
   cursor: pointer;
 
@@ -2638,15 +689,398 @@ input[type="date"] {
     background 0.2s ease;
 }
 
+.iconbtn:hover {
+  transform: translateY(-2px);
+
+  background:
+    rgba(255, 255, 255, 0.9);
+}
+
+
+/* =====================================================
+   MAIN CONTAINER
+===================================================== */
+
+main {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+}
+
+.container {
+  width: min(900px, 100%);
+
+  margin: 0 auto;
+
+  padding:
+    34px
+    max(18px, 4vw)
+    110px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+
+/* =====================================================
+   HOME
+===================================================== */
+
+.sushi-home {
+  position: relative;
+
+  width: 100%;
+
+  overflow: hidden;
+
+  background: #f5f1eb;
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.sushi-hero {
+  position: relative;
+
+  min-height: 620px;
+
+  display: flex;
+  align-items: center;
+
+  padding:
+    80px
+    max(24px, 7vw);
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(143, 52, 52, 0.08),
+      transparent 28%
+    ),
+    linear-gradient(
+      135deg,
+      #f8f5f0 0%,
+      #eee8df 100%
+    );
+}
+
+/* Japanese wave decoration */
+
+.sushi-hero::before {
+  content: "";
+
+  position: absolute;
+
+  width: 520px;
+  height: 520px;
+
+  right: -170px;
+  bottom: -210px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid rgba(45, 40, 35, 0.07);
+
+  box-shadow:
+    0 0 0 35px rgba(45, 40, 35, 0.018),
+    0 0 0 70px rgba(45, 40, 35, 0.014),
+    0 0 0 105px rgba(45, 40, 35, 0.01);
+}
+
+.sushi-hero::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    repeating-linear-gradient(
+      135deg,
+      transparent 0 22px,
+      rgba(45, 40, 35, 0.018) 23px,
+      transparent 24px 45px
+    );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+
+  width: min(650px, 100%);
+}
+
+.japanese-watermark {
+  display: none;
+}
+
+.hero-label,
+.section-kicker,
+.eyebrow {
+  color: #8f3434;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  letter-spacing: 3px;
+}
+
+.hero-label {
+  margin-bottom: 17px;
+}
+
+.hero-content h1 {
+  margin: 0;
+
+  max-width: 620px;
+
+  font-size:
+    clamp(42px, 7vw, 76px);
+
+  line-height: 0.98;
+
+  letter-spacing: -1.5px;
+
+  font-weight: 400;
+}
+
+.hero-content h1 span {
+  display: block;
+
+  color: #8f3434;
+
+  font-weight: 400;
+}
+
+.hero-content > p {
+  max-width: 470px;
+
+  margin: 23px 0 0;
+
+  color: #716b65;
+
+  font-size: 16px;
+
+  line-height: 1.7;
+}
+
+
+/* =====================================================
+   GLASS BUTTONS
+===================================================== */
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 11px;
+
+  margin-top: 30px;
+}
+
+.glass-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 12px 19px;
+
+  border-radius: 999px;
+
+  font-size: 13px;
+
+  font-weight: 500;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+}
+
+.dark-glass {
+  color: white;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.2);
+
+  background:
+    rgba(48, 43, 39, 0.84);
+
+  box-shadow:
+    0 10px 26px rgba(40, 30, 25, 0.12);
+}
+
+.light-glass {
+  color: #3d3834;
+
+  border:
+    1px solid rgba(60, 50, 40, 0.1);
+
+  background:
+    rgba(255, 255, 255, 0.45);
+
+  box-shadow:
+    0 8px 22px rgba(40, 30, 25, 0.05);
+}
+
+
+/* =====================================================
+   SECTIONS
+===================================================== */
+
+.points-section,
+.menu-section,
+.rewards-section {
+  position: relative;
+
+  width: min(1050px, 100%);
+
+  margin: 0 auto;
+
+  padding:
+    90px
+    max(24px, 6vw);
+}
+
+.points-section h2,
+.menu-section h2,
+.rewards-section h2 {
+  margin:
+    8px 0 0;
+
+  font-size:
+    clamp(30px, 5vw, 48px);
+
+  line-height: 1.05;
+
+  font-weight: 400;
+}
+
+.section-intro {
+  margin:
+    13px 0 0;
+
+  color: #817a73;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+}
+
+
+/* =====================================================
+   POINTS CARD
+===================================================== */
+
+.points-glass-card {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 35px;
+
+  padding: 28px;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.75);
+
+  border-radius: 24px;
+
+  background:
+    rgba(255, 255, 255, 0.52);
+
+  box-shadow:
+    0 18px 45px rgba(50, 40, 30, 0.07);
+
+  backdrop-filter: blur(18px);
+}
+
+.points-glass-card span,
+.points-glass-card small {
+  display: block;
+
+  color: #918a83;
+
+  font-size: 9px;
+
+  letter-spacing: 2px;
+
+  font-weight: 600;
+}
+
+.points-glass-card strong {
+  display: block;
+
+  margin: 5px 0;
+
+  color: #292726;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 48px;
+
+  font-weight: 400;
+}
+
+.bubble-arrow {
+  width: 48px;
+  height: 48px;
+
+  display: grid;
+  place-items: center;
+
+  border:
+    1px solid rgba(60, 50, 40, 0.08);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.62);
+
+  color: #4d4742;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease;
+}
+
 .bubble-arrow:hover {
   transform: translateX(3px);
 
-  background:
-    rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.9);
 }
 
+
 /* =====================================================
-   HOW YOU EARN
+   EARN GRID
 ===================================================== */
 
 .earn-grid {
@@ -2655,32 +1089,33 @@ input[type="date"] {
   grid-template-columns:
     repeat(3, 1fr);
 
-  gap: 1px;
+  gap: 25px;
 
-  margin-top: 28px;
-
-  border-top:
-    1px solid rgba(25, 25, 24, 0.10);
-
-  border-bottom:
-    1px solid rgba(25, 25, 24, 0.10);
+  margin-top: 35px;
 }
 
 .earn-item {
-  padding: 24px 10px;
-
   display: flex;
 
-  gap: 15px;
+  gap: 13px;
+
+  padding-top: 17px;
+
+  border-top:
+    1px solid rgba(50, 40, 30, 0.1);
 }
 
 .earn-item > span {
+  color: #8f3434;
+
   font-size: 10px;
 
-  color: #9a968e;
+  letter-spacing: 1px;
 }
 
 .earn-item b {
+  color: #4b4540;
+
   font-size: 12px;
 
   font-weight: 600;
@@ -2691,110 +1126,100 @@ input[type="date"] {
 .earn-item p {
   margin: 5px 0 0;
 
-  color: #77736b;
+  color: #817a73;
 
   font-size: 12px;
 
   line-height: 1.5;
 }
 
+
 /* =====================================================
    MENU
 ===================================================== */
 
 .menu-section {
-  text-align: center;
+  background:
+    rgba(255, 255, 255, 0.28);
 
-  max-width: 1100px;
+  border-top:
+    1px solid rgba(50, 40, 30, 0.05);
+
+  border-bottom:
+    1px solid rgba(50, 40, 30, 0.05);
 }
 
 .sushi-showcase {
   position: relative;
 
-  min-height: 430px;
-
-  margin-top: 30px;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
+
+  margin-top: 40px;
 }
 
 .sushi-stage {
-  width: min(520px, 75vw);
+  width: min(520px, 72vw);
 
   animation:
-    sushiEnter 0.55s ease both;
+    sushiAppear 0.45s ease both;
 }
 
-@keyframes sushiEnter {
+@keyframes sushiAppear {
   from {
     opacity: 0;
-    transform:
-      translateY(20px)
-      scale(0.94);
+    transform: translateY(10px) scale(0.98);
   }
 
   to {
     opacity: 1;
-    transform:
-      translateY(0)
-      scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
 .sushi-image-wrap {
-  width: 100%;
-
-  aspect-ratio: 1 / 0.72;
-
   position: relative;
 
-  display: grid;
+  aspect-ratio: 1 / 1;
 
+  display: grid;
   place-items: center;
+
+  overflow: hidden;
+
+  border-radius: 28px;
+
+  background:
+    rgba(255, 255, 255, 0.55);
+
+  border:
+    1px solid rgba(255, 255, 255, 0.8);
+
+  box-shadow:
+    0 25px 60px rgba(45, 35, 25, 0.1);
 }
 
 .sushi-image {
   width: 100%;
-
   height: 100%;
 
-  object-fit: contain;
+  object-fit: cover;
 
-  filter:
-    drop-shadow(
-      0 35px 25px
-      rgba(25, 25, 24, 0.20)
-    );
-
-  animation:
-    sushiFloat 4s ease-in-out infinite;
+  transition:
+    transform 0.5s ease;
 }
 
-@keyframes sushiFloat {
-  0%,
-  100% {
-    transform:
-      translateY(0)
-      rotate(-1deg);
-  }
-
-  50% {
-    transform:
-      translateY(-10px)
-      rotate(1deg);
-  }
+.sushi-image-wrap:hover .sushi-image {
+  transform: scale(1.025);
 }
 
 .photo-placeholder {
+  display: none;
+
   position: absolute;
 
   inset: 0;
-
-  display: grid;
 
   place-items: center;
 
@@ -2802,68 +1227,41 @@ input[type="date"] {
 
   gap: 8px;
 
-  color: rgba(25, 25, 24, 0.30);
-
-  pointer-events: none;
-}
-
-.photo-placeholder span {
-  font-size: 90px;
-
-  filter:
-    grayscale(1);
-
-  opacity: 0.35;
-}
-
-.photo-placeholder small {
-  font-size: 9px;
-
-  letter-spacing: 2px;
+  color: #8c857e;
 }
 
 .photo-missing .photo-placeholder {
   display: grid;
 }
 
-.sushi-image-wrap:not(.photo-missing)
-  .photo-placeholder {
-  display: none;
-}
-
-/* =====================================================
-   CAROUSEL ARROWS
-===================================================== */
-
 .carousel-arrow {
   position: absolute;
 
-  width: 52px;
+  z-index: 3;
 
-  height: 52px;
+  width: 44px;
+  height: 44px;
+
+  display: grid;
+  place-items: center;
+
+  border:
+    1px solid rgba(60, 50, 40, 0.1);
 
   border-radius: 50%;
 
-  border: 1px solid rgba(25, 25, 24, 0.13);
-
   background:
-    rgba(255, 255, 255, 0.40);
+    rgba(255, 255, 255, 0.65);
 
-  color: #252421;
+  color: #4a4540;
 
-  font-size: 30px;
+  font-size: 28px;
 
   line-height: 1;
 
   cursor: pointer;
 
-  display: grid;
-
-  place-items: center;
-
-  backdrop-filter: blur(15px);
-
-  z-index: 2;
+  backdrop-filter: blur(12px);
 
   transition:
     transform 0.2s ease,
@@ -2871,191 +1269,176 @@ input[type="date"] {
 }
 
 .carousel-arrow:hover {
-  background:
-    rgba(255, 255, 255, 0.75);
+  transform: scale(1.07);
 
-  transform: scale(1.06);
+  background:
+    rgba(255, 255, 255, 0.95);
 }
 
 .carousel-arrow.left {
-  left: 4%;
+  left: 0;
 }
 
 .carousel-arrow.right {
-  right: 4%;
+  right: 0;
 }
 
-/* =====================================================
-   SUSHI DETAILS
-===================================================== */
-
 .sushi-details {
-  max-width: 600px;
+  max-width: 520px;
 
-  margin:
-    -10px auto 0;
+  margin: 27px auto 0;
+
+  text-align: center;
 }
 
 .sushi-counter {
-  font-size: 11px;
+  color: #8f3434;
+
+  font-size: 10px;
+
+  font-weight: 600;
 
   letter-spacing: 2px;
-
-  color: #8f4038;
 }
 
 .sushi-counter span {
-  color: #aaa59d;
+  color: #aaa29a;
 }
 
 .sushi-details h3 {
   margin:
-    8px 0 5px;
+    9px 0 5px;
 
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 34px;
+  font-size: 30px;
 
   font-weight: 400;
-
-  color: #191918;
 }
 
 .sushi-meta {
   margin: 0;
 
-  font-size: 13px;
+  color: #514b46;
 
-  color: #55524d;
+  font-size: 13px;
 }
 
 .ingredients {
-  margin:
-    10px 0 20px;
+  margin: 10px 0 20px;
 
-  color: #858078;
+  color: #817a73;
 
   font-size: 12px;
 }
 
 .order-bubble {
-  border: 1px solid rgba(25, 25, 24, 0.15);
-
-  border-radius: 999px;
-
-  background:
-    rgba(255, 255, 255, 0.55);
-
-  color: #191918;
-
-  padding:
-    13px 21px;
-
   display: inline-flex;
-
   align-items: center;
 
   gap: 8px;
 
-  cursor: pointer;
+  padding: 11px 19px;
 
-  font-size: 11px;
+  border:
+    1px solid rgba(60, 50, 40, 0.1);
+
+  border-radius: 999px;
+
+  background:
+    rgba(255, 255, 255, 0.62);
+
+  color: #3f3935;
+
+  font-size: 12px;
+
+  font-weight: 600;
 
   letter-spacing: 1px;
 
-  font-weight: 500;
+  cursor: pointer;
 
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(12px);
 
   transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .order-bubble:hover {
   transform: translateY(-2px);
 
-  box-shadow:
-    0 12px 30px rgba(25, 25, 24, 0.10);
+  background:
+    rgba(255, 255, 255, 0.95);
 }
+
 
 /* =====================================================
    REWARDS
 ===================================================== */
 
-.rewards-section {
-  padding-bottom: 150px;
-}
-
 .modern-rewards {
   margin-top: 35px;
 
   border-top:
-    1px solid rgba(25, 25, 24, 0.12);
+    1px solid rgba(50, 40, 30, 0.08);
 }
 
 .modern-reward {
-  padding:
-    22px 5px;
-
   display: grid;
 
-  grid-template-columns: 45px 1fr auto;
+  grid-template-columns:
+    45px 1fr auto;
 
   align-items: center;
 
   gap: 15px;
 
+  padding: 20px 0;
+
   border-bottom:
-    1px solid rgba(25, 25, 24, 0.12);
+    1px solid rgba(50, 40, 30, 0.08);
 
   transition:
-    padding 0.25s ease;
+    transform 0.2s ease;
 }
 
 .modern-reward:hover {
-  padding-left: 12px;
-  padding-right: 12px;
+  transform: translateX(4px);
 }
 
 .modern-reward > span {
-  color: #9b978f;
+  color: #8f3434;
 
   font-size: 10px;
+
+  letter-spacing: 1px;
 }
 
 .modern-reward h3 {
   margin: 0;
 
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
+  font-size: 17px;
 
-  font-size: 20px;
-
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .modern-reward p {
-  margin:
-    5px 0 0;
+  margin: 5px 0 0;
 
-  color: #858078;
+  color: #817a73;
 
   font-size: 12px;
 }
 
-.modern-reward strong {
+.modern-reward > strong {
+  color: #4b4540;
+
   font-size: 12px;
 
-  font-weight: 500;
+  font-weight: 600;
 
-  color: #8f4038;
+  white-space: nowrap;
 }
+
 
 /* =====================================================
    ORDER MODAL
@@ -3069,13 +1452,12 @@ input[type="date"] {
   z-index: 100;
 
   display: grid;
-
   place-items: center;
 
   padding: 20px;
 
   background:
-    rgba(20, 19, 17, 0.35);
+    rgba(40, 34, 29, 0.38);
 
   backdrop-filter: blur(10px);
 
@@ -3094,905 +1476,28 @@ input[type="date"] {
 }
 
 .order-modal {
-  width: min(430px, 100%);
-
   position: relative;
 
-  padding: 35px;
+  width: min(470px, 100%);
 
-  border-radius: 30px;
+  padding: 30px;
+
+  border-radius: 25px;
 
   background:
-    rgba(247, 245, 239, 0.90);
+    rgba(250, 247, 242, 0.94);
 
   border:
-    1px solid rgba(255, 255, 255, 0.80);
+    1px solid rgba(255, 255, 255, 0.9);
 
   box-shadow:
-    0 30px 90px rgba(0, 0, 0, 0.25);
-
-  backdrop-filter: blur(25px);
+    0 30px 80px rgba(30, 25, 20, 0.18);
 
   animation:
     modalUp 0.3s ease;
 }
 
 @keyframes modalUp {
-  from {
-    opacity: 0;
-    transform:
-      translateY(20px)
-      scale(0.97);
-  }
-
-  to {
-    opacity: 1;
-    transform:
-      translateY(0)
-      scale(1);
-  }
-}
-
-.modal-close {
-  position: absolute;
-
-  right: 18px;
-
-  top: 18px;
-
-  width: 38px;
-
-  height: 38px;
-
-  border-radius: 50%;
-
-  border:
-    1px solid rgba(25, 25, 24, 0.12);
-
-  background:
-    rgba(255, 255, 255, 0.50);
-
-  color: #333;
-
-  display: grid;
-
-  place-items: center;
-
-  cursor: pointer;
-}
-
-.order-modal h2 {
-  margin:
-    5px 0 10px;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-weight: 400;
-
-  font-size: 32px;
-
-  line-height: 1.05;
-}
-
-.order-modal > p {
-  color: #77736b;
-
-  font-size: 13px;
-
-  margin-bottom: 22px;
-}
-
-.order-option {
-  text-decoration: none;
-
-  color: #191918;
-
-  display: grid;
-
-  grid-template-columns:
-    45px 1fr auto;
-
-  align-items: center;
-
-  gap: 13px;
-
-  padding: 15px;
-
-  margin-top: 10px;
-
-  border:
-    1px solid rgba(25, 25, 24, 0.10);
-
-  border-radius: 18px;
-
-  background:
-    rgba(255, 255, 255, 0.48);
-
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease;
-}
-
-.order-option:hover {
-  transform: translateY(-2px);
-
-  background:
-    rgba(255, 255, 255, 0.75);
-}
-
-.order-option-icon {
-  width: 45px;
-
-  height: 45px;
-
-  border-radius: 14px;
-
-  background:
-    rgba(255, 255, 255, 0.65);
-
-  display: grid;
-
-  place-items: center;
-
-  font-size: 19px;
-}
-
-.order-option b,
-.order-option small {
-  display: block;
-}
-
-.order-option b {
-  font-size: 12px;
-
-  font-weight: 600;
-
-  letter-spacing: 0.5px;
-}
-
-.order-option small {
-  margin-top: 3px;
-
-  color: #858078;
-
-  font-size: 11px;
-}
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
-@media (max-width: 700px) {
-
-  .sushi-hero {
-    min-height: 650px;
-
-    padding:
-      80px 24px;
-  }
-
-  .hero-content h1 {
-    font-size: 51px;
-
-    letter-spacing: -2px;
-  }
-
-  .japanese-watermark {
-    right: -100px;
-
-    top: 42%;
-
-    font-size: 150px;
-  }
-
-  .points-section,
-  .menu-section,
-  .rewards-section {
-    padding:
-      75px 0;
-  }
-
-  .earn-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .earn-item {
-    border-bottom:
-      1px solid rgba(25, 25, 24, 0.08);
-  }
-
-  .earn-item:last-child {
-    border-bottom: 0;
-  }
-
-  .points-glass-card {
-    padding: 24px;
-  }
-
-  .points-glass-card strong {
-    font-size: 48px;
-  }
-
-  .sushi-showcase {
-    min-height: 330px;
-  }
-
-  .sushi-stage {
-    width: 85vw;
-  }
-
-  .carousel-arrow {
-    width: 44px;
-
-    height: 44px;
-
-    font-size: 25px;
-  }
-
-  .carousel-arrow.left {
-    left: 0;
-  }
-
-  .carousel-arrow.right {
-    right: 0;
-  }
-
-  .sushi-details h3 {
-    font-size: 29px;
-  }
-
-  .order-modal {
-    padding: 28px 22px;
-  }
-}
-
-@media (max-width: 420px) {
-
-  .hero-content h1 {
-    font-size: 43px;
-  }
-
-  .hero-actions {
-    flex-direction: column;
-  }
-
-  .glass-button {
-    justify-content: center;
-  }
-
-  .points-glass-card {
-    border-radius: 22px;
-  }
-
-  .modern-reward {
-    grid-template-columns:
-      32px 1fr auto;
-  }
-
-}
-
-.sushi-home .reward-progress i {
-  background: #f1eee8;
-}
-/* =====================================================
-   AT HOME SUSHI — NEW PREMIUM JAPANESE DESIGN
-===================================================== */
-
-:root {
-  --ink: #171717;
-  --paper: #f5f2eb;
-  --paper-soft: #ebe7de;
-  --white: rgba(255,255,255,.72);
-  --line: rgba(20,20,20,.12);
-  --muted: #77736c;
-  --accent: #8f2f2f;
-  --accent-soft: rgba(143,47,47,.12);
-}
-
-/* ---------- GLOBAL ---------- */
-
-html,
-body,
-#root {
-  width: 100%;
-  min-height: 100%;
-}
-
-body {
-  background:
-    linear-gradient(
-      rgba(245,242,235,.94),
-      rgba(245,242,235,.94)
-    ),
-    repeating-linear-gradient(
-      135deg,
-      transparent 0,
-      transparent 22px,
-      rgba(25,25,25,.025) 23px,
-      transparent 24px
-    );
-
-  color: var(--ink);
-  overflow-x: hidden;
-}
-
-/* subtle Japanese-inspired background texture */
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-
-  opacity: .28;
-
-  background:
-    radial-gradient(
-      ellipse at 20% 20%,
-      transparent 0 48px,
-      rgba(30,30,30,.035) 49px 50px,
-      transparent 51px
-    ),
-    radial-gradient(
-      ellipse at 80% 70%,
-      transparent 0 60px,
-      rgba(30,30,30,.025) 61px 62px,
-      transparent 63px
-    );
-
-  background-size: 180px 180px;
-}
-
-/* ---------- TYPOGRAPHY ---------- */
-
-body,
-button,
-input,
-textarea,
-select {
-  font-family:
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-}
-
-h1,
-h2,
-h3,
-p {
-  font-weight: 400;
-}
-
-h1,
-h2,
-h3 {
-  letter-spacing: -.02em;
-}
-
-/* ---------- APP ---------- */
-
-.app {
-  min-height: 100vh;
-  padding-bottom: 90px;
-
-  background:
-    linear-gradient(
-      rgba(245,242,235,.90),
-      rgba(245,242,235,.90)
-    );
-}
-
-/* ---------- TOP HEADER ---------- */
-
-.topbar {
-  position: sticky;
-  top: 0;
-
-  z-index: 50;
-
-  width: 100%;
-
-  padding:
-    15px
-    max(22px, calc((100% - 1180px) / 2));
-
-  background: rgba(245,242,235,.72);
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-
-  border-bottom:
-    1px solid rgba(20,20,20,.08);
-}
-
-.topbar > div:first-child {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* logo */
-
-.topbar img {
-  width: 48px;
-  height: 48px;
-
-  object-fit: contain;
-
-  border-radius: 50%;
-}
-
-/* restaurant name */
-
-.topbar b {
-  font-size: 14px;
-  font-weight: 500;
-
-  letter-spacing: .12em;
-
-  color: var(--ink);
-}
-
-.topbar span {
-  color: var(--accent);
-
-  font-size: 9px;
-  letter-spacing: .22em;
-
-  font-weight: 500;
-}
-
-/* ---------- CONTAINER ---------- */
-
-.container {
-  width: min(1180px, 100%);
-  margin: 0 auto;
-
-  padding:
-    35px
-    max(22px, 4vw);
-}
-
-/* ---------- HERO ---------- */
-
-.hero {
-  padding: 55px 0 35px;
-
-  animation:
-    heroFade .8s ease both;
-}
-
-.hero p {
-  margin: 0 0 10px;
-
-  color: var(--accent);
-
-  font-size: 12px;
-  letter-spacing: .18em;
-
-  text-transform: uppercase;
-}
-
-.hero h1 {
-  max-width: 760px;
-
-  margin: 0;
-
-  font-size:
-    clamp(38px, 6vw, 72px);
-
-  line-height: .98;
-
-  font-weight: 400;
-
-  letter-spacing: -.045em;
-}
-
-/* ---------- GLASS CARDS ---------- */
-
-.card {
-  background:
-    rgba(255,255,255,.48);
-
-  border:
-    1px solid rgba(255,255,255,.65);
-
-  box-shadow:
-    0 20px 60px rgba(35,30,20,.08);
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-
-  border-radius: 24px;
-}
-
-/* ---------- GLASS BUTTON ---------- */
-
-.primary {
-  background:
-    rgba(30,30,30,.08);
-
-  color: var(--ink);
-
-  border:
-    1px solid rgba(30,30,30,.15);
-
-  border-radius: 999px;
-
-  padding:
-    13px 22px;
-
-  font-weight: 400;
-
-  letter-spacing: .02em;
-
-  box-shadow:
-    inset 0 1px rgba(255,255,255,.7),
-    0 8px 25px rgba(0,0,0,.05);
-
-  backdrop-filter: blur(12px);
-
-  transition:
-    transform .25s ease,
-    background .25s ease,
-    box-shadow .25s ease;
-}
-
-.primary:hover {
-  background:
-    rgba(255,255,255,.65);
-
-  color: var(--ink);
-
-  box-shadow:
-    0 14px 35px rgba(0,0,0,.09);
-
-  transform: translateY(-2px);
-}
-
-/* ---------- ICON BUTTON ---------- */
-
-.iconbtn {
-  background:
-    rgba(255,255,255,.42);
-
-  border:
-    1px solid rgba(30,30,30,.10);
-
-  color: var(--ink);
-
-  border-radius: 50%;
-
-  width: 42px;
-  height: 42px;
-
-  padding: 0;
-
-  transition: .25s ease;
-}
-
-.iconbtn:hover {
-  background: rgba(255,255,255,.75);
-
-  transform: translateY(-2px);
-}
-
-/* ---------- BALANCE ---------- */
-
-.balance-grid {
-  gap: 16px;
-}
-
-.balance {
-  background:
-    rgba(255,255,255,.42);
-
-  border:
-    1px solid rgba(30,30,30,.08);
-
-  border-radius: 22px;
-
-  padding: 24px;
-
-  box-shadow:
-    0 15px 40px rgba(35,30,20,.06);
-
-  backdrop-filter: blur(15px);
-
-  transition:
-    transform .3s ease,
-    box-shadow .3s ease;
-}
-
-.balance:hover {
-  transform: translateY(-4px);
-
-  box-shadow:
-    0 25px 50px rgba(35,30,20,.10);
-}
-
-.balance svg {
-  color: var(--accent);
-}
-
-.balance strong {
-  font-size: 32px;
-
-  font-weight: 400;
-
-  color: var(--ink);
-}
-
-/* ---------- QUICK CARD ---------- */
-
-.quick,
-.progress {
-  background:
-    rgba(255,255,255,.38);
-
-  border:
-    1px solid rgba(30,30,30,.08);
-
-  box-shadow:
-    0 15px 40px rgba(35,30,20,.06);
-}
-
-.quick h3 {
-  font-weight: 400;
-}
-
-/* ---------- REWARDS ---------- */
-
-.section-title {
-  font-size: 21px;
-  font-weight: 400;
-
-  margin-top: 45px;
-}
-
-.reward {
-  background:
-    rgba(255,255,255,.40);
-
-  border:
-    1px solid rgba(30,30,30,.07);
-
-  border-radius: 20px;
-
-  transition:
-    transform .3s ease,
-    background .3s ease;
-}
-
-.reward:hover {
-  transform: translateY(-3px);
-
-  background:
-    rgba(255,255,255,.65);
-}
-
-.reward-icon {
-  background:
-    var(--accent-soft);
-
-  color:
-    var(--accent);
-
-  border-radius: 50%;
-}
-
-.reward b {
-  font-weight: 500;
-}
-
-.reward > strong {
-  color: var(--accent);
-
-  font-weight: 500;
-}
-
-/* ---------- DIGITAL CARD ---------- */
-
-.digital {
-  background:
-    linear-gradient(
-      135deg,
-      #1c1c1c,
-      #303030 48%,
-      #161616
-    );
-
-  color: white;
-
-  border:
-    1px solid rgba(255,255,255,.18);
-
-  box-shadow:
-    0 30px 80px rgba(0,0,0,.22);
-
-  position: relative;
-
-  overflow: hidden;
-}
-
-/* premium card shine */
-
-.digital::before {
-  content: "";
-
-  position: absolute;
-
-  width: 300px;
-  height: 300px;
-
-  right: -120px;
-  top: -120px;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(255,255,255,.16),
-      transparent 65%
-    );
-
-  pointer-events: none;
-}
-
-.digital h2 {
-  font-weight: 400;
-  letter-spacing: .12em;
-}
-
-.digital .mini {
-  background:
-    rgba(255,255,255,.08);
-
-  border:
-    1px solid rgba(255,255,255,.12);
-}
-
-.digital .mini b {
-  color: white;
-  font-weight: 400;
-}
-
-.digital .eyebrow {
-  color: rgba(255,255,255,.65);
-}
-
-/* ---------- QR ---------- */
-
-.qr {
-  box-shadow:
-    0 12px 35px rgba(0,0,0,.15);
-
-  border-radius: 18px;
-}
-
-/* ---------- BOTTOM NAV ---------- */
-
-.nav {
-  background:
-    rgba(245,242,235,.76);
-
-  border-top:
-    1px solid rgba(30,30,30,.08);
-
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-
-  box-shadow:
-    0 -10px 30px rgba(0,0,0,.04);
-}
-
-.nav button {
-  color: #888;
-
-  font-weight: 400;
-
-  border-radius: 999px;
-
-  transition: .25s ease;
-}
-
-.nav button:hover {
-  color: var(--ink);
-
-  background:
-    rgba(255,255,255,.45);
-}
-
-.nav .sel {
-  color: var(--accent);
-
-  font-weight: 500;
-}
-
-/* ---------- INPUTS ---------- */
-
-input,
-textarea,
-select {
-  background:
-    rgba(255,255,255,.48);
-
-  color: var(--ink);
-
-  border:
-    1px solid rgba(30,30,30,.12);
-
-  border-radius: 14px;
-
-  padding: 13px 15px;
-
-  backdrop-filter: blur(10px);
-}
-
-input::placeholder,
-textarea::placeholder {
-  color: #999;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  border-color:
-    rgba(143,47,47,.45);
-
-  box-shadow:
-    0 0 0 3px rgba(143,47,47,.08);
-}
-
-/* ---------- BIRTHDAY ---------- */
-
-.birthday-banner {
-  background:
-    rgba(255,255,255,.45);
-
-  border:
-    1px solid rgba(143,47,47,.18);
-
-  box-shadow:
-    0 15px 40px rgba(35,30,20,.06);
-}
-
-.birthday-banner strong {
-  color: var(--accent);
-}
-
-.birthday-button {
-  background:
-    rgba(143,47,47,.06);
-
-  color:
-    var(--accent);
-
-  border:
-    1px solid rgba(143,47,47,.20);
-
-  border-radius: 999px;
-
-  font-weight: 400;
-
-  transition: .25s ease;
-}
-
-.birthday-button:hover {
-  background:
-    rgba(143,47,47,.12);
-}
-
-/* ---------- ANIMATION ---------- */
-
-@keyframes heroFade {
   from {
     opacity: 0;
     transform: translateY(15px);
@@ -4004,466 +1509,668 @@ select:focus {
   }
 }
 
-/* ---------- MOBILE ---------- */
+.modal-close {
+  position: absolute;
 
-@media (max-width: 600px) {
+  top: 16px;
+  right: 16px;
 
-  .container {
-    padding:
-      25px 16px;
-  }
+  width: 36px;
+  height: 36px;
 
-  .hero {
-    padding:
-      35px 0 25px;
-  }
+  display: grid;
+  place-items: center;
 
-  .hero h1 {
-    font-size: 42px;
-  }
-
-  .balance {
-    padding: 18px;
-  }
-
-  .topbar {
-    padding:
-      12px 16px;
-  }
-
-  .topbar img {
-    width: 43px;
-    height: 43px;
-  }
-}
-/* =====================================================
-   AT HOME SUSHI — FULL VISUAL OVERRIDE
-===================================================== */
-
-html,
-body,
-#root {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-body {
-  background: #f3f0e8 !important;
-  color: #181818 !important;
-}
-
-/* Japanese-inspired background */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-
-  opacity: .22;
-
-  background-image:
-    radial-gradient(
-      circle at 10% 20%,
-      transparent 0 55px,
-      rgba(40,40,40,.10) 56px 57px,
-      transparent 58px
-    ),
-    radial-gradient(
-      circle at 90% 75%,
-      transparent 0 75px,
-      rgba(40,40,40,.07) 76px 77px,
-      transparent 78px
-    );
-
-  background-size: 260px 260px;
-}
-
-/* =====================================================
-   LOGIN / SIGNUP
-===================================================== */
-
-.auth-wrap {
-  min-height: 100vh !important;
-
-  background:
-    linear-gradient(
-      rgba(243,240,232,.88),
-      rgba(243,240,232,.88)
-    ) !important;
-
-  padding: 40px 20px !important;
-}
-
-/* remove old gold glow / grid */
-.auth-wrap::before,
-.auth-wrap::after {
-  display: none !important;
-}
-
-.brand {
-  margin-bottom: 28px !important;
-}
-
-.logo {
-  width: 105px !important;
-  height: 105px !important;
+  border:
+    1px solid rgba(60, 50, 40, 0.08);
 
   border-radius: 50%;
 
-  object-fit: contain;
-
-  filter:
-    drop-shadow(0 12px 25px rgba(0,0,0,.10));
-}
-
-/* Restaurant name */
-.brand h1 {
-  color: #171717 !important;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif !important;
-
-  font-size: 25px !important;
-
-  font-weight: 400 !important;
-
-  letter-spacing: .18em !important;
-}
-
-.brand p {
-  color: #8f2f2f !important;
-
-  font-size: 11px !important;
-
-  font-weight: 400 !important;
-
-  letter-spacing: .22em !important;
-}
-
-/* Login card */
-.auth-card {
   background:
-    rgba(255,255,255,.52) !important;
+    rgba(255, 255, 255, 0.65);
+
+  color: #4b4540;
+
+  cursor: pointer;
+}
+
+.order-modal h2 {
+  margin:
+    10px 0;
+
+  font-size: 30px;
+
+  line-height: 1.05;
+
+  font-weight: 400;
+}
+
+.order-modal > p {
+  color: #817a73;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+}
+
+.order-option {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  margin-top: 12px;
+
+  padding: 15px;
 
   border:
-    1px solid rgba(255,255,255,.75) !important;
+    1px solid rgba(60, 50, 40, 0.08);
 
-  box-shadow:
-    0 30px 80px rgba(40,35,25,.10) !important;
+  border-radius: 17px;
 
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-
-  border-radius: 26px !important;
-}
-
-/* Login tabs */
-.tabs {
   background:
-    rgba(0,0,0,.045) !important;
+    rgba(255, 255, 255, 0.58);
 
-  border:
-    1px solid rgba(0,0,0,.07) !important;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
-.tabs button {
-  color: #777 !important;
-
-  font-weight: 400 !important;
-}
-
-.tabs .active {
-  background:
-    rgba(255,255,255,.70) !important;
-
-  color: #181818 !important;
-
-  box-shadow:
-    0 5px 20px rgba(0,0,0,.07) !important;
-}
-
-/* Form headings */
-.auth-card h2 {
-  color: #181818 !important;
-  font-weight: 400 !important;
-}
-
-.auth-card .muted {
-  color: #777 !important;
-}
-
-/* =====================================================
-   ALL BUTTONS
-===================================================== */
-
-.primary {
-  background:
-    rgba(255,255,255,.48) !important;
-
-  color: #181818 !important;
-
-  border:
-    1px solid rgba(0,0,0,.12) !important;
-
-  border-radius: 999px !important;
-
-  font-weight: 400 !important;
-
-  box-shadow:
-    inset 0 1px rgba(255,255,255,.8),
-    0 8px 25px rgba(0,0,0,.06) !important;
-
-  backdrop-filter: blur(15px);
-}
-
-.primary:hover {
-  background:
-    rgba(255,255,255,.78) !important;
-
-  color: #181818 !important;
-
+.order-option:hover {
   transform: translateY(-2px);
+
+  background:
+    rgba(255, 255, 255, 0.9);
 }
+
+.order-option-icon {
+  width: 40px;
+  height: 40px;
+
+  display: grid;
+  place-items: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background:
+    rgba(143, 52, 52, 0.08);
+
+  color: #8f3434;
+}
+
+.order-option > span:nth-child(2) {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.order-option b {
+  color: #39332f;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.5px;
+}
+
+.order-option small {
+  color: #918a83;
+
+  font-size: 11px;
+}
+
 
 /* =====================================================
-   TEXT COLORS
-===================================================== */
-
-.eyebrow {
-  color: #8f2f2f !important;
-
-  font-weight: 400 !important;
-}
-
-.muted {
-  color: #777 !important;
-}
-
-.footer {
-  color: #8f2f2f !important;
-
-  font-weight: 400 !important;
-}
-
-/* =====================================================
-   MAIN APP
-===================================================== */
-
-.app {
-  background:
-    transparent !important;
-}
-
-.topbar {
-  background:
-    rgba(243,240,232,.76) !important;
-
-  border-bottom:
-    1px solid rgba(0,0,0,.08) !important;
-
-  backdrop-filter: blur(20px);
-}
-
-.topbar b {
-  color: #181818 !important;
-  font-weight: 400 !important;
-}
-
-.topbar span {
-  color: #8f2f2f !important;
-  font-weight: 400 !important;
-}
-
-/* =====================================================
-   HOME
-===================================================== */
-
-.hero p {
-  color: #8f2f2f !important;
-  font-weight: 400 !important;
-}
-
-.hero h1 {
-  color: #181818 !important;
-  font-weight: 400 !important;
-}
-
-/* =====================================================
-   CARDS
-===================================================== */
-
-.card {
-  background:
-    rgba(255,255,255,.48) !important;
-
-  border:
-    1px solid rgba(255,255,255,.70) !important;
-
-  box-shadow:
-    0 20px 60px rgba(40,35,25,.07) !important;
-
-  backdrop-filter: blur(18px);
-}
-
-/* =====================================================
-   POINT CARDS
-===================================================== */
-
-.balance {
-  background:
-    rgba(255,255,255,.45) !important;
-
-  border:
-    1px solid rgba(0,0,0,.07) !important;
-}
-
-.balance svg {
-  color: #8f2f2f !important;
-}
-
-.balance strong {
-  color: #181818 !important;
-  font-weight: 400 !important;
-}
-
-/* =====================================================
-   REWARDS
-===================================================== */
-
-.reward {
-  background:
-    rgba(255,255,255,.42) !important;
-}
-
-.reward:hover {
-  background:
-    rgba(255,255,255,.72) !important;
-}
-
-.reward-icon {
-  background:
-    rgba(143,47,47,.08) !important;
-
-  color:
-    #8f2f2f !important;
-}
-
-.reward b {
-  color: #181818 !important;
-  font-weight: 400 !important;
-}
-
-.reward > strong {
-  color: #8f2f2f !important;
-  font-weight: 400 !important;
-}
-
-/* =====================================================
-   DIGITAL CARD
+   DIGITAL LOYALTY CARD
 ===================================================== */
 
 .digital {
+  width: min(450px, 100%);
+
+  padding: 30px;
+
+  text-align: center;
+
+  overflow: hidden;
+}
+
+/* premium card front */
+
+.digital::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
   background:
-    linear-gradient(
-      135deg,
-      #292929,
-      #444,
-      #1d1d1d
-    ) !important;
+    radial-gradient(
+      circle at 80% 15%,
+      rgba(143, 52, 52, 0.08),
+      transparent 25%
+    );
+}
 
-  color: white !important;
+.digital h2 {
+  margin:
+    7px 0 20px;
 
-  border:
-    1px solid rgba(255,255,255,.20) !important;
+  font-weight: 400;
+}
 
-  border-radius: 25px !important;
+.qr {
+  width: fit-content;
+
+  margin: 0 auto 18px;
+
+  padding: 12px;
+
+  background: white;
+
+  border-radius: 16px;
 
   box-shadow:
-    0 30px 80px rgba(0,0,0,.20) !important;
+    0 10px 30px rgba(30, 25, 20, 0.08);
 }
 
-.digital .eyebrow {
-  color: rgba(255,255,255,.65) !important;
+.digital h3 {
+  margin: 5px 0;
+
+  font-size: 20px;
 }
+
+.code {
+  color: #8f3434;
+
+  font-size: 11px;
+
+  letter-spacing: 2px;
+}
+
+.balance-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+.mini,
+.balance {
+  padding: 15px;
+
+  border-radius: 16px;
+
+  background:
+    rgba(40, 35, 30, 0.045);
+
+  border:
+    1px solid rgba(40, 35, 30, 0.06);
+}
+
+.mini small,
+.balance small {
+  display: block;
+
+  color: #918a83;
+
+  font-size: 9px;
+
+  letter-spacing: 1.5px;
+}
+
+.mini b,
+.balance strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #38322e;
+
+  font-size: 22px;
+
+  font-weight: 500;
+}
+
+.balance svg {
+  margin-bottom: 7px;
+
+  color: #8f3434;
+}
+
+
+/* =====================================================
+   REWARDS LIST / HISTORY
+===================================================== */
+
+.reward-list {
+  display: grid;
+
+  gap: 12px;
+
+  margin-top: 22px;
+}
+
+.reward {
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 17px;
+
+  width: 100%;
+
+  text-align: left;
+}
+
+.reward-icon {
+  width: 43px;
+  height: 43px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background:
+    rgba(143, 52, 52, 0.07);
+
+  color: #8f3434;
+}
+
+.reward p {
+  margin: 5px 0 0;
+
+  color: #817a73;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.reward > div:nth-child(2) {
+  flex: 1;
+}
+
+.reward strong,
+.reward > small {
+  color: #4d4742;
+
+  font-size: 12px;
+
+  white-space: nowrap;
+}
+
+.empty {
+  padding: 40px;
+
+  text-align: center;
+
+  color: #817a73;
+}
+
+
+/* =====================================================
+   REWARDS PAGE TITLE
+===================================================== */
+
+.page-title {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+}
+
+.page-title svg {
+  color: #8f3434;
+}
+
+.page-title h1 {
+  margin: 0;
+}
+
+
+/* =====================================================
+   STAFF
+===================================================== */
+
+.hero {
+  margin-bottom: 25px;
+}
+
+.hero p {
+  margin: 0 0 7px;
+
+  color: #8f3434;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  letter-spacing: 3px;
+}
+
+.hero h1 {
+  margin: 0;
+
+  font-size: 34px;
+
+  font-weight: 400;
+}
+
+.birthday-button {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  margin-top: 12px;
+
+  padding: 12px 16px;
+
+  border:
+    1px solid rgba(143, 52, 52, 0.12);
+
+  border-radius: 999px;
+
+  background:
+    rgba(143, 52, 52, 0.055);
+
+  color: #8f3434;
+
+  font-size: 13px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.birthday-button:hover {
+  transform: translateY(-2px);
+
+  background:
+    rgba(143, 52, 52, 0.09);
+}
+
+
+/* =====================================================
+   BIRTHDAY BANNER
+===================================================== */
+
+.birthday-banner {
+  width: min(900px, calc(100% - 36px));
+
+  margin:
+    25px auto 0;
+
+  padding: 22px;
+
+  border-radius: 20px;
+
+  background:
+    rgba(143, 52, 52, 0.06);
+
+  border:
+    1px solid rgba(143, 52, 52, 0.1);
+}
+
+.birthday-banner h2 {
+  margin: 7px 0;
+
+  font-size: 23px;
+}
+
+.birthday-banner p {
+  color: #817a73;
+
+  font-size: 13px;
+}
+
+.birthday-banner strong {
+  color: #8f3434;
+
+  font-size: 13px;
+}
+
 
 /* =====================================================
    NAVIGATION
 ===================================================== */
 
 .nav {
-  background:
-    rgba(243,240,232,.78) !important;
+  position: fixed;
 
-  border-top:
-    1px solid rgba(0,0,0,.08) !important;
+  left: 50%;
+
+  bottom: 16px;
+
+  z-index: 50;
+
+  transform: translateX(-50%);
+
+  width: min(470px, calc(100% - 24px));
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  padding: 7px;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.8);
+
+  border-radius: 20px;
+
+  background:
+    rgba(255, 255, 255, 0.72);
+
+  box-shadow:
+    0 15px 40px rgba(40, 30, 25, 0.13);
 
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .nav button {
-  color: #888 !important;
-  font-weight: 400 !important;
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 4px;
+
+  padding: 8px 5px;
+
+  border: 0;
+
+  border-radius: 15px;
+
+  background: transparent;
+
+  color: #8c857e;
+
+  font-size: 9px;
+
+  cursor: pointer;
+
+  transition:
+    all 0.2s ease;
 }
 
-.nav .sel {
-  color: #8f2f2f !important;
-  font-weight: 400 !important;
+.nav button svg {
+  width: 19px;
+  height: 19px;
+
+  stroke-width: 1.6;
 }
+
+.nav button.sel {
+  color: #8f3434;
+
+  background:
+    rgba(143, 52, 52, 0.065);
+}
+
+.nav button:hover {
+  color: #8f3434;
+}
+
 
 /* =====================================================
-   INPUTS
+   CHECKBOX
 ===================================================== */
 
-input,
-textarea,
-select {
-  background:
-    rgba(255,255,255,.55) !important;
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
 
-  color: #181818 !important;
+  margin: 0;
 
-  border:
-    1px solid rgba(0,0,0,.10) !important;
+  accent-color: #8f3434;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
-  border-color:
-    rgba(143,47,47,.45) !important;
-
-  box-shadow:
-    0 0 0 3px rgba(143,47,47,.08) !important;
-}
 
 /* =====================================================
-   HIDE OLD GOLD
+   RESPONSIVE
 ===================================================== */
 
-.notice {
-  background:
-    rgba(143,47,47,.06) !important;
+@media (max-width: 700px) {
 
-  border:
-    1px solid rgba(143,47,47,.12) !important;
+  .sushi-hero {
+    min-height: 570px;
 
-  color:
-    #8f2f2f !important;
+    padding:
+      70px 24px;
+  }
+
+  .hero-content h1 {
+    font-size:
+      clamp(40px, 12vw, 58px);
+  }
+
+  .points-section,
+  .menu-section,
+  .rewards-section {
+    padding:
+      70px 22px;
+  }
+
+  .earn-grid {
+    grid-template-columns: 1fr;
+
+    gap: 18px;
+  }
+
+  .earn-item {
+    padding-top: 14px;
+  }
+
+  .sushi-stage {
+    width: min(450px, 78vw);
+  }
+
+  .carousel-arrow.left {
+    left: -5px;
+  }
+
+  .carousel-arrow.right {
+    right: -5px;
+  }
+
+  .container {
+    padding:
+      27px 18px 105px;
+  }
 }
 
-.birthday-button {
-  background:
-    rgba(143,47,47,.06) !important;
 
-  color:
-    #8f2f2f !important;
+@media (max-width: 480px) {
 
-  border:
-    1px solid rgba(143,47,47,.20) !important;
+  .auth-wrap {
+    padding:
+      35px 15px;
+  }
 
-  font-weight: 400 !important;
+  .logo {
+    width: 58px;
+    height: 58px;
+  }
+
+  .staff-logo {
+    width: 56px;
+    height: 56px;
+  }
+
+  .brand h1 {
+    font-size: 21px;
+
+    letter-spacing: 2.5px;
+  }
+
+  .auth-card {
+    padding: 21px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .glass-button {
+    width: 100%;
+  }
+
+  .points-glass-card {
+    padding: 22px;
+  }
+
+  .points-glass-card strong {
+    font-size: 42px;
+  }
+
+  .sushi-stage {
+    width: 82vw;
+  }
+
+  .sushi-details h3 {
+    font-size: 26px;
+  }
+
+  .modern-reward {
+    grid-template-columns:
+      35px 1fr auto;
+  }
+
+  .modern-reward p {
+    font-size: 11px;
+  }
+
+  .order-modal {
+    padding: 25px 20px;
+  }
+
+  .digital {
+    padding: 24px 18px;
+  }
 }
