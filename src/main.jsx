@@ -645,79 +645,334 @@ function Dashboard({ session, profile, reloadProfile }) {
    HOME
 ===================================================== */
 
-function Home({ profile, rewards, onGoRewards }) {
+function Home({ profile, rewards }) {
+  const [category, setCategory] = useState('Specialty Rolls');
+  const [menuIndex, setMenuIndex] = useState(0);
+  const [orderOpen, setOrderOpen] = useState(false);
+  const [direction, setDirection] = useState('next');
+
   const points = Number(profile.points || 0);
 
-  const menu = [
-    {
-      name: 'California Roll',
-      price: '₱189',
-      pieces: '8 pcs',
-      ingredients: 'Avocado • Mango • Cucumber • Crabstick • Japanese Mayo',
-      image: '/sushi/california-roll.png'
-    },
-    {
-      name: 'Spicy Salmon Roll',
-      price: '₱219',
-      pieces: '8 pcs',
-      ingredients: 'Fresh Salmon • Cucumber • Sesame • Spicy Salmon Mix',
-      image: '/sushi/spicy-salmon-roll.png'
-    },
-    {
-      name: 'Green Dragon',
-      price: '₱219',
-      pieces: '8 pcs',
-      ingredients: 'Prawn Tempura • Fresh Avocado • Teriyaki • Spicy Mayo',
-      image: '/sushi/green-dragon-roll.png'
-    },
-    {
-      name: 'Crispy Cream',
-      price: '₱209',
-      pieces: '8 pcs',
-      ingredients: 'Prawn Tempura • Avocado • Cucumber • Tamago • Cream Cheese',
-      image: '/sushi/crispy-cream.png'
-    },
-    {
-      name: 'Hurricane Roll',
-      price: '₱219',
-      pieces: '8 pcs',
-      ingredients: 'Avocado • Crabstick • Cucumber • Crabstick Salad • Caviar',
-      image: '/sushi/hurricane-roll.png'
-    },
-    {
-      name: 'Super California',
-      price: '₱209',
-      pieces: '8 pcs',
-      ingredients: 'Avocado • Mango • Cucumber • Crabstick • Japanese Mayo • Caviar',
-      image: '/sushi/super-california.png'
-    },
-    {
-      name: 'Volcano Roll',
-      price: '₱229',
-      pieces: '8 pcs',
-      ingredients: 'Prawn Tempura • Avocado • Cucumber • Spicy Prawn Mix • Crispy Chips',
-      image: '/sushi/volcano-roll.png'
-    },
-    {
-      name: 'At Home Supreme Roll',
-      price: '₱239',
-      pieces: '8 pcs',
-      ingredients: 'Prawn Tempura • Avocado • Tamago • Cream Cheese • Seared Salmon',
-      image: '/sushi/at-home-supreme-roll.png'
-    }
-  ];
+  const menuCategories = {
+    'Specialty Rolls': [
+      {
+        name: 'Spicy Salmon Roll',
+        pieces: '8 pcs',
+        price: '₱219',
+        ingredients:
+          'Fresh salmon • Cucumber • Black & white sesame • Spicy salmon mix'
+      },
+      {
+        name: 'California Roll',
+        pieces: '8 pcs',
+        price: '₱189',
+        ingredients:
+          'Avocado • Mango • Cucumber • Crabstick • Japanese mayo • White sesame'
+      },
+      {
+        name: 'Green Dragon',
+        pieces: '8 pcs',
+        price: '₱219',
+        ingredients:
+          'Prawn tempura • Fresh avocado • Teriyaki • Spicy mayo • Black sesame'
+      },
+      {
+        name: 'Shrimp Avo Roll',
+        pieces: '8 pcs',
+        price: '₱205',
+        ingredients:
+          'Prawn tempura • Avocado • White sesame seeds'
+      },
+      {
+        name: 'Spicy California',
+        pieces: '8 pcs',
+        price: '₱195',
+        ingredients:
+          'Avocado • Mango • Cucumber • Crabstick • Japanese mayo • Togarashi'
+      },
+      {
+        name: 'Creamy Salmon Avo',
+        pieces: '8 pcs',
+        price: '₱209',
+        ingredients:
+          'Fresh salmon • Cream cheese • Avocado • Black & white sesame'
+      },
+      {
+        name: 'Crispy Cream',
+        pieces: '8 pcs',
+        price: '₱209',
+        ingredients:
+          'Prawn tempura • Avocado • Cucumber • Tamago • Cream cheese • Sweet chili sauce'
+      },
+      {
+        name: 'Crunchy California',
+        pieces: '8 pcs',
+        price: '₱189',
+        ingredients:
+          'Avocado • Mango • Cucumber • Crabstick • Japanese mayo • Crispy tanuki'
+      },
+      {
+        name: 'Chicken Katsu Roll',
+        pieces: '8 pcs',
+        price: '₱209',
+        ingredients:
+          'Chicken katsu • Cucumber • Crispy tanuki • Teriyaki • Sweet chili • Japanese mayo'
+      },
+      {
+        name: 'Hurricane Roll',
+        pieces: '8 pcs',
+        price: '₱219',
+        ingredients:
+          'Avocado • Crabsticks • Cucumber • Crabstick salad • Spring onion • Caviar'
+      },
+      {
+        name: 'Super California',
+        pieces: '8 pcs',
+        price: '₱209',
+        ingredients:
+          'Avocado • Mango • Cucumber • Crabstick • Japanese mayo • Caviar'
+      },
+      {
+        name: 'Crunchy Tempura',
+        pieces: '8 pcs',
+        price: '₱199',
+        ingredients:
+          'Prawn tempura • Cucumber • Crispy tanuki • Sweet chili • Teriyaki'
+      },
+      {
+        name: 'Sphinx Roll',
+        pieces: '8 pcs',
+        price: '₱219',
+        ingredients:
+          'Prawn tempura • Avocado • Cucumber • Fried salmon • Crispy nori • Sweet chili'
+      },
+      {
+        name: 'Crunchy Potato',
+        pieces: '8 pcs',
+        price: '₱219',
+        ingredients:
+          'Prawn tempura • Avocado • Cucumber • Crabstick salad • Japanese mayo • Crispy potato'
+      },
+      {
+        name: 'Passion Rainbow',
+        pieces: '8 pcs',
+        price: '₱219',
+        ingredients:
+          'Fresh salmon • Avocado • Cucumber • Crabstick • Japanese mayo • Caviar'
+      },
+      {
+        name: 'Kani Aburi Roll',
+        pieces: '8 pcs',
+        price: '₱229',
+        ingredients:
+          'Prawn tempura • Tamago • Avocado • Seared crabstick • Spicy mayo • Teriyaki'
+      },
+      {
+        name: 'Imperial Salmon',
+        pieces: '8 pcs',
+        price: '₱239',
+        ingredients:
+          'Prawn tempura • Mango • Cucumber • Cream cheese • Seared salmon • Spicy mayo'
+      },
+      {
+        name: 'At Home Supreme Roll',
+        pieces: '8 pcs',
+        price: '₱239',
+        ingredients:
+          'Prawn tempura • Avocado • Tamago • Cream cheese • Seared salmon • Spicy mayo • Crispy potato'
+      },
+      {
+        name: 'Crab Lava Roll',
+        pieces: '8 pcs',
+        price: '₱239',
+        ingredients:
+          'Tempura crabstick • Avocado • Black & white sesame • Spicy mayo crab • Crispy tanuki'
+      },
+      {
+        name: 'Cheezy Tempura',
+        pieces: '8 pcs',
+        price: '₱229',
+        ingredients:
+          'Prawn tempura • Tamago • Carrots • Cream cheese • Seared cheddar • Japanese mayo • Teriyaki • Chips'
+      },
+      {
+        name: 'Volcano Roll',
+        pieces: '8 pcs',
+        price: '₱229',
+        ingredients:
+          'Prawn tempura • Avocado • Cucumber • Cream cheese • Spicy mayo • Spicy prawn tempura mix • Crispy chips'
+      }
+    ],
 
-  const [index, setIndex] = useState(0);
-  const [orderOpen, setOrderOpen] = useState(false);
+    'Tempura & Seafood': [
+      {
+        name: 'Dynamite Shrimp',
+        pieces: '—',
+        price: '₱189',
+        ingredients: 'Prawn tempura covered with dynamite sauce'
+      },
+      {
+        name: 'Ebi Fry',
+        pieces: '4 pcs',
+        price: '₱189',
+        ingredients: '4 pieces prawn tempura'
+      },
+      {
+        name: 'Cucumber Crab Salad',
+        pieces: '—',
+        price: '₱179',
+        ingredients:
+          'Mango • Cucumber • Crabstick • Japanese mayo • Caviar'
+      }
+    ],
 
-  const current = menu[index];
+    'Veggie': [
+      {
+        name: 'Creamy Avo',
+        pieces: '8 pcs',
+        price: '₱99',
+        ingredients: 'Avocado • Cream cheese'
+      },
+      {
+        name: 'Avo Lover',
+        pieces: '8 pcs',
+        price: '₱119',
+        ingredients:
+          'Avocado inside covered with avocado'
+      },
+      {
+        name: 'Veggie Roll',
+        pieces: '8 pcs',
+        price: '₱109',
+        ingredients:
+          'Avocado • Cucumber • Carrots • Lettuce • White sesame'
+      },
+      {
+        name: 'Tropical Garden Roll',
+        pieces: '—',
+        price: '₱199',
+        ingredients:
+          'Mango • Cucumber • Crabstick • Avocado • Carrots • Lettuce • Rice paper • Sweet chili'
+      },
+      {
+        name: 'Tropical Garden Roll — Veggie',
+        pieces: '—',
+        price: '₱159',
+        ingredients:
+          'Mango • Cucumber • Avocado • Carrots • Lettuce • Rice paper • Sweet chili'
+      }
+    ],
 
-  function previous() {
-    setIndex((i) => (i === 0 ? menu.length - 1 : i - 1));
+    'Nigiri & Sashimi': [
+      {
+        name: 'Tamago Nigiri',
+        pieces: '2 pcs',
+        price: '₱89',
+        ingredients: 'Japanese omelette'
+      },
+      {
+        name: 'Salmon Nigiri',
+        pieces: '2 pcs',
+        price: '₱129',
+        ingredients: 'Fresh salmon'
+      },
+      {
+        name: 'Kani Nigiri',
+        pieces: '2 pcs',
+        price: '₱95',
+        ingredients: 'Crabstick'
+      },
+      {
+        name: 'Sake Sashimi',
+        pieces: '4 pcs',
+        price: '₱219',
+        ingredients: 'Fresh slices of salmon'
+      },
+      {
+        name: 'Seared Salmon',
+        pieces: '2 pcs',
+        price: '₱135',
+        ingredients: 'Seared salmon'
+      }
+    ],
+
+    'Platters': [
+      {
+        name: 'Create Your Own Platter',
+        pieces: '32 pcs',
+        price: '₱859',
+        ingredients:
+          'Mix & match any 4 rolls from Classic or Specialty Rolls'
+      },
+      {
+        name: 'Tempura Platter',
+        pieces: '32 pcs',
+        price: '₱759',
+        ingredients:
+          'Mix of tempura rolls from Classic selection'
+      },
+      {
+        name: 'California Party Platter',
+        pieces: '32 pcs',
+        price: '₱689',
+        ingredients:
+          'Mixed California rolls'
+      },
+      {
+        name: 'Mini Harvest Platter',
+        pieces: '32 pcs',
+        price: '₱959',
+        ingredients:
+          'Fresh salmon nigiri • Crabstick nigiri • Tropical garden roll • Seafood rolls'
+      },
+      {
+        name: 'At Home Supreme Platter',
+        pieces: '80 pcs',
+        price: '₱1,699',
+        ingredients:
+          'Mixed sushi rolls and makis'
+      },
+      {
+        name: 'Harvest Platter',
+        pieces: '68 pcs',
+        price: '₱1,899',
+        ingredients:
+          'Fresh salmon nigiri • Crabstick nigiri • Veggie rolls • Seafood rolls'
+      }
+    ]
+  };
+
+  const currentMenu =
+    menuCategories[category] || [];
+
+  const current =
+    currentMenu[menuIndex] ||
+    currentMenu[0];
+
+  function changeCategory(newCategory) {
+    setCategory(newCategory);
+    setMenuIndex(0);
+    setDirection('next');
   }
 
-  function next() {
-    setIndex((i) => (i === menu.length - 1 ? 0 : i + 1));
+  function previousSushi() {
+    setDirection('prev');
+
+    setMenuIndex((index) =>
+      index === 0
+        ? currentMenu.length - 1
+        : index - 1
+    );
+  }
+
+  function nextSushi() {
+    setDirection('next');
+
+    setMenuIndex((index) =>
+      index === currentMenu.length - 1
+        ? 0
+        : index + 1
+    );
   }
 
   return (
