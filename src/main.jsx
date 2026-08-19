@@ -735,66 +735,67 @@ function Dashboard({
    HOME
 ===================================================== */
 
+/* =====================================================
+   PREMIUM SUSHI HOME
+===================================================== */
+
 function Home({ profile, rewards }) {
+  const [menuIndex, setMenuIndex] = useState(0);
+  const [orderOpen, setOrderOpen] = useState(false);
+
   const points = Number(profile.points || 0);
 
-  const next = rewards.find(
-    (reward) => Number(reward.points_required) > points
-  );
-
-  const sushiMenu = [
+  const menu = [
     {
       name: 'California Roll',
+      pieces: '8 pcs',
       price: '₱189',
-      pieces: '8 pcs',
       ingredients: 'Crab • Cucumber • Japanese Mayo',
-      emoji: '🍣'
-    },
-    {
-      name: 'Volcano Roll',
-      price: '₱229',
-      pieces: '8 pcs',
-      ingredients: 'Crab • Cucumber • Spicy Sauce',
-      emoji: '🍣'
-    },
-    {
-      name: 'Cheezy Tempura Roll',
-      price: '₱219',
-      pieces: '8 pcs',
-      ingredients: 'Tempura • Cheese • Special Sauce',
-      emoji: '🍣'
+      image: '/sushi/california-roll.png'
     },
     {
       name: 'Green Dragon Roll',
-      price: '₱249',
       pieces: '8 pcs',
-      ingredients: 'Tempura • Avocado • Special Sauce',
-      emoji: '🍣'
+      price: '₱229',
+      ingredients: 'Cucumber • Avocado • Teriyaki',
+      image: '/sushi/green-dragon-roll.png'
+    },
+    {
+      name: 'Volcano Roll',
+      pieces: '8 pcs',
+      price: '₱229',
+      ingredients: 'Spicy Sauce • Crab • Cucumber',
+      image: '/sushi/volcano-roll.png'
+    },
+    {
+      name: 'Super California Roll',
+      pieces: '8 pcs',
+      price: '₱219',
+      ingredients: 'Crab • Avocado • Cucumber • Mayo',
+      image: '/sushi/super-california-roll.png'
     }
   ];
 
-  const [selectedSushi, setSelectedSushi] = useState(0);
-
-  const sushi = sushiMenu[selectedSushi];
+  const current = menu[menuIndex];
 
   function previousSushi() {
-    setSelectedSushi((current) =>
-      current === 0
-        ? sushiMenu.length - 1
-        : current - 1
+    setMenuIndex((currentIndex) =>
+      currentIndex === 0
+        ? menu.length - 1
+        : currentIndex - 1
     );
   }
 
   function nextSushi() {
-    setSelectedSushi((current) =>
-      current === sushiMenu.length - 1
+    setMenuIndex((currentIndex) =>
+      currentIndex === menu.length - 1
         ? 0
-        : current + 1
+        : currentIndex + 1
     );
   }
 
   return (
-    <div className="container sushi-home">
+    <div className="sushi-home">
 
       {/* =================================================
           HERO
@@ -802,20 +803,58 @@ function Home({ profile, rewards }) {
 
       <section className="sushi-hero">
 
-        <p className="sushi-kicker">
-          AT HOME SUSHI LOYALTY CLUB
-        </p>
+        <div className="japanese-watermark">
+          AT HOME
+        </div>
 
-        <h1>
-          GET MORE FROM
-          <br />
-          EVERY ORDER
-        </h1>
+        <div className="hero-content">
 
-        <p className="sushi-subtitle">
-          Every order brings you closer
-          to your next reward.
-        </p>
+          <div className="hero-label">
+            AT HOME SUSHI
+          </div>
+
+          <h1>
+            GET MORE FROM
+            <span> EVERY ORDER.</span>
+          </h1>
+
+          <p>
+            Every order brings you closer
+            to your next reward.
+          </p>
+
+          <div className="hero-actions">
+
+            <button
+              className="glass-button dark-glass"
+              onClick={() =>
+                document
+                  .getElementById('sushi-menu')
+                  ?.scrollIntoView({
+                    behavior: 'smooth'
+                  })
+              }
+            >
+              Explore Our Sushi
+              <ChevronRight size={17} />
+            </button>
+
+            <button
+              className="glass-button light-glass"
+              onClick={() =>
+                document
+                  .getElementById('sushi-points')
+                  ?.scrollIntoView({
+                    behavior: 'smooth'
+                  })
+              }
+            >
+              My Sushi Points
+            </button>
+
+          </div>
+
+        </div>
 
       </section>
 
@@ -824,151 +863,242 @@ function Home({ profile, rewards }) {
           SUSHI POINTS
       ================================================= */}
 
-      <section className="points-card">
+      <section
+        id="sushi-points"
+        className="points-section"
+      >
 
-        <div className="points-content">
+        <div className="section-kicker">
+          YOUR LOYALTY
+        </div>
 
-          <span>
-            YOUR SUSHI POINTS
-          </span>
+        <h2>
+          YOUR SUSHI POINTS
+        </h2>
 
-          <strong>
-            {points.toFixed(2)}
-          </strong>
+        <p className="section-intro">
+          Every order brings you closer
+          to something delicious.
+        </p>
 
-          <p>
-            Keep ordering. Keep earning.
-          </p>
+        <div className="points-glass-card">
+
+          <div>
+            <span>
+              CURRENT BALANCE
+            </span>
+
+            <strong>
+              {points.toFixed(0)}
+            </strong>
+
+            <small>
+              SUSHI POINTS
+            </small>
+          </div>
+
+          <button
+            className="bubble-arrow"
+            onClick={() =>
+              document
+                .getElementById('rewards-preview')
+                ?.scrollIntoView({
+                  behavior: 'smooth'
+                })
+            }
+          >
+            <ChevronRight size={20} />
+          </button>
 
         </div>
 
-        <div className="points-mark">
-          🍣
+        <div className="earn-grid">
+
+          <div className="earn-item">
+            <span>01</span>
+            <div>
+              <b>ORDER</b>
+              <p>Enjoy your favorite sushi.</p>
+            </div>
+          </div>
+
+          <div className="earn-item">
+            <span>02</span>
+            <div>
+              <b>EARN</b>
+              <p>₱100 spent = 1 Sushi Point.</p>
+            </div>
+          </div>
+
+          <div className="earn-item">
+            <span>03</span>
+            <div>
+              <b>REDEEM</b>
+              <p>Turn points into rewards.</p>
+            </div>
+          </div>
+
         </div>
 
       </section>
 
 
       {/* =================================================
-          SUSHI MENU
+          MENU CAROUSEL
       ================================================= */}
 
-      <section className="menu-section">
+      <section
+        id="sushi-menu"
+        className="menu-section"
+      >
 
-        <div className="menu-heading">
-
-          <div>
-            <span className="sushi-kicker">
-              FROM OUR MENU
-            </span>
-
-            <h2>
-              Pick your favorite
-            </h2>
-          </div>
-
-          <span className="menu-count">
-            {selectedSushi + 1} / {sushiMenu.length}
-          </span>
-
+        <div className="section-kicker">
+          FROM OUR KITCHEN
         </div>
 
+        <h2>
+          EXPLORE OUR SUSHI
+        </h2>
 
-        <div className="sushi-carousel">
+        <p className="section-intro">
+          Swipe through your favorites.
+        </p>
+
+        <div className="sushi-showcase">
 
           <button
-            type="button"
-            className="sushi-arrow left"
+            className="carousel-arrow left"
             onClick={previousSushi}
+            aria-label="Previous sushi"
           >
             ‹
           </button>
 
+          <div
+            className="sushi-stage"
+            key={current.name}
+          >
 
-          <div className="sushi-stage">
+            <div className="sushi-image-wrap">
 
-            <div className="sushi-glow" />
+              <img
+                src={current.image}
+                alt={current.name}
+                className="sushi-image"
+                onError={(e) => {
+                  e.currentTarget.style.display =
+                    'none';
 
-            <div
-              key={sushi.name}
-              className="sushi-placeholder"
-            >
-              <span>
-                {sushi.emoji}
-              </span>
+                  e.currentTarget.parentElement.classList.add(
+                    'photo-missing'
+                  );
+                }}
+              />
+
+              <div className="photo-placeholder">
+                <span>🍣</span>
+                <small>
+                  YOUR SUSHI PHOTO
+                </small>
+              </div>
+
             </div>
 
           </div>
 
-
           <button
-            type="button"
-            className="sushi-arrow right"
+            className="carousel-arrow right"
             onClick={nextSushi}
+            aria-label="Next sushi"
           >
             ›
           </button>
 
         </div>
 
+        <div className="sushi-details">
 
-        <div
-          key={`${sushi.name}-info`}
-          className="sushi-info"
-        >
-
-          <h2>
-            {sushi.name}
-          </h2>
-
-          <div className="sushi-meta">
-
-            <strong>
-              {sushi.price}
-            </strong>
-
-            <span>
-              {sushi.pieces}
-            </span>
-
+          <div className="sushi-counter">
+            {String(menuIndex + 1).padStart(2, '0')}
+            <span>/ {String(menu.length).padStart(2, '0')}</span>
           </div>
 
-          <p>
-            {sushi.ingredients}
+          <h3>
+            {current.name}
+          </h3>
+
+          <p className="sushi-meta">
+            {current.pieces} &nbsp;·&nbsp; {current.price}
+          </p>
+
+          <p className="ingredients">
+            {current.ingredients}
           </p>
 
           <button
-            type="button"
-            className="order-button"
-            onClick={() => {
-              alert(
-                `Order ${sushi.name} — we'll connect this to your ordering system next.`
-              );
-            }}
+            className="order-bubble"
+            onClick={() => setOrderOpen(true)}
           >
             ORDER THIS
+            <ChevronRight size={17} />
           </button>
 
         </div>
 
+      </section>
 
-        <div className="sushi-dots">
 
-          {sushiMenu.map((item, index) => (
+      {/* =================================================
+          REWARDS
+      ================================================= */}
 
-            <button
-              key={item.name}
-              type="button"
-              className={
-                selectedSushi === index
-                  ? 'active'
-                  : ''
-              }
-              onClick={() =>
-                setSelectedSushi(index)
-              }
-              aria-label={`View ${item.name}`}
-            />
+      <section
+        id="rewards-preview"
+        className="rewards-section"
+      >
+
+        <div className="section-kicker">
+          YOUR BENEFITS
+        </div>
+
+        <h2>
+          REWARDS
+        </h2>
+
+        <p className="section-intro">
+          A little something for every
+          sushi lover.
+        </p>
+
+        <div className="modern-rewards">
+
+          {rewards.slice(0, 3).map((reward, index) => (
+
+            <div
+              className="modern-reward"
+              key={reward.id}
+            >
+
+              <span>
+                0{index + 1}
+              </span>
+
+              <div>
+                <h3>
+                  {reward.name}
+                </h3>
+
+                <p>
+                  {reward.description ||
+                    'Use your Sushi Points for this reward.'}
+                </p>
+              </div>
+
+              <strong>
+                {reward.points_required}
+              </strong>
+
+            </div>
 
           ))}
 
@@ -978,126 +1108,88 @@ function Home({ profile, rewards }) {
 
 
       {/* =================================================
-          NEXT REWARD
+          ORDER POPUP
       ================================================= */}
 
-      {next && (
-        <section className="next-reward-card">
+      {orderOpen && (
 
-          <div className="next-reward-top">
+        <div
+          className="order-overlay"
+          onClick={() => setOrderOpen(false)}
+        >
 
-            <span>
-              NEXT REWARD
-            </span>
+          <div
+            className="order-modal"
+            onClick={(e) =>
+              e.stopPropagation()
+            }
+          >
 
-            <b>
-              {(
-                Number(next.points_required) -
-                points
-              ).toFixed(2)}{' '}
-              pts to go
-            </b>
+            <button
+              className="modal-close"
+              onClick={() =>
+                setOrderOpen(false)
+              }
+            >
+              <X size={19} />
+            </button>
 
-          </div>
+            <div className="section-kicker">
+              {current.name}
+            </div>
 
-          <div className="reward-progress">
-
-            <i
-              style={{
-                width: `${Math.min(
-                  100,
-                  (points /
-                    Number(next.points_required)) *
-                    100
-                )}%`
-              }}
-            />
-
-          </div>
-
-          <h3>
-            {next.name}
-          </h3>
-
-          <p>
-            {next.description ||
-              'You are getting closer to your next reward.'}
-          </p>
-
-        </section>
-      )}
-
-
-      {/* =================================================
-          HOW IT WORKS
-      ================================================= */}
-
-      <section className="how-section">
-
-        <span className="sushi-kicker">
-          YOUR SUSHI POINTS
-        </span>
-
-        <h2>
-          Simple. Rewarding.
-        </h2>
-
-        <div className="how-grid">
-
-          <div className="how-item">
-
-            <span className="how-number">
-              01
-            </span>
-
-            <h3>
-              ORDER
-            </h3>
+            <h2>
+              HOW WOULD YOU
+              <br />
+              LIKE TO ORDER?
+            </h2>
 
             <p>
-              Enjoy your favorite
-              At Home Sushi.
+              Choose how you'd like to
+              order your sushi.
             </p>
 
-          </div>
+            <a
+              className="order-option"
+              href="https://www.ordermo.ph/restaurants/at-home-sushi/M8y6MG8S?n=QXQgSG9tZSBTdXNoaQ==&p=cG5n&c=anBn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="order-option-icon">
+                🛒
+              </span>
 
-          <div className="how-item">
+              <span>
+                <b>ORDER ONLINE</b>
+                <small>OrderMo</small>
+              </span>
 
-            <span className="how-number">
-              02
-            </span>
+              <ChevronRight size={18} />
+            </a>
 
-            <h3>
-              EARN
-            </h3>
+            <a
+              className="order-option"
+              href="https://www.facebook.com/athomesushibustos"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="order-option-icon">
+                💬
+              </span>
 
-            <p>
-              Collect Sushi Points
-              with every purchase.
-            </p>
+              <span>
+                <b>ORDER VIA FACEBOOK</b>
+                <small>Message At Home Sushi</small>
+              </span>
 
-          </div>
-
-          <div className="how-item">
-
-            <span className="how-number">
-              03
-            </span>
-
-            <h3>
-              REDEEM
-            </h3>
-
-            <p>
-              Turn your points
-              into delicious rewards.
-            </p>
+              <ChevronRight size={18} />
+            </a>
 
           </div>
 
         </div>
 
-      </section>
+      )}
 
     </div>
   );
