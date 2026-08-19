@@ -1,40 +1,36 @@
 /* =====================================================
-   AT HOME SUSHI — CLEAN PREMIUM STYLE
+   AT HOME SUSHI — CLEAN PREMIUM STYLES
 ===================================================== */
 
 * {
   box-sizing: border-box;
 }
 
-html {
+html,
+body,
+#root {
   margin: 0;
-  padding: 0;
-  width: 100%;
   min-height: 100%;
+  width: 100%;
+}
+
+html {
   scroll-behavior: smooth;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  min-height: 100%;
-  overflow-x: hidden;
-
   font-family:
     Inter,
+    system-ui,
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
 
-  color: #292726;
-  background: #f5f1eb;
-}
+  background: #f5f3ef;
+  color: #222;
 
-#root {
-  width: 100%;
-  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 button,
@@ -48,65 +44,45 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-img {
-  max-width: 100%;
-}
-
-
 /* =====================================================
-   GLOBAL JAPANESE BACKGROUND
+   JAPANESE BACKGROUND
 ===================================================== */
 
-.app,
 .auth-wrap,
+.app,
 .screen {
   position: relative;
   min-height: 100vh;
-  overflow-x: hidden;
-
-  background:
-    radial-gradient(
-      circle at 15% 10%,
-      rgba(137, 38, 38, 0.055),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at 85% 75%,
-      rgba(0, 0, 0, 0.045),
-      transparent 30%
-    ),
-    #f5f1eb;
 }
 
-/* subtle Japanese-inspired wave pattern */
-
-.app::before,
-.auth-wrap::before {
+.auth-wrap::before,
+.app::before {
   content: "";
   position: fixed;
   inset: 0;
+  z-index: -2;
 
-  pointer-events: none;
-  z-index: 0;
-
-  opacity: 0.34;
-
-  background-image:
+  background:
     radial-gradient(
-      ellipse at center,
-      transparent 0 58%,
-      rgba(45, 40, 36, 0.035) 59%,
-      transparent 61%
+      circle at 20% 20%,
+      rgba(120, 25, 25, 0.05),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(0, 0, 0, 0.035),
+      transparent 35%
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(0, 0, 0, 0.018) 0,
+      rgba(0, 0, 0, 0.018) 1px,
+      transparent 1px,
+      transparent 18px
     );
 
-  background-size: 90px 45px;
+  pointer-events: none;
 }
-
 
 /* =====================================================
    LOADING
@@ -116,231 +92,168 @@ img {
   display: grid;
   place-items: center;
   align-content: center;
-  gap: 12px;
+  gap: 8px;
 
-  padding: 24px;
+  padding: 25px;
 
-  text-align: center;
-  color: #77716b;
+  background: #f5f3ef;
+  color: #666;
 }
 
 .loader {
-  width: 58px;
-  height: 58px;
+  width: 34px;
+  height: 34px;
 
-  display: grid;
-  place-items: center;
+  border: 2px solid rgba(120, 25, 25, 0.15);
+  border-top-color: #7d2929;
 
   border-radius: 50%;
 
-  background: rgba(255, 255, 255, 0.6);
+  animation: spin 0.8s linear infinite;
 
-  border: 1px solid rgba(255, 255, 255, 0.8);
-
-  box-shadow:
-    0 12px 35px rgba(55, 45, 35, 0.08);
-
-  animation: softPulse 2s ease-in-out infinite;
+  font-size: 0;
 }
 
-@keyframes softPulse {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-
-  50% {
-    transform: scale(1.08);
-    opacity: 1;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
-
 
 /* =====================================================
    AUTH / LOGIN
 ===================================================== */
 
 .auth-wrap {
+  min-height: 100vh;
+
   display: flex;
   flex-direction: column;
+
   align-items: center;
   justify-content: center;
 
-  padding: 45px 18px;
+  padding: 40px 18px;
+
+  background:
+    linear-gradient(
+      rgba(248, 246, 242, 0.92),
+      rgba(248, 246, 242, 0.96)
+    );
 }
+
+/* =====================================================
+   BRAND
+===================================================== */
 
 .brand {
-  position: relative;
-  z-index: 1;
-
   text-align: center;
-
-  margin-bottom: 25px;
+  margin-bottom: 22px;
 }
 
-/* ACTUAL LOGO */
+/* SMALLER LOGO */
 
 .logo {
-  width: 66px;
-  height: 66px;
+  width: 54px;
+  height: 54px;
 
   object-fit: contain;
 
   display: block;
 
-  margin: 0 auto 13px;
+  margin: 0 auto 9px;
 
   border-radius: 50%;
 
-  filter:
-    drop-shadow(
-      0 7px 15px rgba(0, 0, 0, 0.08)
-    );
-
-  transition:
-    transform 0.3s ease;
+  mix-blend-mode: multiply;
 }
 
-.logo:hover {
-  transform: translateY(-2px);
-}
-
-/* staff logo */
+/* STAFF LOGO */
 
 .staff-logo {
-  width: 62px;
-  height: 62px;
+  width: 46px;
+  height: 46px;
 
   object-fit: contain;
 
   display: block;
 
-  margin: 0 auto 13px;
+  margin: 0 auto 9px;
 
   border-radius: 50%;
 
-  filter:
-    drop-shadow(
-      0 7px 15px rgba(0, 0, 0, 0.08)
-    );
+  mix-blend-mode: multiply;
 }
 
 .brand h1 {
   margin: 0;
 
-  color: #292726;
+  color: #262626;
 
   font-family:
     Georgia,
     "Times New Roman",
     serif;
 
-  font-size: 24px;
+  font-size: 25px;
 
   font-weight: 500;
 
   letter-spacing: 3px;
-
-  line-height: 1.15;
 }
 
 .brand p {
-  margin: 7px 0 0;
+  margin: 6px 0 0;
 
-  color: #8f3434;
+  color: #7d2929;
 
   font-size: 10px;
 
-  font-weight: 600;
-
   letter-spacing: 3px;
+
+  font-weight: 600;
 }
 
-
 /* =====================================================
-   GENERAL CARD
+   CARD
 ===================================================== */
 
 .card {
-  position: relative;
-  z-index: 1;
+  background: rgba(255, 255, 255, 0.72);
 
-  background:
-    rgba(255, 255, 255, 0.68);
-
-  border:
-    1px solid rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.85);
 
   border-radius: 22px;
 
   box-shadow:
-    0 18px 50px rgba(55, 45, 35, 0.08);
+    0 18px 45px rgba(45, 35, 30, 0.08);
 
   backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
 }
 
 .auth-card {
   width: min(430px, 100%);
 
-  padding: 27px;
-
-  animation:
-    cardAppear 0.55s ease both;
+  padding: 25px;
 }
 
-@keyframes cardAppear {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-
-/* =====================================================
-   HEADINGS
-===================================================== */
-
-h1,
-h2,
-h3 {
-  color: #292726;
+.auth-card h2 {
+  margin: 0 0 7px;
 
   font-family:
     Georgia,
     "Times New Roman",
     serif;
 
-  font-weight: 500;
-}
-
-h1 {
-  font-size: 28px;
-}
-
-h2 {
   font-size: 25px;
+
+  font-weight: 500;
+
+  color: #252525;
 }
-
-h3 {
-  font-size: 20px;
-}
-
-.muted {
-  color: #817a73;
-
-  line-height: 1.6;
-}
-
 
 /* =====================================================
-   LOGIN TABS
+   TABS
 ===================================================== */
 
 .tabs {
@@ -348,15 +261,13 @@ h3 {
 
   padding: 4px;
 
-  margin-bottom: 24px;
+  margin-bottom: 23px;
 
-  background:
-    rgba(40, 35, 30, 0.045);
+  background: rgba(0, 0, 0, 0.035);
 
-  border:
-    1px solid rgba(40, 35, 30, 0.07);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 
-  border-radius: 14px;
+  border-radius: 13px;
 }
 
 .tabs button {
@@ -366,40 +277,52 @@ h3 {
 
   background: transparent;
 
-  padding: 11px 10px;
+  color: #777;
 
-  border-radius: 11px;
+  padding: 10px;
+
+  border-radius: 10px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
   gap: 7px;
 
-  color: #817a73;
-
-  font-size: 14px;
-
   cursor: pointer;
 
-  transition:
-    all 0.25s ease;
-}
-
-.tabs button:hover {
-  color: #292726;
+  transition: 0.25s ease;
 }
 
 .tabs button.active {
-  background:
-    rgba(255, 255, 255, 0.85);
+  background: rgba(125, 41, 41, 0.09);
 
-  color: #8f3434;
-
-  box-shadow:
-    0 5px 16px rgba(40, 30, 25, 0.06);
+  color: #7d2929;
 }
 
+/* =====================================================
+   TEXT
+===================================================== */
+
+.muted {
+  color: #777;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+}
+
+.eyebrow,
+.section-kicker {
+  color: #7d2929;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  letter-spacing: 3px;
+}
 
 /* =====================================================
    FORMS
@@ -408,9 +331,9 @@ h3 {
 label {
   display: block;
 
-  margin-bottom: 15px;
+  margin-top: 16px;
 
-  color: #4d4742;
+  color: #444;
 
   font-size: 13px;
 
@@ -424,141 +347,89 @@ select {
 
   margin-top: 7px;
 
-  padding: 12px 14px;
+  padding: 12px 13px;
 
-  border:
-    1px solid rgba(70, 60, 50, 0.12);
+  border-radius: 12px;
 
-  border-radius: 13px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+
+  background: rgba(255, 255, 255, 0.8);
+
+  color: #222;
 
   outline: none;
 
-  background:
-    rgba(255, 255, 255, 0.72);
-
-  color: #292726;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
+  transition: 0.2s ease;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-  border-color:
-    rgba(143, 52, 52, 0.45);
-
-  background: #fff;
+  border-color: rgba(125, 41, 41, 0.4);
 
   box-shadow:
-    0 0 0 4px rgba(143, 52, 52, 0.07);
+    0 0 0 3px rgba(125, 41, 41, 0.06);
 }
 
 textarea {
-  min-height: 110px;
+  min-height: 100px;
 
   resize: vertical;
 }
 
-
 /* =====================================================
-   PRIMARY BUTTON
+   BUTTONS
 ===================================================== */
 
 .primary {
   width: 100%;
 
+  margin-top: 18px;
+
+  border: 1px solid rgba(125, 41, 41, 0.2);
+
+  border-radius: 13px;
+
+  padding: 12px 16px;
+
+  background: #7d2929;
+
+  color: white;
+
   display: flex;
+
   align-items: center;
   justify-content: center;
 
   gap: 8px;
 
-  margin-top: 16px;
-
-  padding: 13px 18px;
-
-  border: 1px solid rgba(255, 255, 255, 0.55);
-
-  border-radius: 999px;
-
-  background:
-    rgba(48, 43, 39, 0.92);
-
-  color: white;
-
-  font-size: 14px;
-
-  font-weight: 500;
-
   cursor: pointer;
-
-  box-shadow:
-    0 9px 24px rgba(40, 30, 25, 0.12);
 
   transition:
     transform 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
+    opacity 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .primary:hover {
-  transform: translateY(-2px);
-
-  background:
-    #3b3530;
+  transform: translateY(-1px);
 
   box-shadow:
-    0 13px 28px rgba(40, 30, 25, 0.16);
-}
-
-.primary:active {
-  transform: translateY(0);
+    0 8px 20px rgba(125, 41, 41, 0.18);
 }
 
 .primary:disabled {
-  opacity: 0.55;
+  opacity: 0.5;
+
   cursor: not-allowed;
 }
 
-
-/* =====================================================
-   NOTICES
-===================================================== */
-
-.notice {
-  margin-top: 14px;
-
-  padding: 12px 14px;
-
-  border-radius: 12px;
-
-  background:
-    rgba(143, 52, 52, 0.07);
-
-  border:
-    1px solid rgba(143, 52, 52, 0.12);
-
-  color: #783232;
-
-  font-size: 13px;
-
-  line-height: 1.5;
-}
-
-
-/* =====================================================
-   SWITCH / FOOTER
-===================================================== */
-
 .switch {
-  margin: 18px 0 0;
-
   text-align: center;
 
-  color: #817a73;
+  margin: 20px 0 0;
+
+  color: #777;
 
   font-size: 13px;
 }
@@ -568,20 +439,39 @@ textarea {
 
   background: transparent;
 
-  color: #8f3434;
+  color: #7d2929;
 
   font-weight: 600;
 
   cursor: pointer;
 }
 
+/* =====================================================
+   NOTICE
+===================================================== */
+
+.notice {
+  margin-top: 14px;
+
+  padding: 11px 13px;
+
+  border-radius: 11px;
+
+  background: rgba(125, 41, 41, 0.07);
+
+  color: #7d2929;
+
+  font-size: 13px;
+}
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
 .footer {
-  position: relative;
-  z-index: 1;
+  margin-top: 20px;
 
-  margin-top: 23px;
-
-  color: #938c85;
+  color: #999;
 
   font-size: 11px;
 
@@ -590,6 +480,19 @@ textarea {
   text-align: center;
 }
 
+/* =====================================================
+   APP
+===================================================== */
+
+.app {
+  min-height: 100vh;
+
+  background:
+    linear-gradient(
+      rgba(247, 245, 241, 0.95),
+      rgba(247, 245, 241, 0.98)
+    );
+}
 
 /* =====================================================
    TOP BAR
@@ -597,39 +500,34 @@ textarea {
 
 .topbar {
   position: sticky;
+
   top: 0;
+
   z-index: 20;
 
   width: 100%;
 
+  padding: 13px 22px;
+
   display: flex;
+
   align-items: center;
   justify-content: space-between;
 
-  padding:
-    14px
-    max(18px, calc((100vw - 1100px) / 2));
+  background: rgba(247, 245, 241, 0.78);
 
-  background:
-    rgba(245, 241, 235, 0.82);
-
-  border-bottom:
-    1px solid rgba(50, 40, 30, 0.07);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 
   backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
 }
 
 .topbar > div {
   display: flex;
-  flex-direction: column;
 
-  gap: 2px;
+  flex-direction: column;
 }
 
 .topbar b {
-  color: #292726;
-
   font-family:
     Georgia,
     "Times New Roman",
@@ -640,72 +538,51 @@ textarea {
   font-weight: 500;
 
   letter-spacing: 1.5px;
+
+  color: #282828;
 }
 
 .topbar span {
-  color: #8f3434;
+  margin-top: 2px;
 
-  font-size: 8px;
-
-  font-weight: 600;
+  font-size: 9px;
 
   letter-spacing: 2px;
+
+  color: #7d2929;
 }
-
-.brand-name {
-  display: flex;
-  align-items: center;
-  gap: 0;
-}
-
-
-/* =====================================================
-   ICON BUTTON
-===================================================== */
 
 .iconbtn {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
 
-  display: grid;
-  place-items: center;
-
-  border:
-    1px solid rgba(60, 50, 40, 0.09);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 
   border-radius: 50%;
 
-  background:
-    rgba(255, 255, 255, 0.58);
+  background: rgba(255, 255, 255, 0.6);
 
-  color: #4b4540;
+  color: #555;
+
+  display: grid;
+
+  place-items: center;
 
   cursor: pointer;
-
-  backdrop-filter: blur(12px);
-
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease;
 }
-
-.iconbtn:hover {
-  transform: translateY(-2px);
-
-  background:
-    rgba(255, 255, 255, 0.9);
-}
-
 
 /* =====================================================
-   MAIN CONTAINER
+   MAIN
 ===================================================== */
 
 main {
-  position: relative;
-  z-index: 1;
-
   width: 100%;
+
+  max-width: 1100px;
+
+  margin: 0 auto;
+
+  padding-bottom: 100px;
 }
 
 .container {
@@ -713,32 +590,22 @@ main {
 
   margin: 0 auto;
 
-  padding:
-    34px
-    max(18px, 4vw)
-    110px;
+  padding: 28px 20px;
 }
 
 .center {
-  display: flex;
-  justify-content: center;
+  text-align: center;
 }
 
-
 /* =====================================================
-   HOME
+   PREMIUM SUSHI HOME
 ===================================================== */
 
 .sushi-home {
-  position: relative;
-
   width: 100%;
 
   overflow: hidden;
-
-  background: #f5f1eb;
 }
-
 
 /* =====================================================
    HERO
@@ -747,134 +614,92 @@ main {
 .sushi-hero {
   position: relative;
 
-  min-height: 620px;
+  min-height: 610px;
 
   display: flex;
+
   align-items: center;
 
-  padding:
-    80px
-    max(24px, 7vw);
+  padding: 70px 25px;
 
   overflow: hidden;
 
   background:
     radial-gradient(
-      circle at 80% 20%,
-      rgba(143, 52, 52, 0.08),
-      transparent 28%
-    ),
-    linear-gradient(
-      135deg,
-      #f8f5f0 0%,
-      #eee8df 100%
+      circle at 75% 25%,
+      rgba(125, 41, 41, 0.08),
+      transparent 30%
     );
 }
 
-/* Japanese wave decoration */
-
-.sushi-hero::before {
-  content: "";
-
-  position: absolute;
-
-  width: 520px;
-  height: 520px;
-
-  right: -170px;
-  bottom: -210px;
-
-  border-radius: 50%;
-
-  border:
-    1px solid rgba(45, 40, 35, 0.07);
-
-  box-shadow:
-    0 0 0 35px rgba(45, 40, 35, 0.018),
-    0 0 0 70px rgba(45, 40, 35, 0.014),
-    0 0 0 105px rgba(45, 40, 35, 0.01);
-}
-
-.sushi-hero::after {
-  content: "";
-
-  position: absolute;
-
-  inset: 0;
-
-  pointer-events: none;
-
-  background:
-    repeating-linear-gradient(
-      135deg,
-      transparent 0 22px,
-      rgba(45, 40, 35, 0.018) 23px,
-      transparent 24px 45px
-    );
-}
-
-.hero-content {
-  position: relative;
-  z-index: 2;
-
-  width: min(650px, 100%);
-}
+/* REMOVE BIG HOME WATERMARK */
 
 .japanese-watermark {
   display: none;
 }
 
-.hero-label,
-.section-kicker,
-.eyebrow {
-  color: #8f3434;
+.hero-content {
+  position: relative;
 
-  font-size: 10px;
+  z-index: 2;
 
-  font-weight: 600;
+  width: min(850px, 100%);
 
-  letter-spacing: 3px;
+  margin: 0 auto;
+
+  text-align: left;
 }
 
 .hero-label {
-  margin-bottom: 17px;
+  color: #7d2929;
+
+  font-size: 11px;
+
+  letter-spacing: 4px;
+
+  font-weight: 600;
+
+  margin-bottom: 20px;
 }
 
 .hero-content h1 {
+  max-width: 720px;
+
   margin: 0;
 
-  max-width: 620px;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 
-  font-size:
-    clamp(42px, 7vw, 76px);
+  font-size: clamp(42px, 7vw, 76px);
 
   line-height: 0.98;
 
-  letter-spacing: -1.5px;
+  font-weight: 500;
 
-  font-weight: 400;
+  letter-spacing: -2px;
+
+  color: #252525;
 }
 
 .hero-content h1 span {
   display: block;
 
-  color: #8f3434;
-
-  font-weight: 400;
+  color: #7d2929;
 }
 
 .hero-content > p {
   max-width: 470px;
 
-  margin: 23px 0 0;
+  margin: 22px 0;
 
-  color: #716b65;
+  color: #6d6d6d;
 
   font-size: 16px;
 
   line-height: 1.7;
 }
-
 
 /* =====================================================
    GLASS BUTTONS
@@ -882,69 +707,57 @@ main {
 
 .hero-actions {
   display: flex;
+
   flex-wrap: wrap;
 
-  gap: 11px;
+  gap: 10px;
 
-  margin-top: 30px;
+  margin-top: 25px;
 }
 
-.glass-button {
+.glass-button,
+.order-bubble {
+  border-radius: 50px;
+
+  padding: 12px 18px;
+
   display: inline-flex;
+
   align-items: center;
+
   justify-content: center;
 
   gap: 8px;
 
-  padding: 12px 19px;
-
-  border-radius: 999px;
-
-  font-size: 13px;
-
-  font-weight: 500;
-
   cursor: pointer;
 
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-
   transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    background 0.25s ease;
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
-.glass-button:hover {
+.glass-button:hover,
+.order-bubble:hover {
   transform: translateY(-2px);
 }
 
 .dark-glass {
+  border: 1px solid rgba(125, 41, 41, 0.25);
+
+  background: rgba(125, 41, 41, 0.88);
+
   color: white;
-
-  border:
-    1px solid rgba(255, 255, 255, 0.2);
-
-  background:
-    rgba(48, 43, 39, 0.84);
-
-  box-shadow:
-    0 10px 26px rgba(40, 30, 25, 0.12);
 }
 
 .light-glass {
-  color: #3d3834;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 
-  border:
-    1px solid rgba(60, 50, 40, 0.1);
+  background: rgba(255, 255, 255, 0.42);
 
-  background:
-    rgba(255, 255, 255, 0.45);
+  color: #444;
 
-  box-shadow:
-    0 8px 22px rgba(40, 30, 25, 0.05);
+  backdrop-filter: blur(12px);
 }
-
 
 /* =====================================================
    SECTIONS
@@ -953,42 +766,45 @@ main {
 .points-section,
 .menu-section,
 .rewards-section {
-  position: relative;
+  padding: 75px 25px;
 
-  width: min(1050px, 100%);
+  max-width: 900px;
 
-  margin: 0 auto;
+  margin: auto;
+}
 
-  padding:
-    90px
-    max(24px, 6vw);
+.section-kicker {
+  margin-bottom: 12px;
 }
 
 .points-section h2,
 .menu-section h2,
 .rewards-section h2 {
-  margin:
-    8px 0 0;
+  margin: 0;
 
-  font-size:
-    clamp(30px, 5vw, 48px);
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 
-  line-height: 1.05;
+  font-weight: 500;
 
-  font-weight: 400;
+  font-size: clamp(30px, 5vw, 48px);
+
+  letter-spacing: -1px;
+
+  color: #282828;
 }
 
 .section-intro {
-  margin:
-    13px 0 0;
+  color: #777;
 
-  color: #817a73;
+  line-height: 1.7;
 
-  font-size: 14px;
+  max-width: 500px;
 
-  line-height: 1.6;
+  margin: 12px 0 30px;
 }
-
 
 /* =====================================================
    POINTS CARD
@@ -1000,20 +816,21 @@ main {
   align-items: center;
   justify-content: space-between;
 
-  margin-top: 35px;
+  padding: 25px;
 
-  padding: 28px;
-
-  border:
-    1px solid rgba(255, 255, 255, 0.75);
-
-  border-radius: 24px;
+  border-radius: 22px;
 
   background:
-    rgba(255, 255, 255, 0.52);
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.82),
+      rgba(255, 255, 255, 0.48)
+    );
+
+  border: 1px solid rgba(255, 255, 255, 0.9);
 
   box-shadow:
-    0 18px 45px rgba(50, 40, 30, 0.07);
+    0 20px 45px rgba(40, 30, 25, 0.07);
 
   backdrop-filter: blur(18px);
 }
@@ -1022,62 +839,48 @@ main {
 .points-glass-card small {
   display: block;
 
-  color: #918a83;
+  color: #888;
 
   font-size: 9px;
 
   letter-spacing: 2px;
-
-  font-weight: 600;
 }
 
 .points-glass-card strong {
   display: block;
 
-  margin: 5px 0;
-
-  color: #292726;
+  margin: 4px 0;
 
   font-family:
     Georgia,
     "Times New Roman",
     serif;
 
-  font-size: 48px;
+  font-size: 44px;
 
-  font-weight: 400;
+  font-weight: 500;
+
+  color: #7d2929;
 }
 
 .bubble-arrow {
-  width: 48px;
-  height: 48px;
-
-  display: grid;
-  place-items: center;
-
-  border:
-    1px solid rgba(60, 50, 40, 0.08);
+  width: 45px;
+  height: 45px;
 
   border-radius: 50%;
 
-  background:
-    rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 
-  color: #4d4742;
+  background: rgba(255, 255, 255, 0.55);
+
+  color: #7d2929;
+
+  display: grid;
+
+  place-items: center;
 
   cursor: pointer;
-
-  transition:
-    transform 0.25s ease,
-    background 0.25s ease;
 }
-
-.bubble-arrow:hover {
-  transform: translateX(3px);
-
-  background: rgba(255, 255, 255, 0.9);
-}
-
 
 /* =====================================================
    EARN GRID
@@ -1089,418 +892,79 @@ main {
   grid-template-columns:
     repeat(3, 1fr);
 
-  gap: 25px;
+  gap: 18px;
 
-  margin-top: 35px;
+  margin-top: 25px;
 }
 
 .earn-item {
   display: flex;
 
-  gap: 13px;
+  gap: 12px;
 
-  padding-top: 17px;
-
-  border-top:
-    1px solid rgba(50, 40, 30, 0.1);
+  padding: 10px 0;
 }
 
 .earn-item > span {
-  color: #8f3434;
+  color: #7d2929;
 
-  font-size: 10px;
+  font-size: 11px;
 
   letter-spacing: 1px;
 }
 
 .earn-item b {
-  color: #4b4540;
-
-  font-size: 12px;
-
-  font-weight: 600;
+  font-size: 11px;
 
   letter-spacing: 1px;
+
+  font-weight: 600;
 }
 
 .earn-item p {
   margin: 5px 0 0;
 
-  color: #817a73;
+  color: #888;
 
   font-size: 12px;
 
   line-height: 1.5;
 }
 
-
 /* =====================================================
-   MENU
+   SUSHI SHOWCASE
 ===================================================== */
-
-.menu-section {
-  background:
-    rgba(255, 255, 255, 0.28);
-
-  border-top:
-    1px solid rgba(50, 40, 30, 0.05);
-
-  border-bottom:
-    1px solid rgba(50, 40, 30, 0.05);
-}
 
 .sushi-showcase {
   position: relative;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
-
-  margin-top: 40px;
-}
-
-.sushi-stage {
-  width: min(520px, 72vw);
-
-  animation:
-    sushiAppear 0.45s ease both;
-}
-
-@keyframes sushiAppear {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.98);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.sushi-image-wrap {
-  position: relative;
-
-  aspect-ratio: 1 / 1;
-
-  display: grid;
-  place-items: center;
-
-  overflow: hidden;
-
-  border-radius: 28px;
-
-  background:
-    rgba(255, 255, 255, 0.55);
-
-  border:
-    1px solid rgba(255, 255, 255, 0.8);
-
-  box-shadow:
-    0 25px 60px rgba(45, 35, 25, 0.1);
-}
-
-.sushi-image {
-  width: 100%;
-  height: 100%;
-
-  object-fit: cover;
-
-  transition:
-    transform 0.5s ease;
-}
-
-.sushi-image-wrap:hover .sushi-image {
-  transform: scale(1.025);
-}
-
-.photo-placeholder {
-  display: none;
-
-  position: absolute;
-
-  inset: 0;
-
-  place-items: center;
-
-  align-content: center;
-
-  gap: 8px;
-
-  color: #8c857e;
-}
-
-.photo-missing .photo-placeholder {
-  display: grid;
-}
-
-.carousel-arrow {
-  position: absolute;
-
-  z-index: 3;
-
-  width: 44px;
-  height: 44px;
-
-  display: grid;
-  place-items: center;
-
-  border:
-    1px solid rgba(60, 50, 40, 0.1);
-
-  border-radius: 50%;
-
-  background:
-    rgba(255, 255, 255, 0.65);
-
-  color: #4a4540;
-
-  font-size: 28px;
-
-  line-height: 1;
-
-  cursor: pointer;
-
-  backdrop-filter: blur(12px);
-
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease;
-}
-
-.carousel-arrow:hover {
-  transform: scale(1.07);
-
-  background:
-    rgba(255, 255, 255, 0.95);
-}
-
-.carousel-arrow.left {
-  left: 0;
-}
-
-.carousel-arrow.right {
-  right: 0;
-}
-
-.sushi-details {
-  max-width: 520px;
-
-  margin: 27px auto 0;
-
-  text-align: center;
-}
-
-.sushi-counter {
-  color: #8f3434;
-
-  font-size: 10px;
-
-  font-weight: 600;
-
-  letter-spacing: 2px;
-}
-
-.sushi-counter span {
-  color: #aaa29a;
-}
-
-.sushi-details h3 {
-  margin:
-    9px 0 5px;
-
-  font-size: 30px;
-
-  font-weight: 400;
-}
-
-.sushi-meta {
-  margin: 0;
-
-  color: #514b46;
-
-  font-size: 13px;
-}
-
-.ingredients {
-  margin: 10px 0 20px;
-
-  color: #817a73;
-
-  font-size: 12px;
-}
-
-.order-bubble {
-  display: inline-flex;
-  align-items: center;
-
-  gap: 8px;
-
-  padding: 11px 19px;
-
-  border:
-    1px solid rgba(60, 50, 40, 0.1);
-
-  border-radius: 999px;
-
-  background:
-    rgba(255, 255, 255, 0.62);
-
-  color: #3f3935;
-
-  font-size: 12px;
-
-  font-weight: 600;
-
-  letter-spacing: 1px;
-
-  cursor: pointer;
-
-  backdrop-filter: blur(12px);
-
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease;
-}
-
-.order-bubble:hover {
-  transform: translateY(-2px);
-
-  background:
-    rgba(255, 255, 255, 0.95);
-}
-
-
-/* =====================================================
-   REWARDS
-===================================================== */
-
-.modern-rewards {
-  margin-top: 35px;
-
-  border-top:
-    1px solid rgba(50, 40, 30, 0.08);
-}
-
-.modern-reward {
-  display: grid;
-
-  grid-template-columns:
-    45px 1fr auto;
-
-  align-items: center;
 
   gap: 15px;
 
-  padding: 20px 0;
-
-  border-bottom:
-    1px solid rgba(50, 40, 30, 0.08);
-
-  transition:
-    transform 0.2s ease;
+  margin-top: 30px;
 }
 
-.modern-reward:hover {
-  transform: translateX(4px);
-}
+.sushi-stage {
+  width: min(570px, 75vw);
 
-.modern-reward > span {
-  color: #8f3434;
-
-  font-size: 10px;
-
-  letter-spacing: 1px;
-}
-
-.modern-reward h3 {
-  margin: 0;
-
-  font-size: 17px;
-
-  font-weight: 500;
-}
-
-.modern-reward p {
-  margin: 5px 0 0;
-
-  color: #817a73;
-
-  font-size: 12px;
-}
-
-.modern-reward > strong {
-  color: #4b4540;
-
-  font-size: 12px;
-
-  font-weight: 600;
-
-  white-space: nowrap;
-}
-
-
-/* =====================================================
-   ORDER MODAL
-===================================================== */
-
-.order-overlay {
-  position: fixed;
-
-  inset: 0;
-
-  z-index: 100;
+  min-height: 330px;
 
   display: grid;
+
   place-items: center;
 
-  padding: 20px;
-
-  background:
-    rgba(40, 34, 29, 0.38);
-
-  backdrop-filter: blur(10px);
-
-  animation:
-    fadeIn 0.2s ease;
+  animation: sushiFade 0.35s ease;
 }
 
-@keyframes fadeIn {
+@keyframes sushiFade {
   from {
     opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-.order-modal {
-  position: relative;
-
-  width: min(470px, 100%);
-
-  padding: 30px;
-
-  border-radius: 25px;
-
-  background:
-    rgba(250, 247, 242, 0.94);
-
-  border:
-    1px solid rgba(255, 255, 255, 0.9);
-
-  box-shadow:
-    0 30px 80px rgba(30, 25, 20, 0.18);
-
-  animation:
-    modalUp 0.3s ease;
-}
-
-@keyframes modalUp {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
+    transform: translateY(8px);
   }
 
   to {
@@ -1509,186 +973,322 @@ main {
   }
 }
 
-.modal-close {
-  position: absolute;
+.sushi-image-wrap {
+  position: relative;
 
-  top: 16px;
-  right: 16px;
+  width: 100%;
 
-  width: 36px;
-  height: 36px;
+  min-height: 300px;
 
-  display: grid;
-  place-items: center;
-
-  border:
-    1px solid rgba(60, 50, 40, 0.08);
-
-  border-radius: 50%;
-
-  background:
-    rgba(255, 255, 255, 0.65);
-
-  color: #4b4540;
-
-  cursor: pointer;
-}
-
-.order-modal h2 {
-  margin:
-    10px 0;
-
-  font-size: 30px;
-
-  line-height: 1.05;
-
-  font-weight: 400;
-}
-
-.order-modal > p {
-  color: #817a73;
-
-  font-size: 13px;
-
-  line-height: 1.6;
-}
-
-.order-option {
-  display: flex;
-  align-items: center;
-
-  gap: 13px;
-
-  margin-top: 12px;
-
-  padding: 15px;
-
-  border:
-    1px solid rgba(60, 50, 40, 0.08);
-
-  border-radius: 17px;
-
-  background:
-    rgba(255, 255, 255, 0.58);
-
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease;
-}
-
-.order-option:hover {
-  transform: translateY(-2px);
-
-  background:
-    rgba(255, 255, 255, 0.9);
-}
-
-.order-option-icon {
-  width: 40px;
-  height: 40px;
-
-  display: grid;
-  place-items: center;
-
-  flex-shrink: 0;
-
-  border-radius: 50%;
-
-  background:
-    rgba(143, 52, 52, 0.08);
-
-  color: #8f3434;
-}
-
-.order-option > span:nth-child(2) {
-  flex: 1;
-
-  display: flex;
-  flex-direction: column;
-
-  gap: 3px;
-}
-
-.order-option b {
-  color: #39332f;
-
-  font-size: 12px;
-
-  font-weight: 600;
-
-  letter-spacing: 0.5px;
-}
-
-.order-option small {
-  color: #918a83;
-
-  font-size: 11px;
-}
-
-
-/* =====================================================
-   DIGITAL LOYALTY CARD
-===================================================== */
-
-.digital {
-  width: min(450px, 100%);
-
-  padding: 30px;
-
-  text-align: center;
+  border-radius: 25px;
 
   overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(125, 41, 41, 0.07),
+      transparent 65%
+    );
 }
 
-/* premium card front */
+.sushi-image {
+  width: 100%;
 
-.digital::before {
-  content: "";
+  height: 320px;
 
+  object-fit: cover;
+
+  display: block;
+
+  border-radius: 25px;
+}
+
+.photo-placeholder {
   position: absolute;
 
   inset: 0;
 
-  pointer-events: none;
+  display: none;
 
-  background:
-    radial-gradient(
-      circle at 80% 15%,
-      rgba(143, 52, 52, 0.08),
-      transparent 25%
-    );
+  place-items: center;
+
+  align-content: center;
+
+  gap: 8px;
+
+  color: #999;
 }
 
-.digital h2 {
-  margin:
-    7px 0 20px;
-
-  font-weight: 400;
+.photo-placeholder span {
+  font-size: 30px;
 }
 
-.qr {
-  width: fit-content;
+.photo-missing .photo-placeholder {
+  display: grid;
+}
 
-  margin: 0 auto 18px;
+.carousel-arrow {
+  flex: 0 0 auto;
 
-  padding: 12px;
+  width: 44px;
+  height: 44px;
 
-  background: white;
+  border-radius: 50%;
+
+  border: 1px solid rgba(0, 0, 0, 0.08);
+
+  background: rgba(255, 255, 255, 0.55);
+
+  color: #555;
+
+  font-size: 28px;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(10px);
+}
+
+.sushi-details {
+  text-align: center;
+
+  margin-top: 25px;
+}
+
+.sushi-counter {
+  color: #7d2929;
+
+  font-size: 10px;
+
+  letter-spacing: 2px;
+}
+
+.sushi-counter span {
+  color: #aaa;
+}
+
+.sushi-details h3 {
+  margin: 8px 0 3px;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 30px;
+
+  font-weight: 500;
+
+  color: #292929;
+}
+
+.sushi-meta {
+  color: #7d2929;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+.ingredients {
+  color: #888;
+
+  font-size: 13px;
+
+  margin: 8px auto 20px;
+}
+
+.order-bubble {
+  border: 1px solid rgba(125, 41, 41, 0.18);
+
+  background: rgba(125, 41, 41, 0.9);
+
+  color: white;
+
+  padding: 11px 18px;
+
+  font-size: 11px;
+
+  letter-spacing: 1px;
+}
+
+/* =====================================================
+   REWARDS
+===================================================== */
+
+.modern-rewards {
+  display: grid;
+
+  gap: 10px;
+}
+
+.modern-reward {
+  display: grid;
+
+  grid-template-columns:
+    35px 1fr auto;
+
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 18px;
+
+  border-radius: 17px;
+
+  background: rgba(255, 255, 255, 0.58);
+
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  transition: transform 0.2s ease;
+}
+
+.modern-reward:hover {
+  transform: translateX(3px);
+}
+
+.modern-reward > span {
+  color: #7d2929;
+
+  font-size: 11px;
+}
+
+.modern-reward h3 {
+  margin: 0;
+
+  font-size: 16px;
+
+  font-weight: 500;
+}
+
+.modern-reward p {
+  margin: 4px 0 0;
+
+  color: #888;
+
+  font-size: 12px;
+}
+
+.modern-reward strong {
+  color: #7d2929;
+
+  font-size: 12px;
+}
+
+/* =====================================================
+   BOTTOM NAV
+===================================================== */
+
+.nav {
+  position: fixed;
+
+  bottom: 15px;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  z-index: 50;
+
+  width: min(500px, calc(100% - 25px));
+
+  padding: 7px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 3px;
+
+  background: rgba(255, 255, 255, 0.72);
+
+  border: 1px solid rgba(255, 255, 255, 0.9);
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 15px 40px rgba(40, 30, 25, 0.12);
+
+  backdrop-filter: blur(20px);
+}
+
+.nav button {
+  border: 0;
+
+  background: transparent;
+
+  color: #999;
+
+  padding: 8px 4px;
 
   border-radius: 16px;
 
-  box-shadow:
-    0 10px 30px rgba(30, 25, 20, 0.08);
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 4px;
+
+  font-size: 9px;
+
+  cursor: pointer;
+}
+
+.nav svg {
+  width: 18px;
+  height: 18px;
+}
+
+.nav button.sel {
+  color: #7d2929;
+
+  background: rgba(125, 41, 41, 0.08);
+}
+
+/* =====================================================
+   DIGITAL CARD
+===================================================== */
+
+.digital {
+  padding: 30px 22px;
+
+  text-align: center;
+}
+
+.digital h2 {
+  margin: 6px 0 22px;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-weight: 500;
+}
+
+.qr {
+  display: flex;
+
+  justify-content: center;
+
+  margin: 20px auto;
 }
 
 .digital h3 {
-  margin: 5px 0;
+  margin: 10px 0 3px;
 
-  font-size: 20px;
+  font-size: 18px;
+
+  font-weight: 500;
 }
 
 .code {
-  color: #8f3434;
+  color: #7d2929;
 
   font-size: 11px;
 
@@ -1703,27 +1303,23 @@ main {
 
   gap: 10px;
 
-  margin-top: 20px;
+  margin-top: 18px;
 }
 
 .mini,
 .balance {
   padding: 15px;
 
-  border-radius: 16px;
+  border-radius: 15px;
 
-  background:
-    rgba(40, 35, 30, 0.045);
-
-  border:
-    1px solid rgba(40, 35, 30, 0.06);
+  background: rgba(0, 0, 0, 0.035);
 }
 
 .mini small,
 .balance small {
   display: block;
 
-  color: #918a83;
+  color: #888;
 
   font-size: 9px;
 
@@ -1734,443 +1330,373 @@ main {
 .balance strong {
   display: block;
 
-  margin-top: 4px;
+  margin-top: 5px;
 
-  color: #38322e;
+  color: #7d2929;
 
-  font-size: 22px;
+  font-size: 20px;
 
   font-weight: 500;
 }
 
-.balance svg {
-  margin-bottom: 7px;
-
-  color: #8f3434;
-}
-
-
 /* =====================================================
-   REWARDS LIST / HISTORY
+   REWARD LIST
 ===================================================== */
 
 .reward-list {
   display: grid;
 
-  gap: 12px;
-
-  margin-top: 22px;
+  gap: 10px;
 }
 
 .reward {
-  display: flex;
+  display: grid;
+
+  grid-template-columns:
+    auto 1fr auto;
 
   align-items: center;
 
-  gap: 14px;
+  gap: 13px;
 
-  padding: 17px;
+  padding: 16px;
 
-  width: 100%;
+  color: #333;
 
   text-align: left;
 }
 
 .reward-icon {
-  width: 43px;
-  height: 43px;
-
-  flex-shrink: 0;
-
-  display: grid;
-  place-items: center;
+  width: 38px;
+  height: 38px;
 
   border-radius: 50%;
 
-  background:
-    rgba(143, 52, 52, 0.07);
+  display: grid;
 
-  color: #8f3434;
+  place-items: center;
+
+  background: rgba(125, 41, 41, 0.08);
+
+  color: #7d2929;
+}
+
+.reward b {
+  font-size: 14px;
+
+  font-weight: 600;
 }
 
 .reward p {
-  margin: 5px 0 0;
+  margin: 4px 0;
 
-  color: #817a73;
-
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.reward > div:nth-child(2) {
-  flex: 1;
-}
-
-.reward strong,
-.reward > small {
-  color: #4d4742;
+  color: #888;
 
   font-size: 12px;
-
-  white-space: nowrap;
 }
 
-.empty {
-  padding: 40px;
+.reward strong {
+  color: #7d2929;
 
-  text-align: center;
-
-  color: #817a73;
+  font-size: 12px;
 }
-
 
 /* =====================================================
-   REWARDS PAGE TITLE
-===================================================== */
-
-.page-title {
-  display: flex;
-  align-items: center;
-
-  gap: 9px;
-}
-
-.page-title svg {
-  color: #8f3434;
-}
-
-.page-title h1 {
-  margin: 0;
-}
-
-
-/* =====================================================
-   STAFF
-===================================================== */
-
-.hero {
-  margin-bottom: 25px;
-}
-
-.hero p {
-  margin: 0 0 7px;
-
-  color: #8f3434;
-
-  font-size: 10px;
-
-  font-weight: 600;
-
-  letter-spacing: 3px;
-}
-
-.hero h1 {
-  margin: 0;
-
-  font-size: 34px;
-
-  font-weight: 400;
-}
-
-.birthday-button {
-  width: 100%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  gap: 8px;
-
-  margin-top: 12px;
-
-  padding: 12px 16px;
-
-  border:
-    1px solid rgba(143, 52, 52, 0.12);
-
-  border-radius: 999px;
-
-  background:
-    rgba(143, 52, 52, 0.055);
-
-  color: #8f3434;
-
-  font-size: 13px;
-
-  cursor: pointer;
-
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease;
-}
-
-.birthday-button:hover {
-  transform: translateY(-2px);
-
-  background:
-    rgba(143, 52, 52, 0.09);
-}
-
-
-/* =====================================================
-   BIRTHDAY BANNER
+   BIRTHDAY
 ===================================================== */
 
 .birthday-banner {
-  width: min(900px, calc(100% - 36px));
-
-  margin:
-    25px auto 0;
+  margin: 20px;
 
   padding: 22px;
 
   border-radius: 20px;
 
   background:
-    rgba(143, 52, 52, 0.06);
+    linear-gradient(
+      135deg,
+      rgba(125, 41, 41, 0.92),
+      rgba(95, 25, 25, 0.95)
+    );
 
-  border:
-    1px solid rgba(143, 52, 52, 0.1);
+  color: white;
+
+  box-shadow:
+    0 15px 35px rgba(125, 41, 41, 0.15);
+}
+
+.birthday-banner .eyebrow {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .birthday-banner h2 {
   margin: 7px 0;
 
-  font-size: 23px;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-weight: 500;
 }
 
 .birthday-banner p {
-  color: #817a73;
+  color: rgba(255, 255, 255, 0.75);
 
   font-size: 13px;
 }
 
-.birthday-banner strong {
-  color: #8f3434;
+.birthday-button {
+  width: 100%;
 
-  font-size: 13px;
+  margin-top: 12px;
+
+  padding: 12px;
+
+  border: 1px solid rgba(125, 41, 41, 0.15);
+
+  border-radius: 12px;
+
+  background: rgba(125, 41, 41, 0.08);
+
+  color: #7d2929;
+
+  cursor: pointer;
 }
-
 
 /* =====================================================
-   NAVIGATION
+   ORDER MODAL
 ===================================================== */
 
-.nav {
+.order-overlay {
   position: fixed;
 
-  left: 50%;
+  inset: 0;
 
-  bottom: 16px;
-
-  z-index: 50;
-
-  transform: translateX(-50%);
-
-  width: min(470px, calc(100% - 24px));
+  z-index: 100;
 
   display: grid;
 
-  grid-template-columns:
-    repeat(4, 1fr);
+  place-items: center;
 
-  padding: 7px;
+  padding: 20px;
 
-  border:
-    1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(30, 25, 22, 0.38);
 
-  border-radius: 20px;
-
-  background:
-    rgba(255, 255, 255, 0.72);
-
-  box-shadow:
-    0 15px 40px rgba(40, 30, 25, 0.13);
-
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(8px);
 }
 
-.nav button {
-  display: flex;
+.order-modal {
+  position: relative;
 
-  flex-direction: column;
+  width: min(430px, 100%);
 
-  align-items: center;
-  justify-content: center;
+  padding: 28px;
 
-  gap: 4px;
+  border-radius: 25px;
 
-  padding: 8px 5px;
+  background: rgba(250, 248, 244, 0.96);
+
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, 0.18);
+}
+
+.order-modal h2 {
+  margin: 10px 0;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 30px;
+
+  font-weight: 500;
+}
+
+.order-modal > p {
+  color: #777;
+
+  font-size: 13px;
+}
+
+.modal-close {
+  position: absolute;
+
+  top: 15px;
+  right: 15px;
+
+  width: 35px;
+  height: 35px;
 
   border: 0;
 
-  border-radius: 15px;
+  border-radius: 50%;
 
-  background: transparent;
+  background: rgba(0, 0, 0, 0.05);
 
-  color: #8c857e;
+  color: #666;
 
-  font-size: 9px;
+  display: grid;
+
+  place-items: center;
 
   cursor: pointer;
-
-  transition:
-    all 0.2s ease;
 }
 
-.nav button svg {
-  width: 19px;
-  height: 19px;
+.order-option {
+  display: grid;
 
-  stroke-width: 1.6;
+  grid-template-columns:
+    42px 1fr auto;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 10px;
+
+  padding: 14px;
+
+  border-radius: 15px;
+
+  border: 1px solid rgba(0, 0, 0, 0.07);
+
+  background: rgba(255, 255, 255, 0.7);
+
+  color: #333;
+
+  text-decoration: none;
+
+  transition: 0.2s ease;
 }
 
-.nav button.sel {
-  color: #8f3434;
+.order-option:hover {
+  transform: translateY(-2px);
 
-  background:
-    rgba(143, 52, 52, 0.065);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.06);
 }
 
-.nav button:hover {
-  color: #8f3434;
+.order-option-icon {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+
+  display: grid;
+
+  place-items: center;
+
+  background: rgba(125, 41, 41, 0.08);
+
+  color: #7d2929;
 }
 
+.order-option b {
+  display: block;
 
-/* =====================================================
-   CHECKBOX
-===================================================== */
+  font-size: 12px;
 
-input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-
-  margin: 0;
-
-  accent-color: #8f3434;
+  letter-spacing: 0.5px;
 }
 
+.order-option small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #999;
+
+  font-size: 11px;
+}
 
 /* =====================================================
    RESPONSIVE
 ===================================================== */
 
-@media (max-width: 700px) {
+@media (max-width: 650px) {
 
   .sushi-hero {
-    min-height: 570px;
+    min-height: 540px;
 
     padding:
-      70px 24px;
+      55px 20px;
   }
 
   .hero-content h1 {
-    font-size:
-      clamp(40px, 12vw, 58px);
+    font-size: 48px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .glass-button {
+    width: auto;
+  }
+
+  .earn-grid {
+    grid-template-columns: 1fr;
+
+    gap: 8px;
   }
 
   .points-section,
   .menu-section,
   .rewards-section {
     padding:
-      70px 22px;
+      55px 20px;
   }
 
-  .earn-grid {
-    grid-template-columns: 1fr;
-
-    gap: 18px;
-  }
-
-  .earn-item {
-    padding-top: 14px;
+  .sushi-showcase {
+    gap: 6px;
   }
 
   .sushi-stage {
-    width: min(450px, 78vw);
+    width: calc(100vw - 115px);
+
+    min-height: 240px;
   }
 
-  .carousel-arrow.left {
-    left: -5px;
+  .sushi-image-wrap,
+  .sushi-image {
+    min-height: 240px;
+
+    height: 240px;
   }
 
-  .carousel-arrow.right {
-    right: -5px;
-  }
-
-  .container {
-    padding:
-      27px 18px 105px;
-  }
-}
-
-
-@media (max-width: 480px) {
-
-  .auth-wrap {
-    padding:
-      35px 15px;
-  }
-
-  .logo {
-    width: 58px;
-    height: 58px;
-  }
-
-  .staff-logo {
-    width: 56px;
-    height: 56px;
-  }
-
-  .brand h1 {
-    font-size: 21px;
-
-    letter-spacing: 2.5px;
-  }
-
-  .auth-card {
-    padding: 21px;
-  }
-
-  .hero-actions {
-    flex-direction: column;
-  }
-
-  .glass-button {
-    width: 100%;
-  }
-
-  .points-glass-card {
-    padding: 22px;
-  }
-
-  .points-glass-card strong {
-    font-size: 42px;
-  }
-
-  .sushi-stage {
-    width: 82vw;
-  }
-
-  .sushi-details h3 {
-    font-size: 26px;
+  .carousel-arrow {
+    width: 38px;
+    height: 38px;
   }
 
   .modern-reward {
     grid-template-columns:
-      35px 1fr auto;
+      28px 1fr auto;
   }
 
-  .modern-reward p {
-    font-size: 11px;
+  .topbar {
+    padding:
+      12px 16px;
+  }
+}
+
+@media (max-width: 400px) {
+
+  .hero-content h1 {
+    font-size: 41px;
   }
 
-  .order-modal {
-    padding: 25px 20px;
+  .brand h1 {
+    font-size: 22px;
+
+    letter-spacing: 2px;
   }
 
-  .digital {
-    padding: 24px 18px;
+  .auth-card {
+    padding: 20px;
   }
 }
