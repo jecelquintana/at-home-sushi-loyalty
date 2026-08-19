@@ -154,7 +154,9 @@ function App() {
   if (loading) {
     return (
       <div className="screen">
-        <div className="loader">🍣</div>
+       <div className="loader">
+  <Utensils size={28} strokeWidth={1.5} />
+</div>
         <p>Loading At Home Sushi Loyalty Club...</p>
       </div>
     );
@@ -639,8 +641,9 @@ function Dashboard({
           <div className="birthday-banner">
             <div>
               <span className="eyebrow">
-                🎂 BIRTHDAY REWARD
-              </span>
+  <Cake size={15} strokeWidth={1.7} />
+  BIRTHDAY REWARD
+</span>
 
               <h2>
                 {birthdayReward.name}
@@ -2508,7 +2511,15 @@ function Staff() {
               }
               disabled={busy}
             >
-              🎂 Claim Birthday Reward
+              <button
+  type="button"
+  className="birthday-button"
+  onClick={claimBirthdayReward}
+  disabled={busy}
+>
+  <Cake size={17} strokeWidth={1.7} />
+  Claim Birthday Reward
+</button>
             </button>
 
             {/* NOTES */}
