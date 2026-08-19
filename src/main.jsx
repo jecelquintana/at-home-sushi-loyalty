@@ -620,7 +620,10 @@ function Dashboard({
          <div className="topbar-brand">
   <img src={logo} alt="At Home Sushi" />
   <div>
-    <b>AT HOME SUSHI</b>
+  <b className="brand-name">
+  <Utensils size={18} strokeWidth={1.6} />
+  AT HOME SUSHI
+</b>
     <span>LOYALTY CLUB</span>
   </div>
 </div>
@@ -2141,9 +2144,9 @@ function Staff() {
     return (
       <div className="screen">
 
-        <div className="loader">
-          🍣
-        </div>
+       <div className="loader">
+  <Utensils size={28} strokeWidth={1.5} />
+</div>
 
         <p>
           Checking staff access...
