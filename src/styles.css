@@ -4036,3 +4036,434 @@ select:focus {
     height: 43px;
   }
 }
+/* =====================================================
+   AT HOME SUSHI — FULL VISUAL OVERRIDE
+===================================================== */
+
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background: #f3f0e8 !important;
+  color: #181818 !important;
+}
+
+/* Japanese-inspired background */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  opacity: .22;
+
+  background-image:
+    radial-gradient(
+      circle at 10% 20%,
+      transparent 0 55px,
+      rgba(40,40,40,.10) 56px 57px,
+      transparent 58px
+    ),
+    radial-gradient(
+      circle at 90% 75%,
+      transparent 0 75px,
+      rgba(40,40,40,.07) 76px 77px,
+      transparent 78px
+    );
+
+  background-size: 260px 260px;
+}
+
+/* =====================================================
+   LOGIN / SIGNUP
+===================================================== */
+
+.auth-wrap {
+  min-height: 100vh !important;
+
+  background:
+    linear-gradient(
+      rgba(243,240,232,.88),
+      rgba(243,240,232,.88)
+    ) !important;
+
+  padding: 40px 20px !important;
+}
+
+/* remove old gold glow / grid */
+.auth-wrap::before,
+.auth-wrap::after {
+  display: none !important;
+}
+
+.brand {
+  margin-bottom: 28px !important;
+}
+
+.logo {
+  width: 105px !important;
+  height: 105px !important;
+
+  border-radius: 50%;
+
+  object-fit: contain;
+
+  filter:
+    drop-shadow(0 12px 25px rgba(0,0,0,.10));
+}
+
+/* Restaurant name */
+.brand h1 {
+  color: #171717 !important;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif !important;
+
+  font-size: 25px !important;
+
+  font-weight: 400 !important;
+
+  letter-spacing: .18em !important;
+}
+
+.brand p {
+  color: #8f2f2f !important;
+
+  font-size: 11px !important;
+
+  font-weight: 400 !important;
+
+  letter-spacing: .22em !important;
+}
+
+/* Login card */
+.auth-card {
+  background:
+    rgba(255,255,255,.52) !important;
+
+  border:
+    1px solid rgba(255,255,255,.75) !important;
+
+  box-shadow:
+    0 30px 80px rgba(40,35,25,.10) !important;
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  border-radius: 26px !important;
+}
+
+/* Login tabs */
+.tabs {
+  background:
+    rgba(0,0,0,.045) !important;
+
+  border:
+    1px solid rgba(0,0,0,.07) !important;
+}
+
+.tabs button {
+  color: #777 !important;
+
+  font-weight: 400 !important;
+}
+
+.tabs .active {
+  background:
+    rgba(255,255,255,.70) !important;
+
+  color: #181818 !important;
+
+  box-shadow:
+    0 5px 20px rgba(0,0,0,.07) !important;
+}
+
+/* Form headings */
+.auth-card h2 {
+  color: #181818 !important;
+  font-weight: 400 !important;
+}
+
+.auth-card .muted {
+  color: #777 !important;
+}
+
+/* =====================================================
+   ALL BUTTONS
+===================================================== */
+
+.primary {
+  background:
+    rgba(255,255,255,.48) !important;
+
+  color: #181818 !important;
+
+  border:
+    1px solid rgba(0,0,0,.12) !important;
+
+  border-radius: 999px !important;
+
+  font-weight: 400 !important;
+
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.8),
+    0 8px 25px rgba(0,0,0,.06) !important;
+
+  backdrop-filter: blur(15px);
+}
+
+.primary:hover {
+  background:
+    rgba(255,255,255,.78) !important;
+
+  color: #181818 !important;
+
+  transform: translateY(-2px);
+}
+
+/* =====================================================
+   TEXT COLORS
+===================================================== */
+
+.eyebrow {
+  color: #8f2f2f !important;
+
+  font-weight: 400 !important;
+}
+
+.muted {
+  color: #777 !important;
+}
+
+.footer {
+  color: #8f2f2f !important;
+
+  font-weight: 400 !important;
+}
+
+/* =====================================================
+   MAIN APP
+===================================================== */
+
+.app {
+  background:
+    transparent !important;
+}
+
+.topbar {
+  background:
+    rgba(243,240,232,.76) !important;
+
+  border-bottom:
+    1px solid rgba(0,0,0,.08) !important;
+
+  backdrop-filter: blur(20px);
+}
+
+.topbar b {
+  color: #181818 !important;
+  font-weight: 400 !important;
+}
+
+.topbar span {
+  color: #8f2f2f !important;
+  font-weight: 400 !important;
+}
+
+/* =====================================================
+   HOME
+===================================================== */
+
+.hero p {
+  color: #8f2f2f !important;
+  font-weight: 400 !important;
+}
+
+.hero h1 {
+  color: #181818 !important;
+  font-weight: 400 !important;
+}
+
+/* =====================================================
+   CARDS
+===================================================== */
+
+.card {
+  background:
+    rgba(255,255,255,.48) !important;
+
+  border:
+    1px solid rgba(255,255,255,.70) !important;
+
+  box-shadow:
+    0 20px 60px rgba(40,35,25,.07) !important;
+
+  backdrop-filter: blur(18px);
+}
+
+/* =====================================================
+   POINT CARDS
+===================================================== */
+
+.balance {
+  background:
+    rgba(255,255,255,.45) !important;
+
+  border:
+    1px solid rgba(0,0,0,.07) !important;
+}
+
+.balance svg {
+  color: #8f2f2f !important;
+}
+
+.balance strong {
+  color: #181818 !important;
+  font-weight: 400 !important;
+}
+
+/* =====================================================
+   REWARDS
+===================================================== */
+
+.reward {
+  background:
+    rgba(255,255,255,.42) !important;
+}
+
+.reward:hover {
+  background:
+    rgba(255,255,255,.72) !important;
+}
+
+.reward-icon {
+  background:
+    rgba(143,47,47,.08) !important;
+
+  color:
+    #8f2f2f !important;
+}
+
+.reward b {
+  color: #181818 !important;
+  font-weight: 400 !important;
+}
+
+.reward > strong {
+  color: #8f2f2f !important;
+  font-weight: 400 !important;
+}
+
+/* =====================================================
+   DIGITAL CARD
+===================================================== */
+
+.digital {
+  background:
+    linear-gradient(
+      135deg,
+      #292929,
+      #444,
+      #1d1d1d
+    ) !important;
+
+  color: white !important;
+
+  border:
+    1px solid rgba(255,255,255,.20) !important;
+
+  border-radius: 25px !important;
+
+  box-shadow:
+    0 30px 80px rgba(0,0,0,.20) !important;
+}
+
+.digital .eyebrow {
+  color: rgba(255,255,255,.65) !important;
+}
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+.nav {
+  background:
+    rgba(243,240,232,.78) !important;
+
+  border-top:
+    1px solid rgba(0,0,0,.08) !important;
+
+  backdrop-filter: blur(20px);
+}
+
+.nav button {
+  color: #888 !important;
+  font-weight: 400 !important;
+}
+
+.nav .sel {
+  color: #8f2f2f !important;
+  font-weight: 400 !important;
+}
+
+/* =====================================================
+   INPUTS
+===================================================== */
+
+input,
+textarea,
+select {
+  background:
+    rgba(255,255,255,.55) !important;
+
+  color: #181818 !important;
+
+  border:
+    1px solid rgba(0,0,0,.10) !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color:
+    rgba(143,47,47,.45) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(143,47,47,.08) !important;
+}
+
+/* =====================================================
+   HIDE OLD GOLD
+===================================================== */
+
+.notice {
+  background:
+    rgba(143,47,47,.06) !important;
+
+  border:
+    1px solid rgba(143,47,47,.12) !important;
+
+  color:
+    #8f2f2f !important;
+}
+
+.birthday-button {
+  background:
+    rgba(143,47,47,.06) !important;
+
+  color:
+    #8f2f2f !important;
+
+  border:
+    1px solid rgba(143,47,47,.20) !important;
+
+  font-weight: 400 !important;
+}
