@@ -1113,3 +1113,382 @@ input[type="date"] {
   color: #d4af6a;
   font-size: 18px;
 }
+/* =====================================================
+   AT HOME SUSHI — NEW PREMIUM CUSTOMER DESIGN
+   ===================================================== */
+
+:root {
+  --ahs-cream: #f7f3ec;
+  --ahs-white: #ffffff;
+  --ahs-black: #111111;
+  --ahs-soft-black: #1b1b1b;
+  --ahs-red: #b52b2b;
+  --ahs-muted: #77716a;
+  --ahs-border: #e8e1d7;
+}
+
+/* Customer app background */
+.app {
+  background: var(--ahs-cream);
+  color: var(--ahs-black);
+}
+
+/* Top navigation */
+.topbar {
+  background: rgba(247, 243, 236, 0.94);
+  border-bottom: 1px solid var(--ahs-border);
+  color: var(--ahs-black);
+}
+
+.topbar b {
+  color: var(--ahs-black);
+}
+
+.topbar span {
+  color: var(--ahs-red);
+}
+
+/* Main headings */
+.hero p {
+  color: var(--ahs-red);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.hero h1 {
+  color: var(--ahs-black);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(30px, 6vw, 48px);
+  line-height: 1.05;
+}
+
+/* Premium cards */
+.card {
+  background: var(--ahs-white);
+  border: 1px solid var(--ahs-border);
+  box-shadow: 0 12px 35px rgba(30, 25, 20, 0.06);
+  backdrop-filter: none;
+}
+
+/* Points cards */
+.balance {
+  background: var(--ahs-black);
+  border: none;
+  color: white;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+}
+
+.balance svg {
+  color: white;
+}
+
+.balance small {
+  color: rgba(255,255,255,.65);
+}
+
+.balance strong {
+  color: white;
+}
+
+/* Sushi Points wording */
+.balance:first-child::after {
+  content: "SUSHI POINTS";
+  display: block;
+  font-size: 9px;
+  letter-spacing: 1.8px;
+  color: rgba(255,255,255,.5);
+  margin-top: -3px;
+}
+
+/* Second balance card */
+.balance:nth-child(2) {
+  background: white;
+  color: var(--ahs-black);
+  border: 1px solid var(--ahs-border);
+}
+
+.balance:nth-child(2) svg {
+  color: var(--ahs-red);
+}
+
+.balance:nth-child(2) small {
+  color: var(--ahs-muted);
+}
+
+.balance:nth-child(2) strong {
+  color: var(--ahs-black);
+}
+
+/* Quick card */
+.quick {
+  background: white;
+}
+
+.quick h3 {
+  color: var(--ahs-black);
+}
+
+.quick .muted {
+  color: var(--ahs-muted);
+}
+
+/* Progress */
+.progress {
+  background: white;
+}
+
+.row span {
+  color: var(--ahs-muted);
+}
+
+.bar {
+  background: #e8e1d7;
+}
+
+.bar i {
+  background: var(--ahs-red);
+}
+
+/* Section titles */
+.section-title {
+  color: var(--ahs-black);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+/* Reward cards */
+.reward {
+  background: white;
+}
+
+.reward b {
+  color: var(--ahs-black);
+}
+
+.reward p {
+  color: var(--ahs-muted);
+}
+
+.reward-icon {
+  background: #f8eeee;
+  color: var(--ahs-red);
+}
+
+.reward > strong {
+  color: var(--ahs-red);
+}
+
+/* Buttons */
+.primary {
+  background: var(--ahs-black);
+  color: white;
+}
+
+.primary:hover {
+  background: #2a2a2a;
+  box-shadow: 0 10px 25px rgba(0,0,0,.12);
+}
+
+/* Bottom navigation */
+.nav {
+  background: rgba(255,255,255,.96);
+  border-top: 1px solid var(--ahs-border);
+}
+
+.nav button {
+  color: #8a847d;
+}
+
+.nav .sel {
+  color: var(--ahs-red);
+}
+
+/* Icon button */
+.iconbtn {
+  background: white;
+  border-color: var(--ahs-border);
+  color: var(--ahs-black);
+}
+
+/* Digital card */
+.digital {
+  background: white;
+}
+
+.mini {
+  background: #faf8f5;
+  border-color: var(--ahs-border);
+}
+
+.mini b {
+  color: var(--ahs-black);
+}
+
+/* =====================================================
+   SUSHI SHOWCASE
+   ===================================================== */
+
+.sushi-showcase {
+  position: relative;
+  margin: 10px -18px 30px;
+  overflow: hidden;
+  min-height: 430px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.sushi-showcase-header {
+  width: 100%;
+  padding: 0 18px;
+  text-align: center;
+  position: relative;
+  z-index: 3;
+}
+
+.sushi-showcase-header span {
+  color: var(--ahs-red);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.sushi-showcase-header h2 {
+  color: var(--ahs-black);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 28px;
+  margin: 6px 0 0;
+}
+
+.sushi-carousel {
+  width: 100%;
+  height: 280px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+  touch-action: pan-y;
+}
+
+.sushi-item {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transition:
+    transform .55s cubic-bezier(.22,.61,.36,1),
+    opacity .4s ease,
+    filter .4s ease;
+  user-select: none;
+}
+
+.sushi-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 22px 18px rgba(0,0,0,.18));
+  pointer-events: none;
+}
+
+.sushi-item.center {
+  width: 260px;
+  height: 260px;
+  z-index: 3;
+  transform: translateX(0) scale(1);
+  opacity: 1;
+}
+
+.sushi-item.left {
+  transform: translateX(-180px) scale(.62) rotateY(25deg);
+  opacity: .45;
+  z-index: 2;
+}
+
+.sushi-item.right {
+  transform: translateX(180px) scale(.62) rotateY(-25deg);
+  opacity: .45;
+  z-index: 2;
+}
+
+.sushi-item.hidden {
+  opacity: 0;
+  transform: scale(.4);
+  pointer-events: none;
+}
+
+.sushi-details {
+  text-align: center;
+  position: relative;
+  z-index: 4;
+}
+
+.sushi-details h3 {
+  color: var(--ahs-black);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 25px;
+  margin: 0;
+}
+
+.sushi-price {
+  color: var(--ahs-red);
+  font-weight: 800;
+  margin-top: 5px;
+}
+
+.sushi-ingredients {
+  max-width: 400px;
+  margin: 8px auto 0;
+  color: var(--ahs-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.sushi-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.sushi-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d7d0c7;
+  transition: .3s ease;
+}
+
+.sushi-dot.active {
+  width: 20px;
+  border-radius: 10px;
+  background: var(--ahs-red);
+}
+
+.sushi-order-btn {
+  width: min(320px, 90%);
+  margin: 18px auto 0;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .sushi-showcase {
+    min-height: 410px;
+  }
+
+  .sushi-item.left {
+    transform: translateX(-125px) scale(.5) rotateY(25deg);
+  }
+
+  .sushi-item.right {
+    transform: translateX(125px) scale(.5) rotateY(-25deg);
+  }
+
+  .sushi-item.center {
+    width: 230px;
+    height: 230px;
+  }
+}
