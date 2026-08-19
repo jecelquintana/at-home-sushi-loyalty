@@ -1492,3 +1492,759 @@ input[type="date"] {
     height: 230px;
   }
 }
+/* =====================================================
+   AT HOME SUSHI — NEW HOME EXPERIENCE
+===================================================== */
+
+.sushi-home {
+  max-width: 980px;
+}
+
+/* HERO */
+
+.sushi-hero {
+  padding: 30px 4px 22px;
+}
+
+.sushi-kicker {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  font-weight: 800;
+  color: #8f8f8f;
+}
+
+.sushi-hero h1 {
+  margin: 10px 0 12px;
+  font-size: clamp(36px, 7vw, 62px);
+  line-height: .98;
+  letter-spacing: -2px;
+  font-weight: 900;
+  color: #f5f2ec;
+}
+
+.sushi-subtitle {
+  max-width: 420px;
+  margin: 0;
+  color: #8d8d8d;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+
+/* =====================================================
+   SUSHI POINTS CARD
+===================================================== */
+
+.points-card {
+  position: relative;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 145px;
+  padding: 25px;
+
+  border: 1px solid #292929;
+  border-radius: 24px;
+
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(255,255,255,.07),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      #1a1a1a,
+      #0d0d0d
+    );
+
+  box-shadow:
+    0 25px 60px rgba(0,0,0,.35);
+}
+
+.points-content span {
+  display: block;
+  color: #888;
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 800;
+}
+
+.points-content strong {
+  display: block;
+  margin-top: 4px;
+
+  font-size: clamp(38px, 8vw, 56px);
+  line-height: 1;
+
+  letter-spacing: -2px;
+  color: #fff;
+}
+
+.points-content p {
+  margin: 8px 0 0;
+  color: #777;
+  font-size: 12px;
+}
+
+.points-mark {
+  width: 78px;
+  height: 78px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #f2eee7;
+
+  color: #111;
+
+  font-size: 38px;
+
+  box-shadow:
+    0 15px 35px rgba(0,0,0,.4);
+
+  transform: rotate(-8deg);
+}
+
+
+/* =====================================================
+   MENU SECTION
+===================================================== */
+
+.menu-section {
+  margin-top: 55px;
+}
+
+.menu-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.menu-heading h2 {
+  margin: 7px 0 0;
+
+  font-size: clamp(25px, 5vw, 36px);
+  letter-spacing: -1px;
+
+  color: #fff;
+}
+
+.menu-count {
+  color: #666;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+
+/* =====================================================
+   SUSHI CAROUSEL
+===================================================== */
+
+.sushi-carousel {
+  position: relative;
+
+  min-height: 410px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 15px;
+
+  overflow: hidden;
+
+  border-radius: 28px;
+
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      rgba(255,255,255,.07),
+      transparent 32%
+    ),
+    #0e0e0e;
+
+  border: 1px solid #222;
+}
+
+.sushi-stage {
+  position: relative;
+
+  width: min(430px, 75vw);
+  height: 350px;
+
+  display: grid;
+  place-items: center;
+}
+
+
+/* glowing platform behind sushi */
+
+.sushi-glow {
+  position: absolute;
+
+  width: 230px;
+  height: 70px;
+
+  left: 50%;
+  bottom: 48px;
+
+  transform: translateX(-50%);
+
+  border-radius: 50%;
+
+  background: rgba(255,255,255,.08);
+
+  filter: blur(18px);
+
+  animation:
+    sushi-shadow 2.8s ease-in-out infinite;
+}
+
+
+/* temporary sushi */
+
+.sushi-placeholder {
+  position: relative;
+
+  width: 230px;
+  height: 230px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      #fff,
+      #e7e2da 45%,
+      #c9c2b8 75%,
+      #a49e95
+    );
+
+  box-shadow:
+    inset -18px -20px 35px rgba(0,0,0,.18),
+    inset 15px 12px 30px rgba(255,255,255,.65),
+    0 35px 50px rgba(0,0,0,.45);
+
+  animation:
+    sushi-float 3s ease-in-out infinite;
+
+  transform:
+    perspective(700px)
+    rotateX(8deg)
+    rotateY(-8deg);
+}
+
+.sushi-placeholder span {
+  font-size: 110px;
+
+  filter:
+    drop-shadow(
+      0 18px 15px rgba(0,0,0,.35)
+    );
+
+  transform:
+    rotate(-8deg);
+}
+
+
+/* =====================================================
+   ARROWS
+===================================================== */
+
+.sushi-arrow {
+  position: absolute;
+
+  top: 50%;
+  transform: translateY(-50%);
+
+  z-index: 3;
+
+  width: 46px;
+  height: 46px;
+
+  border: 1px solid #333;
+  border-radius: 50%;
+
+  background: rgba(12,12,12,.85);
+
+  color: #fff;
+
+  font-size: 30px;
+  line-height: 1;
+
+  display: grid;
+  place-items: center;
+
+  cursor: pointer;
+
+  transition:
+    transform .2s ease,
+    background .2s ease,
+    border-color .2s ease;
+}
+
+.sushi-arrow:hover {
+  background: #222;
+  border-color: #555;
+}
+
+.sushi-arrow:active {
+  transform:
+    translateY(-50%)
+    scale(.92);
+}
+
+.sushi-arrow.left {
+  left: 18px;
+}
+
+.sushi-arrow.right {
+  right: 18px;
+}
+
+
+/* =====================================================
+   SUSHI INFORMATION
+===================================================== */
+
+.sushi-info {
+  text-align: center;
+
+  padding: 24px 10px 5px;
+
+  animation:
+    sushi-info-in .35s ease;
+}
+
+.sushi-info h2 {
+  margin: 0;
+
+  font-size: clamp(25px, 5vw, 34px);
+  letter-spacing: -.7px;
+}
+
+.sushi-meta {
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 8px;
+}
+
+.sushi-meta strong {
+  font-size: 20px;
+  color: #fff;
+}
+
+.sushi-meta span {
+  padding: 4px 8px;
+
+  border-radius: 6px;
+
+  background: #1c1c1c;
+
+  color: #999;
+
+  font-size: 11px;
+}
+
+.sushi-info > p {
+  margin: 10px auto 0;
+
+  max-width: 450px;
+
+  color: #888;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+/* =====================================================
+   ORDER BUTTON
+===================================================== */
+
+.order-button {
+  width: min(300px, 100%);
+
+  margin-top: 18px;
+
+  padding: 14px 20px;
+
+  border: 1px solid #f1eee8;
+
+  border-radius: 12px;
+
+  background: #f1eee8;
+
+  color: #111;
+
+  font-weight: 900;
+
+  letter-spacing: 1px;
+
+  cursor: pointer;
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+.order-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 30px rgba(255,255,255,.1);
+}
+
+.order-button:active {
+  transform: scale(.98);
+}
+
+
+/* =====================================================
+   DOTS
+===================================================== */
+
+.sushi-dots {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 6px;
+
+  margin-top: 18px;
+}
+
+.sushi-dots button {
+  width: 6px;
+  height: 6px;
+
+  padding: 0;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  background: #3c3c3c;
+
+  cursor: pointer;
+
+  transition:
+    width .25s ease,
+    background .25s ease;
+}
+
+.sushi-dots button.active {
+  width: 22px;
+
+  border-radius: 99px;
+
+  background: #f1eee8;
+}
+
+
+/* =====================================================
+   NEXT REWARD
+===================================================== */
+
+.next-reward-card {
+  margin-top: 50px;
+
+  padding: 22px;
+
+  border-radius: 22px;
+
+  border: 1px solid #282828;
+
+  background: #111;
+}
+
+.next-reward-top {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-bottom: 13px;
+}
+
+.next-reward-top span {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #777;
+  font-weight: 800;
+}
+
+.next-reward-top b {
+  font-size: 11px;
+  color: #aaa;
+}
+
+.reward-progress {
+  height: 7px;
+
+  overflow: hidden;
+
+  border-radius: 99px;
+
+  background: #292929;
+}
+
+.reward-progress i {
+  display: block;
+
+  height: 100%;
+
+  border-radius: 99px;
+
+  background: #f1eee8;
+
+  transition: width .5s ease;
+}
+
+.next-reward-card h3 {
+  margin: 15px 0 4px;
+}
+
+.next-reward-card p {
+  margin: 0;
+
+  color: #777;
+
+  font-size: 12px;
+}
+
+
+/* =====================================================
+   HOW IT WORKS
+===================================================== */
+
+.how-section {
+  margin-top: 60px;
+
+  padding-bottom: 25px;
+}
+
+.how-section h2 {
+  margin: 7px 0 22px;
+
+  font-size: 30px;
+  letter-spacing: -1px;
+}
+
+.how-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 12px;
+}
+
+.how-item {
+  min-height: 160px;
+
+  padding: 18px;
+
+  border: 1px solid #252525;
+
+  border-radius: 18px;
+
+  background: #111;
+}
+
+.how-number {
+  color: #666;
+
+  font-size: 10px;
+
+  letter-spacing: 2px;
+
+  font-weight: 900;
+}
+
+.how-item h3 {
+  margin: 30px 0 7px;
+
+  font-size: 13px;
+
+  letter-spacing: 1px;
+}
+
+.how-item p {
+  margin: 0;
+
+  color: #777;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+}
+
+
+/* =====================================================
+   ANIMATIONS
+===================================================== */
+
+@keyframes sushi-float {
+
+  0%,
+  100% {
+    transform:
+      perspective(700px)
+      translateY(0)
+      rotateX(8deg)
+      rotateY(-8deg);
+  }
+
+  50% {
+    transform:
+      perspective(700px)
+      translateY(-12px)
+      rotateX(11deg)
+      rotateY(8deg);
+  }
+
+}
+
+@keyframes sushi-shadow {
+
+  0%,
+  100% {
+    transform:
+      translateX(-50%)
+      scaleX(1);
+    opacity: .6;
+  }
+
+  50% {
+    transform:
+      translateX(-50%)
+      scaleX(.75);
+    opacity: .35;
+  }
+
+}
+
+@keyframes sushi-info-in {
+
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+  .sushi-home {
+    padding-top: 12px;
+  }
+
+  .sushi-hero {
+    padding-top: 18px;
+  }
+
+  .sushi-hero h1 {
+    font-size: 38px;
+  }
+
+  .points-card {
+    min-height: 125px;
+    padding: 20px;
+  }
+
+  .points-mark {
+    width: 58px;
+    height: 58px;
+    font-size: 28px;
+  }
+
+  .menu-section {
+    margin-top: 42px;
+  }
+
+  .sushi-carousel {
+    min-height: 350px;
+  }
+
+  .sushi-stage {
+    height: 310px;
+  }
+
+  .sushi-placeholder {
+    width: 190px;
+    height: 190px;
+  }
+
+  .sushi-placeholder span {
+    font-size: 90px;
+  }
+
+  .sushi-arrow {
+    width: 40px;
+    height: 40px;
+    font-size: 26px;
+  }
+
+  .sushi-arrow.left {
+    left: 10px;
+  }
+
+  .sushi-arrow.right {
+    right: 10px;
+  }
+
+  .how-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .how-item {
+    min-height: auto;
+  }
+
+  .how-item h3 {
+    margin-top: 18px;
+  }
+
+}
+
+
+/* =====================================================
+   REMOVE OLD GOLD — NEW HOME ONLY
+===================================================== */
+
+.sushi-home .eyebrow,
+.sushi-home .sushi-kicker {
+  color: #8f8f8f;
+}
+
+.sushi-home .reward-progress i {
+  background: #f1eee8;
+}
