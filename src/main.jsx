@@ -21,7 +21,10 @@ import {
   FileText,
   CheckCircle,
   Copy,
-  X
+  X,
+  Utensils,
+  ShoppingBag,
+  MessageCircle
 } from 'lucide-react';
 
 import './styles.css';
@@ -612,8 +615,13 @@ function Dashboard({
       <header className="topbar">
 
         <div>
-          <b>🍣 AT HOME SUSHI</b>
-          <span>LOYALTY CLUB</span>
+         <div className="topbar-brand">
+  <img src={logo} alt="At Home Sushi" />
+  <div>
+    <b>AT HOME SUSHI</b>
+    <span>LOYALTY CLUB</span>
+  </div>
+</div>
         </div>
 
         <button
@@ -803,15 +811,12 @@ function Home({ profile, rewards }) {
 
       <section className="sushi-hero">
 
-        <div className="japanese-watermark">
-          AT HOME
-        </div>
-
         <div className="hero-content">
 
-          <div className="hero-label">
-            AT HOME SUSHI
-          </div>
+        <div className="hero-brand">
+  <img src={logo} alt="At Home Sushi" />
+  <span>AT HOME SUSHI</span>
+</div>
 
           <h1>
             GET MORE FROM
@@ -1155,9 +1160,9 @@ function Home({ profile, rewards }) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <span className="order-option-icon">
-                🛒
-              </span>
+            <span className="order-option-icon">
+  <ShoppingBag size={20} strokeWidth={1.7} />
+</span>
 
               <span>
                 <b>ORDER ONLINE</b>
@@ -1572,9 +1577,10 @@ function Rewards({
   return (
     <div className="container">
 
-      <h1>
-        Rewards 🎁
-      </h1>
+      <div className="page-title">
+  <Gift size={22} strokeWidth={1.7} />
+  <h1>Rewards</h1>
+</div>
 
       <p className="muted">
         You have{' '}
@@ -2275,13 +2281,13 @@ function Staff() {
 
         <div>
 
-          <b>
-            🍣 AT HOME SUSHI
-          </b>
-
-          <span>
-            STAFF PANEL
-          </span>
+         <div className="topbar-brand">
+  <img src={logo} alt="At Home Sushi" />
+  <div>
+    <b>AT HOME SUSHI</b>
+    <span>STAFF PANEL</span>
+  </div>
+</div>
 
         </div>
 
