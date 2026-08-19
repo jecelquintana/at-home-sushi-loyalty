@@ -1,39 +1,36 @@
-/* =====================================================
-   AT HOME SUSHI — CLEAN PREMIUM THEME
-===================================================== */
-
 * {
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
-  margin: 0;
-  min-height: 100%;
-}
-
 html {
+  margin: 0;
+  padding: 0;
+  background: #0a0a0a;
   scroll-behavior: smooth;
 }
 
 body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+
+  background: #0a0a0a;
+  color: #f5f3ef;
+
   font-family:
     Inter,
-    system-ui,
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
 
-  background: #0b0b0b;
-  color: #f4f4f4;
+  -webkit-font-smoothing: antialiased;
 }
 
 button,
 input,
-textarea,
-select {
+textarea {
   font: inherit;
 }
 
@@ -41,56 +38,87 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #d8d4cc;
+  outline-offset: 2px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
 /* =====================================================
    LOADING
 ===================================================== */
 
-.screen {
+.loading-screen {
   min-height: 100vh;
+  width: 100%;
+
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+
   padding: 24px;
 
-  background: #0b0b0b;
-  color: #999;
+  background:
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(255,255,255,.055),
+      transparent 34%
+    ),
+    #0a0a0a;
+
+  text-align: center;
 }
 
-.screen p {
-  margin: 0;
-  font-size: 13px;
-  letter-spacing: 0.2px;
+.loading-mark {
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+  place-items: center;
+
+  font-size: 25px;
+
+  margin-bottom: 18px;
+
+  opacity: .9;
 }
 
-.loading-spinner {
-  width: 24px;
-  height: 24px;
+.loading-brand {
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 
-  border: 2px solid rgba(255, 255, 255, 0.12);
-  border-top-color: rgba(255, 255, 255, 0.8);
-
-  border-radius: 50%;
-
-  animation: sushi-spin 0.8s linear infinite;
+  font-size: 14px;
+  letter-spacing: 3px;
+  font-weight: 600;
 }
 
-@keyframes sushi-spin {
-  to {
-    transform: rotate(360deg);
-  }
+.loading-text {
+  margin-top: 8px;
+
+  color: #777;
+
+  font-size: 12px;
+  letter-spacing: .4px;
 }
 
 /* =====================================================
-   AUTH
+   AUTH PAGE
 ===================================================== */
 
-.auth-wrap {
+.auth-page {
+  width: 100%;
   min-height: 100vh;
 
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
 
@@ -98,62 +126,80 @@ button {
 
   background:
     radial-gradient(
-      circle at 50% -10%,
-      rgba(255, 255, 255, 0.07),
+      circle at 50% 0%,
+      rgba(255,255,255,.06),
       transparent 38%
     ),
-    #0b0b0b;
+    #0a0a0a;
+
+  overflow-x: hidden;
 }
 
-.brand {
+.auth-shell {
+  width: 100%;
+  max-width: 430px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* =====================================================
+   BRAND
+===================================================== */
+
+.auth-brand {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   text-align: center;
-  margin-bottom: 24px;
+
+  margin-bottom: 25px;
 }
 
-.logo {
-  width: 52px;
-  height: 52px;
+.auth-brand img {
+  width: 54px;
+  height: 54px;
+
+  max-width: 54px;
+  max-height: 54px;
 
   object-fit: contain;
+
   display: block;
 
-  margin: 0 auto 12px;
-
   border-radius: 50%;
+
+  margin: 0 0 13px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
 }
 
-.staff-logo {
-  width: 42px;
-  height: 42px;
-
-  object-fit: contain;
-  display: block;
-
-  margin: 0 auto 12px;
-
-  border-radius: 50%;
-}
-
-.brand h1 {
+.auth-brand h1 {
   margin: 0;
+
+  color: #f8f6f1;
 
   font-family:
     Georgia,
     "Times New Roman",
     serif;
 
-  font-size: 23px;
+  font-size: 22px;
   font-weight: 600;
 
-  letter-spacing: 3px;
+  letter-spacing: 3.5px;
 
-  color: #fff;
+  line-height: 1.2;
 }
 
-.brand p {
-  margin: 6px 0 0;
+.auth-brand span {
+  margin-top: 6px;
 
-  color: #999;
+  color: #8e8b84;
 
   font-size: 9px;
   font-weight: 700;
@@ -162,62 +208,52 @@ button {
 }
 
 /* =====================================================
-   CARD
+   AUTH CARD
 ===================================================== */
 
-.card {
-  background: #151515;
+.auth-card {
+  width: 100%;
 
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 26px;
+
+  background: rgba(18,18,18,.94);
+
+  border: 1px solid #292929;
 
   border-radius: 22px;
 
   box-shadow:
-    0 18px 45px rgba(0, 0, 0, 0.38);
-}
-
-.auth-card {
-  width: min(420px, 100%);
-  padding: 24px;
-}
-
-.auth-card h2 {
-  margin: 0 0 7px;
-
-  font-size: 22px;
-  font-weight: 600;
-
-  color: #fff;
-}
-
-.muted {
-  color: #929292;
-  line-height: 1.55;
-}
-
-.auth-card > .muted {
-  margin: 0 0 22px;
-  font-size: 13px;
+    0 24px 70px rgba(0,0,0,.42);
 }
 
 /* =====================================================
-   TABS
+   AUTH TABS
 ===================================================== */
 
-.tabs {
-  display: flex;
+.auth-tabs {
+  width: 100%;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 4px;
 
   padding: 4px;
-  margin-bottom: 24px;
 
-  background: #0e0e0e;
+  margin-bottom: 25px;
 
-  border: 1px solid #242424;
-  border-radius: 14px;
+  background: #101010;
+
+  border: 1px solid #272727;
+
+  border-radius: 12px;
 }
 
-.tabs button {
-  flex: 1;
+.auth-tabs button {
+  min-height: 40px;
+
+  border: 0;
+  border-radius: 9px;
 
   display: flex;
   align-items: center;
@@ -225,105 +261,208 @@ button {
 
   gap: 7px;
 
-  padding: 10px 12px;
-
-  border: 0;
-  border-radius: 10px;
-
   background: transparent;
 
   color: #777;
 
+  font-size: 13px;
+  font-weight: 600;
+
   cursor: pointer;
 
   transition:
-    background 0.2s ease,
-    color 0.2s ease;
+    background .2s ease,
+    color .2s ease;
 }
 
-.tabs button.active {
-  background: #242424;
-  color: #fff;
+.auth-tabs button.active {
+  background: #f1eee8;
+  color: #101010;
 }
 
 /* =====================================================
-   FORMS
+   AUTH HEADING
 ===================================================== */
 
-label {
-  display: block;
+.auth-heading {
+  margin-bottom: 23px;
+}
 
-  margin-bottom: 15px;
+.auth-heading h2 {
+  margin: 0;
 
-  color: #cfcfcf;
+  color: #f6f4ef;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 25px;
+  font-weight: 500;
+
+  line-height: 1.2;
+}
+
+.auth-heading p {
+  margin: 8px 0 0;
+
+  color: #818181;
+
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* =====================================================
+   FORM
+===================================================== */
+
+.field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.field label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  margin-bottom: 7px;
+
+  color: #b8b5ae;
 
   font-size: 12px;
   font-weight: 600;
 }
 
-input,
-textarea,
-select {
+.field input,
+.field textarea {
   width: 100%;
 
-  margin-top: 7px;
+  border: 1px solid #303030;
+
+  border-radius: 11px;
+
+  background: #111;
+
+  color: #f5f3ef;
 
   padding: 12px 13px;
 
-  color: #fff;
-  background: #0e0e0e;
-
-  border: 1px solid #292929;
-  border-radius: 12px;
+  font-size: 14px;
 
   outline: none;
 
   transition:
-    border-color 0.2s ease,
-    background 0.2s ease;
+    border-color .2s ease,
+    background .2s ease;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: #555;
-  background: #111;
+.field input {
+  height: 46px;
 }
 
-textarea {
-  min-height: 100px;
+.field textarea {
+  min-height: 105px;
   resize: vertical;
 }
 
-input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
+.field input::placeholder,
+.field textarea::placeholder {
+  color: #555;
+}
+
+.field input:focus,
+.field textarea:focus {
+  border-color: #666;
+  background: #141414;
+}
+
+/* =====================================================
+   PASSWORD
+===================================================== */
+
+.password-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrap input {
+  padding-right: 48px;
+}
+
+.password-toggle {
+  position: absolute;
+
+  top: 50%;
+  right: 8px;
+
+  width: 34px;
+  height: 34px;
+
+  transform: translateY(-50%);
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent !important;
+
+  color: #777;
+
+  cursor: pointer;
+
+  box-shadow: none;
+}
+
+.password-toggle:hover {
+  color: #ddd;
+}
+
+/* =====================================================
+   REMEMBER
+===================================================== */
+
+.remember-row {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  margin: 2px 0 18px;
+
+  color: #8a8a8a;
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  user-select: none;
+}
+
+.remember-row input {
+  width: 15px;
+  height: 15px;
 
   margin: 0;
 
-  accent-color: #fff;
-}
+  accent-color: #e9e6df;
 
-.auth-card form > label[style] {
-  display: flex !important;
-  align-items: center !important;
-
-  gap: 9px !important;
-
-  margin: 3px 0 18px !important;
-
-  font-size: 12px;
-  color: #999;
+  cursor: pointer;
 }
 
 /* =====================================================
    BUTTONS
 ===================================================== */
 
-.primary {
+.primary-button {
   width: 100%;
-
-  min-height: 46px;
+  min-height: 47px;
 
   display: flex;
   align-items: center;
@@ -331,163 +470,174 @@ input[type="checkbox"] {
 
   gap: 8px;
 
-  margin-top: 8px;
-
-  padding: 12px 16px;
-
   border: 0;
-  border-radius: 13px;
+  border-radius: 11px;
 
-  background: #f3f3f3;
-  color: #0b0b0b;
+  background: #f1eee8;
 
-  font-weight: 700;
+  color: #101010;
+
   font-size: 13px;
+  font-weight: 700;
 
   cursor: pointer;
 
   transition:
-    transform 0.15s ease,
-    opacity 0.15s ease;
+    transform .15s ease,
+    opacity .15s ease;
 }
 
-.primary:hover {
+.primary-button:hover {
   transform: translateY(-1px);
 }
 
-.primary:disabled {
-  opacity: 0.45;
+.primary-button:disabled {
+  opacity: .5;
   cursor: not-allowed;
   transform: none;
 }
 
-.iconbtn {
-  width: 40px;
-  height: 40px;
-
-  display: grid;
-  place-items: center;
-
-  border: 1px solid #292929;
-
-  border-radius: 50%;
-
-  background: #151515;
-  color: #ddd;
-
-  cursor: pointer;
-}
-
-.switch {
-  margin: 18px 0 0;
+.auth-switch {
+  margin-top: 20px;
 
   text-align: center;
 
   color: #777;
+
   font-size: 12px;
 }
 
-.switch button {
+.auth-switch button {
+  margin-left: 5px;
+
+  padding: 0;
+
   border: 0;
+
   background: transparent;
 
-  color: #fff;
+  color: #eee;
 
   font-weight: 600;
 
   cursor: pointer;
 }
 
-.notice {
-  margin: 12px 0;
-
-  padding: 11px 13px;
-
-  border-radius: 11px;
-
-  background: #202020;
-
-  color: #ccc;
-
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.footer {
-  margin: 18px 0 0;
+.auth-footer {
+  margin-top: 22px;
 
   color: #555;
 
   font-size: 10px;
-  letter-spacing: 0.8px;
+
+  letter-spacing: .7px;
+
+  text-align: center;
+}
+
+/* =====================================================
+   NOTICE
+===================================================== */
+
+.notice {
+  width: 100%;
+
+  margin: 12px 0;
+
+  padding: 11px 12px;
+
+  border-radius: 10px;
+
+  border: 1px solid #333;
+
+  background: #151515;
+
+  color: #bbb;
+
+  font-size: 12px;
+
+  line-height: 1.5;
 }
 
 /* =====================================================
    APP
 ===================================================== */
 
-.app {
+.app-shell,
+.staff-shell {
+  width: 100%;
   min-height: 100vh;
 
-  background: #0b0b0b;
+  background:
+    radial-gradient(
+      circle at 50% -10%,
+      rgba(255,255,255,.045),
+      transparent 30%
+    ),
+    #0a0a0a;
 
-  padding-bottom: 88px;
+  overflow-x: hidden;
 }
 
 /* =====================================================
-   TOPBAR
+   HEADER
 ===================================================== */
 
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 30;
+.app-header {
+  width: 100%;
 
-  height: 64px;
+  height: 68px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  padding: 0 18px;
+  padding: 0 20px;
 
-  background: rgba(11, 11, 11, 0.94);
+  background: rgba(10,10,10,.92);
 
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid #202020;
+
+  position: sticky;
+  top: 0;
+
+  z-index: 50;
 
   backdrop-filter: blur(16px);
 }
 
-.topbar-brand {
+.header-brand {
   display: flex;
   align-items: center;
 
-  gap: 9px;
+  gap: 10px;
+
+  min-width: 0;
 }
 
-.topbar-brand img {
-  width: 32px !important;
-  height: 32px !important;
+.header-brand img {
+  width: 31px;
+  height: 31px;
 
-  min-width: 32px;
-  max-width: 32px;
+  max-width: 31px;
+  max-height: 31px;
 
   object-fit: contain;
+
+  display: block;
 
   border-radius: 50%;
 }
 
-.topbar-brand > div {
+.header-brand div {
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
-  justify-content: center;
 }
 
-.topbar-brand b {
-  display: flex;
-  align-items: center;
-
-  color: #fff;
+.header-brand strong {
+  color: #eee;
 
   font-family:
     Georgia,
@@ -496,791 +646,460 @@ input[type="checkbox"] {
 
   font-size: 12px;
 
-  letter-spacing: 1.5px;
-
-  line-height: 1.1;
-}
-
-.topbar-brand span {
-  margin-top: 3px;
-
-  color: #777;
-
-  font-size: 7px;
-
-  font-weight: 700;
-
-  letter-spacing: 2px;
-}
-
-/* =====================================================
-   CONTAINER
-===================================================== */
-
-.container {
-  width: min(760px, 100%);
-
-  margin: 0 auto;
-
-  padding: 28px 18px;
-}
-
-.center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  min-height: calc(100vh - 150px);
-}
-
-/* =====================================================
-   HERO
-===================================================== */
-
-.hero {
-  margin-bottom: 20px;
-}
-
-.hero p {
-  margin: 0 0 5px;
-
-  color: #777;
-
-  font-size: 10px;
-  font-weight: 700;
-
-  letter-spacing: 2px;
-}
-
-.hero h1 {
-  margin: 0;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 29px;
-  font-weight: 500;
-
-  letter-spacing: -0.5px;
-}
-
-/* =====================================================
-   NAVIGATION
-===================================================== */
-
-.nav {
-  position: fixed;
-
-  left: 50%;
-  bottom: 13px;
-
-  z-index: 40;
-
-  transform: translateX(-50%);
-
-  width: min(430px, calc(100% - 26px));
-
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-
-  padding: 7px;
-
-  background: rgba(22, 22, 22, 0.96);
-
-  border: 1px solid rgba(255, 255, 255, 0.09);
-
-  border-radius: 20px;
-
-  box-shadow:
-    0 14px 35px rgba(0, 0, 0, 0.45);
-
-  backdrop-filter: blur(16px);
-}
-
-.nav button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  gap: 4px;
-
-  min-height: 52px;
-
-  border: 0;
-  border-radius: 14px;
-
-  background: transparent;
-
-  color: #666;
-
-  font-size: 9px;
-
-  cursor: pointer;
-}
-
-.nav button svg {
-  width: 18px;
-  height: 18px;
-}
-
-.nav button.sel {
-  background: #292929;
-  color: #fff;
-}
-
-/* =====================================================
-   EYEBROW
-===================================================== */
-
-.eyebrow,
-.section-kicker {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  color: #777;
-
-  font-size: 9px;
-  font-weight: 800;
-
-  letter-spacing: 2px;
-}
-
-/* =====================================================
-   PAGE TITLE
-===================================================== */
-
-.page-title {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-
-  margin-bottom: 4px;
-}
-
-.page-title h1 {
-  margin: 0;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 28px;
-  font-weight: 500;
-}
-
-/* =====================================================
-   BALANCE
-===================================================== */
-
-.balance-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-
-  gap: 10px;
-}
-
-.mini,
-.balance {
-  padding: 17px;
-
-  background: #101010;
-
-  border: 1px solid #252525;
-
-  border-radius: 15px;
-}
-
-.mini {
-  display: flex;
-  flex-direction: column;
-}
-
-.mini small,
-.balance small {
-  color: #777;
-
-  font-size: 9px;
-  font-weight: 700;
-
-  letter-spacing: 1.2px;
-}
-
-.mini b {
-  margin-top: 7px;
-
-  font-size: 23px;
-}
-
-.balance {
-  display: flex;
-  flex-direction: column;
-
-  gap: 7px;
-}
-
-.balance svg {
-  width: 19px;
-  height: 19px;
-  color: #bbb;
-}
-
-.balance strong {
-  font-size: 24px;
-}
-
-/* =====================================================
-   DIGITAL CARD
-===================================================== */
-
-.digital {
-  width: min(430px, 100%);
-
-  padding: 28px;
-
-  text-align: center;
-}
-
-.digital h2 {
-  margin: 8px 0 20px;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 27px;
-  font-weight: 500;
-}
-
-.digital h3 {
-  margin: 18px 0 3px;
-
-  font-size: 17px;
-}
-
-.qr {
-  display: flex;
-  justify-content: center;
-
-  padding: 16px;
-
-  background: #fff;
-
-  border-radius: 18px;
-
-  width: fit-content;
-
-  margin: 0 auto;
-}
-
-.qr svg {
-  display: block;
-}
-
-.code {
-  margin: 0 0 20px;
-
-  color: #777;
-
-  font-size: 11px;
-
-  letter-spacing: 2px;
-}
-
-/* =====================================================
-   REWARDS
-===================================================== */
-
-.reward-list {
-  display: grid;
-  gap: 10px;
-
-  margin-top: 20px;
-}
-
-.reward {
-  display: flex;
-  align-items: center;
-
-  gap: 14px;
-
-  padding: 16px;
-
-  border-radius: 16px;
-}
-
-.reward-icon {
-  width: 40px;
-  height: 40px;
-
-  flex: 0 0 40px;
-
-  display: grid;
-  place-items: center;
-
-  background: #202020;
-
-  border-radius: 13px;
-
-  color: #ddd;
-}
-
-.reward-icon svg {
-  width: 19px;
-  height: 19px;
-}
-
-.reward > div:nth-child(2) {
-  flex: 1;
-}
-
-.reward b {
-  font-size: 14px;
-}
-
-.reward p {
-  margin: 4px 0;
-
-  color: #777;
-
-  font-size: 11px;
-  line-height: 1.45;
-}
-
-.reward strong,
-.reward > small {
-  color: #aaa;
-
-  font-size: 11px;
+  letter-spacing: 1.8px;
 
   white-space: nowrap;
 }
 
-/* =====================================================
-   EMPTY
-===================================================== */
+.header-brand span {
+  margin-top: 2px;
 
-.empty {
-  padding: 40px 20px;
+  color: #686868;
 
-  text-align: center;
+  font-size: 7px;
 
-  color: #777;
+  letter-spacing: 2px;
+
+  font-weight: 700;
 }
 
-.empty svg {
-  width: 28px;
-  height: 28px;
+.header-action {
+  width: 37px;
+  height: 37px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #2b2b2b;
+  border-radius: 50%;
+
+  background: #111;
+
+  color: #999;
+
+  cursor: pointer;
+}
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.app-main {
+  width: 100%;
+  max-width: 760px;
+
+  margin: 0 auto;
+
+  padding-bottom: 100px;
 }
 
 /* =====================================================
    BIRTHDAY
 ===================================================== */
 
-.birthday-banner {
-  width: min(760px, calc(100% - 36px));
-
-  margin: 18px auto 0;
-
-  padding: 18px;
-
-  background: #161616;
-
-  border: 1px solid #292929;
-
-  border-radius: 18px;
-}
-
-.birthday-banner h2 {
-  margin: 7px 0 4px;
-
-  font-size: 18px;
-}
-
-.birthday-banner p {
-  margin: 0 0 7px;
-
-  color: #888;
-
-  font-size: 12px;
-}
-
-.birthday-banner strong {
-  font-size: 12px;
-  color: #ddd;
-}
-
-.birthday-button {
-  width: 100%;
-
-  min-height: 44px;
+.birthday-card {
+  margin: 18px 18px 0;
 
   display: flex;
   align-items: center;
-  justify-content: center;
 
-  gap: 8px;
+  gap: 12px;
 
-  margin-top: 12px;
+  padding: 14px;
 
-  padding: 11px 15px;
+  border: 1px solid #2b2b2b;
+  border-radius: 14px;
 
-  border: 1px solid #303030;
-
-  border-radius: 13px;
-
-  background: #191919;
-
-  color: #ddd;
-
-  font-weight: 600;
-  font-size: 12px;
-
-  cursor: pointer;
+  background: #111;
 }
 
-.birthday-button:hover {
-  background: #222;
+.birthday-icon {
+  width: 38px;
+  height: 38px;
+
+  flex: 0 0 38px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #303030;
+  border-radius: 50%;
+
+  color: #ddd;
+}
+
+.birthday-card > div:last-child {
+  min-width: 0;
+}
+
+.birthday-card span {
+  display: block;
+
+  color: #777;
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 1.7px;
+}
+
+.birthday-card strong {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #eee;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 15px;
+}
+
+.birthday-card p {
+  margin: 3px 0 0;
+
+  color: #777;
+
+  font-size: 11px;
 }
 
 /* =====================================================
-   PREMIUM HOME
+   HOME
 ===================================================== */
 
-.sushi-home {
-  overflow: hidden;
+.home-page {
+  width: 100%;
 }
 
-.sushi-hero {
-  min-height: 490px;
+.home-hero {
+  min-height: 430px;
 
   display: flex;
   align-items: center;
 
-  padding: 55px 20px;
+  padding: 65px 24px 55px;
 
   background:
     radial-gradient(
       circle at 50% 20%,
-      rgba(255, 255, 255, 0.07),
-      transparent 35%
-    ),
-    #0b0b0b;
+      rgba(255,255,255,.065),
+      transparent 38%
+    );
 }
 
-.hero-content {
-  width: min(620px, 100%);
+.hero-inner {
+  width: 100%;
+  max-width: 650px;
 
   margin: 0 auto;
 }
 
-.hero-brand {
-  display: flex;
-  align-items: center;
+.hero-label {
+  color: #7d7d7d;
 
-  gap: 9px;
+  font-size: 9px;
+  font-weight: 700;
 
-  margin-bottom: 32px;
+  letter-spacing: 3px;
+
+  margin-bottom: 18px;
 }
 
-.hero-brand img {
-  width: 31px;
-  height: 31px;
-
-  object-fit: contain;
-
-  border-radius: 50%;
-}
-
-.hero-brand span {
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 11px;
-
-  letter-spacing: 2px;
-}
-
-.hero-content h1 {
+.hero-inner h1 {
   margin: 0;
 
-  max-width: 570px;
+  color: #f3f0ea;
 
   font-family:
     Georgia,
     "Times New Roman",
     serif;
 
-  font-size: clamp(43px, 10vw, 76px);
+  font-size: clamp(40px, 10vw, 72px);
 
   font-weight: 400;
 
-  line-height: 0.98;
+  line-height: .98;
 
-  letter-spacing: -3px;
+  letter-spacing: -2px;
 }
 
-.hero-content h1 span {
-  display: block;
-
-  color: #aaa;
+.hero-inner h1 span {
+  color: #898680;
 }
 
-.hero-content > p {
-  max-width: 400px;
+.hero-inner > p {
+  max-width: 450px;
 
-  margin: 23px 0 25px;
+  margin: 22px 0 0;
 
-  color: #858585;
+  color: #888;
 
   font-size: 14px;
 
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
-.hero-actions {
+.hero-buttons {
   display: flex;
   flex-wrap: wrap;
 
   gap: 9px;
+
+  margin-top: 27px;
 }
 
-.glass-button {
+.hero-button {
+  min-height: 43px;
+
+  padding: 0 16px;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  gap: 8px;
+  gap: 7px;
 
-  min-height: 44px;
+  border-radius: 10px;
 
-  padding: 11px 17px;
-
-  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
 
   cursor: pointer;
-
-  font-size: 11px;
-  font-weight: 700;
 }
 
-.dark-glass {
-  background: #eee;
-  color: #111;
-
+.hero-button.primary {
   border: 1px solid #eee;
+
+  background: #eee;
+
+  color: #111;
 }
 
-.light-glass {
-  background: #151515;
-  color: #ddd;
+.hero-button.secondary {
+  border: 1px solid #353535;
 
-  border: 1px solid #303030;
+  background: transparent;
+
+  color: #ccc;
 }
 
 /* =====================================================
    HOME SECTIONS
 ===================================================== */
 
-.points-section,
-.menu-section,
-.rewards-section {
-  width: min(760px, 100%);
+.home-section {
+  padding: 70px 24px;
 
-  margin: 0 auto;
-
-  padding: 65px 20px;
+  border-top: 1px solid #1b1b1b;
 }
 
-.points-section h2,
-.menu-section h2,
-.rewards-section h2 {
-  margin: 8px 0 7px;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 35px;
-
-  font-weight: 400;
-
-  letter-spacing: -1px;
+.home-section > * {
+  max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.section-intro {
-  margin: 0 0 25px;
-
-  color: #777;
-
-  font-size: 13px;
-
-  line-height: 1.55;
-}
-
-/* =====================================================
-   SUSHI POINTS
-===================================================== */
-
-.points-glass-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 24px;
-
-  background: #151515;
-
-  border: 1px solid #282828;
-
-  border-radius: 22px;
-}
-
-.points-glass-card span {
-  display: block;
-
+.section-label {
   color: #777;
 
   font-size: 9px;
   font-weight: 700;
 
-  letter-spacing: 1.5px;
+  letter-spacing: 2.5px;
+
+  text-transform: uppercase;
 }
 
-.points-glass-card strong {
-  display: block;
+.home-section h2 {
+  margin-top: 10px;
+  margin-bottom: 0;
 
-  margin-top: 4px;
+  color: #eee;
 
   font-family:
     Georgia,
     "Times New Roman",
     serif;
 
-  font-size: 43px;
+  font-size: 34px;
 
   font-weight: 400;
+
+  letter-spacing: -.7px;
 }
 
-.points-glass-card small {
+.section-description {
+  margin-top: 10px;
+
+  color: #777;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+}
+
+/* =====================================================
+   POINTS
+===================================================== */
+
+.points-card {
+  margin-top: 28px;
+
+  padding: 26px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border: 1px solid #292929;
+  border-radius: 18px;
+
+  background: #111;
+}
+
+.points-card span {
+  display: block;
+
+  color: #777;
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 2px;
+}
+
+.points-card strong {
+  display: block;
+
+  margin-top: 7px;
+
+  color: #f2efe8;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 46px;
+  font-weight: 400;
+
+  line-height: 1;
+}
+
+.points-card small {
+  display: block;
+
+  margin-top: 5px;
+
   color: #777;
 
   font-size: 9px;
 
-  letter-spacing: 1.5px;
+  letter-spacing: 1.8px;
 }
 
-.bubble-arrow {
-  width: 43px;
-  height: 43px;
+.points-card button {
+  width: 42px;
+  height: 42px;
 
   display: grid;
   place-items: center;
 
   border: 1px solid #333;
-
   border-radius: 50%;
 
-  background: #202020;
-  color: #eee;
+  background: #181818;
+
+  color: #ddd;
 
   cursor: pointer;
 }
 
-.earn-grid {
+.earn-steps {
+  margin-top: 28px;
+
   display: grid;
   grid-template-columns: repeat(3, 1fr);
 
+  gap: 18px;
+}
+
+.earn-steps > div {
+  display: flex;
   gap: 9px;
-
-  margin-top: 10px;
 }
 
-.earn-item {
-  padding: 15px;
-
-  background: #111;
-
-  border: 1px solid #222;
-
-  border-radius: 16px;
-}
-
-.earn-item > span {
+.earn-steps b {
   color: #555;
 
-  font-size: 9px;
+  font-size: 10px;
 }
 
-.earn-item b {
-  display: block;
+.earn-steps span {
+  display: flex;
+  flex-direction: column;
 
-  margin-top: 9px;
+  gap: 4px;
 
-  font-size: 11px;
-}
-
-.earn-item p {
-  margin: 5px 0 0;
-
-  color: #777;
+  color: #707070;
 
   font-size: 10px;
 
   line-height: 1.45;
 }
 
+.earn-steps strong {
+  color: #aaa;
+
+  font-size: 9px;
+  letter-spacing: 1.2px;
+}
+
 /* =====================================================
-   SUSHI MENU
+   MENU
 ===================================================== */
 
-.menu-section {
-  border-top: 1px solid #181818;
-}
+.menu-card {
+  margin-top: 28px;
 
-.sushi-showcase {
-  position: relative;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 40px;
 
-  display: flex;
   align-items: center;
-  justify-content: center;
 
-  min-height: 270px;
-
-  margin-top: 20px;
+  gap: 8px;
 }
 
-.sushi-stage {
-  width: min(320px, 75vw);
+.menu-arrow {
+  width: 36px;
+  height: 36px;
 
-  animation: sushi-fade 0.3s ease;
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #2b2b2b;
+  border-radius: 50%;
+
+  background: #111;
+
+  color: #ccc;
+
+  font-family: Arial, sans-serif;
+  font-size: 25px;
+  line-height: 1;
+
+  cursor: pointer;
 }
 
-@keyframes sushi-fade {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.sushi-image-wrap {
+.menu-photo {
   position: relative;
 
   width: 100%;
-  aspect-ratio: 1;
+  height: 290px;
 
   overflow: hidden;
 
@@ -1288,14 +1107,19 @@ input[type="checkbox"] {
   align-items: center;
   justify-content: center;
 
-  background: #141414;
+  border-radius: 20px;
 
-  border: 1px solid #252525;
+  background:
+    radial-gradient(
+      circle,
+      #1d1d1d,
+      #101010
+    );
 
-  border-radius: 28px;
+  border: 1px solid #282828;
 }
 
-.sushi-image {
+.menu-photo img {
   width: 100%;
   height: 100%;
 
@@ -1304,189 +1128,175 @@ input[type="checkbox"] {
   display: block;
 }
 
-.photo-placeholder {
+.photo-fallback {
   position: absolute;
 
   inset: 0;
 
   display: none;
 
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  flex-direction: column;
+  gap: 8px;
 
   color: #666;
 }
 
-.photo-placeholder span {
-  font-size: 34px;
+.photo-fallback span {
+  font-size: 35px;
 }
 
-.photo-placeholder small {
-  margin-top: 7px;
-
-  font-size: 9px;
-
-  letter-spacing: 1px;
-}
-
-.photo-missing .photo-placeholder {
-  display: flex;
-}
-
-.carousel-arrow {
-  width: 40px;
-  height: 40px;
-
-  display: grid;
-  place-items: center;
-
-  border: 1px solid #2c2c2c;
-
-  border-radius: 50%;
-
-  background: #151515;
-
-  color: #ddd;
-
-  font-size: 25px;
-
-  cursor: pointer;
-
-  z-index: 2;
-}
-
-.carousel-arrow.left {
-  margin-right: 12px;
-}
-
-.carousel-arrow.right {
-  margin-left: 12px;
-}
-
-.sushi-details {
-  text-align: center;
-
-  margin-top: 24px;
-}
-
-.sushi-counter {
-  color: #777;
-
-  font-size: 10px;
-
+.photo-fallback small {
+  font-size: 8px;
   letter-spacing: 2px;
 }
 
-.sushi-counter span {
+.menu-photo.missing .photo-fallback {
+  display: flex;
+}
+
+.menu-info {
+  margin-top: 24px;
+
+  text-align: center;
+}
+
+.menu-count {
+  color: #777;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 1.5px;
+}
+
+.menu-count span {
   color: #444;
 }
 
-.sushi-details h3 {
-  margin: 8px 0 5px;
+.menu-info h3 {
+  margin: 9px 0 0;
+
+  color: #eee;
 
   font-family:
     Georgia,
     "Times New Roman",
     serif;
 
-  font-size: 28px;
+  font-size: 27px;
 
   font-weight: 400;
 }
 
-.sushi-meta {
-  margin: 0;
+.menu-price {
+  margin-top: 8px;
 
-  color: #ccc;
+  color: #aaa;
 
   font-size: 12px;
+  font-weight: 600;
 }
 
-.ingredients {
-  max-width: 420px;
+.menu-price span {
+  margin: 0 5px;
 
-  margin: 9px auto 17px;
+  color: #555;
+}
+
+.menu-info > p {
+  max-width: 500px;
+
+  margin: 11px auto 0;
 
   color: #777;
 
   font-size: 11px;
 
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
-.order-bubble {
+.order-button {
+  margin-top: 20px;
+
+  min-height: 42px;
+
+  padding: 0 17px;
+
   display: inline-flex;
   align-items: center;
+  justify-content: center;
 
   gap: 7px;
 
-  padding: 12px 17px;
+  border: 1px solid #3a3a3a;
+  border-radius: 10px;
 
-  border: 1px solid #333;
-
-  border-radius: 999px;
-
-  background: #181818;
+  background: #151515;
 
   color: #eee;
 
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-
-  letter-spacing: 0.7px;
 
   cursor: pointer;
 }
 
 /* =====================================================
-   MODERN REWARDS
+   REWARDS HOME
 ===================================================== */
 
-.modern-rewards {
-  display: grid;
-  gap: 8px;
+.home-rewards {
+  margin-top: 28px;
+
+  display: flex;
+  flex-direction: column;
+
+  border-top: 1px solid #222;
 }
 
-.modern-reward {
+.home-reward {
+  min-height: 84px;
+
   display: grid;
-  grid-template-columns: 35px 1fr auto;
+  grid-template-columns: 34px 1fr auto;
 
   align-items: center;
 
   gap: 12px;
 
-  padding: 17px;
-
-  background: #121212;
-
-  border: 1px solid #222;
-
-  border-radius: 16px;
+  border-bottom: 1px solid #222;
 }
 
-.modern-reward > span {
+.home-reward > span {
   color: #555;
 
   font-size: 10px;
 }
 
-.modern-reward h3 {
-  margin: 0;
+.home-reward > div {
+  min-width: 0;
+}
+
+.home-reward strong {
+  display: block;
+
+  color: #ddd;
 
   font-size: 13px;
 }
 
-.modern-reward p {
+.home-reward p {
   margin: 4px 0 0;
 
-  color: #777;
+  color: #666;
 
   font-size: 10px;
 }
 
-.modern-reward strong {
+.home-reward > b {
   color: #aaa;
 
   font-size: 11px;
@@ -1496,7 +1306,7 @@ input[type="checkbox"] {
    ORDER MODAL
 ===================================================== */
 
-.order-overlay {
+.modal-overlay {
   position: fixed;
 
   inset: 0;
@@ -1509,7 +1319,7 @@ input[type="checkbox"] {
 
   padding: 15px;
 
-  background: rgba(0, 0, 0, 0.72);
+  background: rgba(0,0,0,.72);
 
   backdrop-filter: blur(8px);
 }
@@ -1517,25 +1327,25 @@ input[type="checkbox"] {
 .order-modal {
   position: relative;
 
-  width: min(460px, 100%);
+  width: 100%;
+  max-width: 440px;
 
-  padding: 28px 20px 22px;
+  padding: 28px 22px 24px;
 
-  background: #171717;
+  background: #151515;
 
   border: 1px solid #303030;
 
-  border-radius: 25px 25px 20px 20px;
+  border-radius: 22px;
 
-  box-shadow:
-    0 25px 70px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 -15px 60px rgba(0,0,0,.5);
 }
 
 .modal-close {
   position: absolute;
 
-  top: 14px;
-  right: 14px;
+  top: 15px;
+  right: 15px;
 
   width: 34px;
   height: 34px;
@@ -1543,19 +1353,22 @@ input[type="checkbox"] {
   display: grid;
   place-items: center;
 
-  border: 1px solid #2d2d2d;
-
+  border: 1px solid #303030;
   border-radius: 50%;
 
-  background: #111;
+  background: #101010;
 
-  color: #aaa;
+  color: #999;
 
   cursor: pointer;
 }
 
 .order-modal h2 {
-  margin: 9px 0;
+  max-width: 300px;
+
+  margin: 10px 0 8px;
+
+  color: #eee;
 
   font-family:
     Georgia,
@@ -1570,165 +1383,975 @@ input[type="checkbox"] {
 }
 
 .order-modal > p {
-  margin: 0 0 20px;
+  margin: 0 0 22px;
 
   color: #777;
 
   font-size: 12px;
 }
 
-.order-option {
-  display: flex;
+.order-choice {
+  min-height: 66px;
+
+  display: grid;
+  grid-template-columns: 39px 1fr 18px;
+
   align-items: center;
 
-  gap: 12px;
+  gap: 11px;
 
-  padding: 14px;
+  padding: 10px 12px;
 
-  margin-top: 8px;
+  margin-top: 9px;
+
+  border: 1px solid #2b2b2b;
+  border-radius: 13px;
 
   background: #111;
-
-  border: 1px solid #292929;
-
-  border-radius: 16px;
-
-  color: #fff;
-
-  text-decoration: none;
 }
 
-.order-option-icon {
-  width: 40px;
-  height: 40px;
-
-  flex: 0 0 40px;
+.choice-icon {
+  width: 37px;
+  height: 37px;
 
   display: grid;
   place-items: center;
 
-  border-radius: 13px;
+  border: 1px solid #303030;
+  border-radius: 50%;
 
-  background: #202020;
+  color: #ccc;
+}
+
+.order-choice strong {
+  display: block;
 
   color: #ddd;
+
+  font-size: 12px;
 }
 
-.order-option > span:nth-child(2) {
-  flex: 1;
+.order-choice small {
+  display: block;
 
-  display: flex;
-  flex-direction: column;
+  margin-top: 3px;
 
-  gap: 3px;
-}
-
-.order-option b {
-  font-size: 11px;
-}
-
-.order-option small {
   color: #666;
 
   font-size: 10px;
 }
 
 /* =====================================================
-   RESPONSIVE
+   PAGE CONTAINER
 ===================================================== */
 
-@media (max-width: 600px) {
-  .auth-wrap {
-    padding-top: 25px;
+.page-container {
+  width: 100%;
+  max-width: 650px;
+
+  margin: 0 auto;
+
+  padding: 45px 22px 40px;
+}
+
+.page-heading {
+  margin-bottom: 25px;
+}
+
+.page-heading h1 {
+  margin: 8px 0 0;
+
+  color: #eee;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 35px;
+
+  font-weight: 400;
+}
+
+.page-heading p {
+  margin: 8px 0 0;
+
+  color: #777;
+
+  font-size: 12px;
+}
+
+/* =====================================================
+   DIGITAL CARD
+===================================================== */
+
+.digital-card {
+  padding: 22px;
+
+  border: 1px solid #303030;
+  border-radius: 20px;
+
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(255,255,255,.055),
+      transparent 35%
+    ),
+    #111;
+
+  box-shadow: 0 20px 55px rgba(0,0,0,.35);
+}
+
+.digital-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  padding-bottom: 20px;
+
+  border-bottom: 1px solid #282828;
+}
+
+.digital-top div {
+  display: flex;
+  flex-direction: column;
+}
+
+.digital-top strong {
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 12px;
+
+  letter-spacing: 2px;
+}
+
+.digital-top span {
+  margin-top: 4px;
+
+  color: #666;
+
+  font-size: 8px;
+
+  letter-spacing: 1.5px;
+}
+
+.digital-top > svg {
+  color: #777;
+}
+
+.qr-box {
+  width: 220px;
+  height: 220px;
+
+  display: grid;
+  place-items: center;
+
+  margin: 30px auto;
+
+  background: #f5f3ee;
+
+  border-radius: 16px;
+}
+
+.digital-member {
+  display: flex;
+  flex-direction: column;
+}
+
+.digital-member span {
+  color: #666;
+
+  font-size: 8px;
+
+  letter-spacing: 1.8px;
+}
+
+.digital-member strong {
+  margin-top: 5px;
+
+  color: #eee;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 20px;
+
+  font-weight: 400;
+}
+
+.digital-member small {
+  margin-top: 5px;
+
+  color: #777;
+
+  font-size: 10px;
+
+  letter-spacing: 1.5px;
+}
+
+.digital-balances {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 1px;
+
+  margin-top: 22px;
+
+  border: 1px solid #282828;
+  border-radius: 12px;
+
+  overflow: hidden;
+}
+
+.digital-balances div {
+  padding: 15px;
+
+  background: #0d0d0d;
+}
+
+.digital-balances div + div {
+  border-left: 1px solid #282828;
+}
+
+.digital-balances span {
+  display: block;
+
+  color: #666;
+
+  font-size: 8px;
+
+  letter-spacing: 1.5px;
+}
+
+.digital-balances strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #eee;
+
+  font-size: 22px;
+
+  font-weight: 500;
+}
+
+.digital-note {
+  margin: 18px 0 0;
+
+  color: #666;
+
+  font-size: 10px;
+
+  text-align: center;
+}
+
+/* =====================================================
+   REWARDS
+===================================================== */
+
+.reward-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+}
+
+.reward-card {
+  width: 100%;
+
+  min-height: 78px;
+
+  display: grid;
+  grid-template-columns: 40px 1fr 18px;
+
+  align-items: center;
+
+  gap: 11px;
+
+  padding: 12px;
+
+  border: 1px solid #292929;
+  border-radius: 14px;
+
+  background: #111;
+
+  color: #eee;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.reward-card.selected {
+  border-color: #777;
+  background: #171717;
+}
+
+.reward-card.locked {
+  opacity: .42;
+  cursor: not-allowed;
+}
+
+.reward-number {
+  width: 39px;
+  height: 39px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #303030;
+  border-radius: 50%;
+
+  color: #aaa;
+}
+
+.reward-content {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.reward-content strong {
+  color: #ddd;
+
+  font-size: 13px;
+}
+
+.reward-content small {
+  margin-top: 3px;
+
+  color: #666;
+
+  font-size: 10px;
+
+  line-height: 1.4;
+}
+
+.reward-content b {
+  margin-top: 5px;
+
+  color: #aaa;
+
+  font-size: 9px;
+
+  letter-spacing: .5px;
+}
+
+.redeem-box {
+  margin-top: 15px;
+
+  padding: 20px;
+
+  border: 1px solid #303030;
+  border-radius: 15px;
+
+  background: #121212;
+}
+
+.redeem-box h2 {
+  margin: 9px 0 7px;
+
+  color: #eee;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 22px;
+
+  font-weight: 400;
+}
+
+.redeem-box p {
+  color: #777;
+
+  font-size: 11px;
+
+  line-height: 1.6;
+}
+
+.success-card {
+  padding: 30px 22px;
+
+  text-align: center;
+
+  border: 1px solid #303030;
+  border-radius: 20px;
+
+  background: #111;
+}
+
+.success-card > svg {
+  color: #ddd;
+
+  margin-bottom: 18px;
+}
+
+.success-card h1 {
+  margin: 9px 0;
+
+  color: #eee;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 28px;
+
+  font-weight: 400;
+}
+
+.success-card > p {
+  color: #777;
+
+  font-size: 12px;
+
+  line-height: 1.6;
+}
+
+.redemption-code {
+  margin: 23px 0;
+
+  padding: 19px 10px;
+
+  border: 1px dashed #454545;
+  border-radius: 12px;
+
+  background: #0c0c0c;
+
+  color: #eee;
+
+  font-size: 28px;
+  font-weight: 700;
+
+  letter-spacing: 4px;
+}
+
+.text-button {
+  margin-top: 17px;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #777;
+
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+/* =====================================================
+   HISTORY
+===================================================== */
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+
+  border-top: 1px solid #242424;
+}
+
+.history-card {
+  min-height: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  border-bottom: 1px solid #242424;
+}
+
+.history-card div {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.history-card strong {
+  color: #ccc;
+
+  font-size: 12px;
+
+  text-transform: capitalize;
+}
+
+.history-card small {
+  margin-top: 5px;
+
+  color: #666;
+
+  font-size: 9px;
+}
+
+.history-points {
+  color: #aaa;
+
+  font-size: 11px;
+}
+
+.empty-card {
+  padding: 25px;
+
+  border: 1px solid #282828;
+  border-radius: 15px;
+
+  background: #111;
+
+  color: #777;
+
+  text-align: center;
+
+  font-size: 12px;
+}
+
+.empty-card.large {
+  min-height: 180px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+}
+
+.empty-card strong {
+  color: #aaa;
+}
+
+.empty-card p {
+  margin: 0;
+
+  color: #666;
+}
+
+/* =====================================================
+   STAFF
+===================================================== */
+
+.staff-main {
+  width: 100%;
+  max-width: 650px;
+
+  margin: 0 auto;
+
+  padding: 45px 22px 50px;
+}
+
+.staff-heading {
+  margin-bottom: 24px;
+}
+
+.staff-heading > span {
+  color: #666;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  letter-spacing: 2px;
+}
+
+.staff-heading h1 {
+  margin: 7px 0 0;
+
+  color: #eee;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 34px;
+
+  font-weight: 400;
+}
+
+.staff-heading p {
+  margin: 7px 0 0;
+
+  color: #777;
+
+  font-size: 12px;
+}
+
+.staff-card {
+  padding: 20px;
+
+  border: 1px solid #2a2a2a;
+  border-radius: 17px;
+
+  background: #111;
+}
+
+.staff-card + .staff-card {
+  margin-top: 12px;
+}
+
+.customer-card h2 {
+  margin: 8px 0 4px;
+
+  color: #eee;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 25px;
+
+  font-weight: 400;
+}
+
+.staff-muted {
+  margin: 3px 0;
+
+  color: #666;
+
+  font-size: 11px;
+}
+
+.staff-balances {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 8px;
+
+  margin: 18px 0;
+}
+
+.staff-balances > div {
+  padding: 14px;
+
+  border: 1px solid #292929;
+  border-radius: 12px;
+
+  background: #0d0d0d;
+}
+
+.staff-balances svg {
+  color: #888;
+}
+
+.staff-balances span {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #666;
+
+  font-size: 8px;
+
+  letter-spacing: 1.5px;
+}
+
+.staff-balances strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #eee;
+
+  font-size: 22px;
+}
+
+.birthday-line {
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+}
+
+.staff-divider {
+  height: 1px;
+
+  margin: 22px 0;
+
+  background: #272727;
+}
+
+.points-preview {
+  margin: -4px 0 14px;
+
+  color: #777;
+
+  font-size: 11px;
+}
+
+.points-preview strong {
+  color: #ddd;
+}
+
+.secondary-staff-button {
+  width: 100%;
+
+  min-height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  margin-top: 9px;
+
+  border: 1px solid #303030;
+  border-radius: 11px;
+
+  background: #151515;
+
+  color: #bbb;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.secondary-staff-button:disabled {
+  opacity: .5;
+}
+
+.staff-notice {
+  margin-top: 12px;
+}
+
+/* =====================================================
+   BOTTOM NAV
+===================================================== */
+
+.bottom-nav {
+  position: fixed;
+
+  left: 50%;
+  bottom: 12px;
+
+  transform: translateX(-50%);
+
+  z-index: 80;
+
+  width: min(
+    calc(100% - 24px),
+    470px
+  );
+
+  height: 65px;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  padding: 5px;
+
+  border: 1px solid #292929;
+  border-radius: 18px;
+
+  background: rgba(16,16,16,.94);
+
+  box-shadow: 0 15px 45px rgba(0,0,0,.45);
+
+  backdrop-filter: blur(18px);
+}
+
+.bottom-nav button {
+  border: 0;
+
+  border-radius: 13px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  background: transparent;
+
+  color: #666;
+
+  font-size: 9px;
+
+  cursor: pointer;
+}
+
+.bottom-nav button.selected {
+  background: #eae7e0;
+
+  color: #111;
+}
+
+.bottom-nav button svg {
+  stroke-width: 1.7;
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 560px) {
+
+  .auth-page {
+    align-items: flex-start;
+
+    padding: 34px 15px 25px;
+  }
+
+  .auth-shell {
+    max-width: 400px;
+  }
+
+  .auth-brand img {
+    width: 48px;
+    height: 48px;
+
+    max-width: 48px;
+    max-height: 48px;
+  }
+
+  .auth-brand h1 {
+    font-size: 20px;
+    letter-spacing: 3px;
   }
 
   .auth-card {
-    padding: 20px;
+    padding: 21px 18px;
   }
 
-  .brand h1 {
-    font-size: 21px;
+  .home-hero {
+    min-height: 390px;
+
+    padding: 55px 22px 45px;
   }
 
-  .sushi-hero {
-    min-height: 430px;
-    padding: 45px 20px;
+  .hero-inner h1 {
+    font-size: 47px;
   }
 
-  .hero-content h1 {
-    font-size: clamp(40px, 12vw, 58px);
-    letter-spacing: -2px;
-  }
-
-  .hero-actions {
+  .hero-buttons {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .glass-button {
+  .hero-button {
     width: 100%;
   }
 
-  .points-section,
-  .menu-section,
-  .rewards-section {
-    padding: 52px 20px;
+  .home-section {
+    padding: 57px 20px;
   }
 
-  .points-section h2,
-  .menu-section h2,
-  .rewards-section h2 {
-    font-size: 30px;
+  .home-section h2 {
+    font-size: 31px;
   }
 
-  .earn-grid {
+  .earn-steps {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
 
-  .sushi-stage {
-    width: min(290px, 72vw);
+  .menu-photo {
+    height: 245px;
   }
 
-  .carousel-arrow {
-    width: 35px;
-    height: 35px;
+  .menu-card {
+    grid-template-columns: 34px minmax(0, 1fr) 34px;
   }
 
-  .carousel-arrow.left {
-    margin-right: 7px;
-  }
-
-  .carousel-arrow.right {
-    margin-left: 7px;
-  }
-
-  .topbar {
-    height: 60px;
-  }
-
-  .topbar-brand img {
-    width: 30px !important;
-    height: 30px !important;
-    min-width: 30px;
-    max-width: 30px;
-  }
-}
-
-@media (max-width: 380px) {
-  .auth-card {
-    padding: 17px;
-  }
-
-  .hero-content h1 {
-    font-size: 39px;
-  }
-
-  .sushi-stage {
-    width: 240px;
-  }
-
-  .carousel-arrow {
+  .menu-arrow {
     width: 32px;
     height: 32px;
   }
+
+  .points-card {
+    padding: 21px;
+  }
+
+  .points-card strong {
+    font-size: 41px;
+  }
+
+  .page-container {
+    padding: 35px 18px 35px;
+  }
+
+  .digital-card {
+    padding: 18px;
+  }
+
+  .qr-box {
+    width: 205px;
+    height: 205px;
+  }
+
+  .app-header {
+    padding: 0 15px;
+  }
+
+  .bottom-nav {
+    bottom: 9px;
+    width: calc(100% - 18px);
+  }
+
+}
+
+/* =====================================================
+   SMALL PHONES
+===================================================== */
+
+@media (max-width: 360px) {
+
+  .auth-card {
+    padding: 18px 15px;
+  }
+
+  .auth-brand h1 {
+    font-size: 18px;
+  }
+
+  .hero-inner h1 {
+    font-size: 41px;
+  }
+
+  .home-section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .menu-photo {
+    height: 215px;
+  }
+
+  .points-card strong {
+    font-size: 36px;
+  }
+
+}
+
+/* =====================================================
+   REDUCED MOTION
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+
 }
