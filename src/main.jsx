@@ -645,123 +645,388 @@ function Dashboard({ session, profile, reloadProfile }) {
    HOME
 ===================================================== */
 
-function Home({ profile, rewards, onGoRewards }) {
+function Home({ profile, rewards }) {
+  const [category, setCategory] = useState('Specialty Rolls');
+  const [menuIndex, setMenuIndex] = useState(0);
+  const [orderOpen, setOrderOpen] = useState(false);
+  const [direction, setDirection] = useState('next');
+
   const points = Number(profile.points || 0);
 
-  const menu = [
-    {
-      name: 'California Roll',
-      price: '₱189',
-      pieces: '8 pcs',
-      ingredients: 'Avocado • Mango • Cucumber • Crabstick • Japanese Mayo',
-      image: '/sushi/california-roll.png'
-    },
-    {
-      name: 'Spicy Salmon Roll',
-      price: '₱219',
-      pieces: '8 pcs',
-      ingredients: 'Fresh Salmon • Cucumber • Sesame • Spicy Salmon Mix',
-      image: '/sushi/spicy-salmon-roll.png'
-    },
-    {
-      name: 'Green Dragon',
-      price: '₱219',
-      pieces: '8 pcs',
-      ingredients: 'Prawn Tempura • Fresh Avocado • Teriyaki • Spicy Mayo',
-      image: '/sushi/green-dragon-roll.png'
-    },
-    {
-      name: 'Crispy Cream',
-      price: '₱209',
-      pieces: '8 pcs',
-      ingredients: 'Prawn Tempura • Avocado • Cucumber • Tamago • Cream Cheese',
-      image: '/sushi/crispy-cream.png'
-    },
-    {
-      name: 'Hurricane Roll',
-      price: '₱219',
-      pieces: '8 pcs',
-      ingredients: 'Avocado • Crabstick • Cucumber • Crabstick Salad • Caviar',
-      image: '/sushi/hurricane-roll.png'
-    },
-    {
-      name: 'Super California',
-      price: '₱209',
-      pieces: '8 pcs',
-      ingredients: 'Avocado • Mango • Cucumber • Crabstick • Japanese Mayo • Caviar',
-      image: '/sushi/super-california.png'
-    },
-    {
-      name: 'Volcano Roll',
-      price: '₱229',
-      pieces: '8 pcs',
-      ingredients: 'Prawn Tempura • Avocado • Cucumber • Spicy Prawn Mix • Crispy Chips',
-      image: '/sushi/volcano-roll.png'
-    },
-    {
-      name: 'At Home Supreme Roll',
-      price: '₱239',
-      pieces: '8 pcs',
-      ingredients: 'Prawn Tempura • Avocado • Tamago • Cream Cheese • Seared Salmon',
-      image: '/sushi/at-home-supreme-roll.png'
-    }
-  ];
+  const menuCategories = {
+    'Specialty Rolls': [
+      {
+        name: 'Spicy Salmon Roll',
+        pieces: '8 pcs',
+        price: '₱219',
+        ingredients:
+          'Fresh salmon • Cucumber • Black & white sesame • Spicy salmon mix'
+      },
+      {
+        name: 'California Roll',
+        pieces: '8 pcs',
+        price: '₱189',
+        ingredients:
+          'Avocado • Mango • Cucumber • Crabstick • Japanese mayo • White sesame'
+      },
+      {
+        name: 'Green Dragon',
+        pieces: '8 pcs',
+        price: '₱219',
+        ingredients:
+          'Prawn tempura • Fresh avocado • Teriyaki • Spicy mayo • Black sesame'
+      },
+      {
+        name: 'Shrimp Avo Roll',
+        pieces: '8 pcs',
+        price: '₱205',
+        ingredients:
+          'Prawn tempura • Avocado • White sesame seeds'
+      },
+      {
+        name: 'Spicy California',
+        pieces: '8 pcs',
+        price: '₱195',
+        ingredients:
+          'Avocado • Mango • Cucumber • Crabstick • Japanese mayo • Togarashi'
+      },
+      {
+        name: 'Creamy Salmon Avo',
+        pieces: '8 pcs',
+        price: '₱209',
+        ingredients:
+          'Fresh salmon • Cream cheese • Avocado • Black & white sesame'
+      },
+      {
+        name: 'Crispy Cream',
+        pieces: '8 pcs',
+        price: '₱209',
+        ingredients:
+          'Prawn tempura • Avocado • Cucumber • Tamago • Cream cheese • Sweet chili sauce'
+      },
+      {
+        name: 'Crunchy California',
+        pieces: '8 pcs',
+        price: '₱189',
+        ingredients:
+          'Avocado • Mango • Cucumber • Crabstick • Japanese mayo • Crispy tanuki'
+      },
+      {
+        name: 'Chicken Katsu Roll',
+        pieces: '8 pcs',
+        price: '₱209',
+        ingredients:
+          'Chicken katsu • Cucumber • Crispy tanuki • Teriyaki • Sweet chili • Japanese mayo'
+      },
+      {
+        name: 'Hurricane Roll',
+        pieces: '8 pcs',
+        price: '₱219',
+        ingredients:
+          'Avocado • Crabsticks • Cucumber • Crabstick salad • Spring onion • Caviar'
+      },
+      {
+        name: 'Super California',
+        pieces: '8 pcs',
+        price: '₱209',
+        ingredients:
+          'Avocado • Mango • Cucumber • Crabstick • Japanese mayo • Caviar'
+      },
+      {
+        name: 'Crunchy Tempura',
+        pieces: '8 pcs',
+        price: '₱199',
+        ingredients:
+          'Prawn tempura • Cucumber • Crispy tanuki • Sweet chili • Teriyaki'
+      },
+      {
+        name: 'Sphinx Roll',
+        pieces: '8 pcs',
+        price: '₱219',
+        ingredients:
+          'Prawn tempura • Avocado • Cucumber • Fried salmon • Crispy nori • Sweet chili'
+      },
+      {
+        name: 'Crunchy Potato',
+        pieces: '8 pcs',
+        price: '₱219',
+        ingredients:
+          'Prawn tempura • Avocado • Cucumber • Crabstick salad • Japanese mayo • Crispy potato'
+      },
+      {
+        name: 'Passion Rainbow',
+        pieces: '8 pcs',
+        price: '₱219',
+        ingredients:
+          'Fresh salmon • Avocado • Cucumber • Crabstick • Japanese mayo • Caviar'
+      },
+      {
+        name: 'Kani Aburi Roll',
+        pieces: '8 pcs',
+        price: '₱229',
+        ingredients:
+          'Prawn tempura • Tamago • Avocado • Seared crabstick • Spicy mayo • Teriyaki'
+      },
+      {
+        name: 'Imperial Salmon',
+        pieces: '8 pcs',
+        price: '₱239',
+        ingredients:
+          'Prawn tempura • Mango • Cucumber • Cream cheese • Seared salmon • Spicy mayo'
+      },
+      {
+        name: 'At Home Supreme Roll',
+        pieces: '8 pcs',
+        price: '₱239',
+        ingredients:
+          'Prawn tempura • Avocado • Tamago • Cream cheese • Seared salmon • Spicy mayo • Crispy potato'
+      },
+      {
+        name: 'Crab Lava Roll',
+        pieces: '8 pcs',
+        price: '₱239',
+        ingredients:
+          'Tempura crabstick • Avocado • Black & white sesame • Spicy mayo crab • Crispy tanuki'
+      },
+      {
+        name: 'Cheezy Tempura',
+        pieces: '8 pcs',
+        price: '₱229',
+        ingredients:
+          'Prawn tempura • Tamago • Carrots • Cream cheese • Seared cheddar • Japanese mayo • Teriyaki • Chips'
+      },
+      {
+        name: 'Volcano Roll',
+        pieces: '8 pcs',
+        price: '₱229',
+        ingredients:
+          'Prawn tempura • Avocado • Cucumber • Cream cheese • Spicy mayo • Spicy prawn tempura mix • Crispy chips'
+      }
+    ],
 
-  const [index, setIndex] = useState(0);
-  const [orderOpen, setOrderOpen] = useState(false);
+    'Tempura & Seafood': [
+      {
+        name: 'Dynamite Shrimp',
+        pieces: '—',
+        price: '₱189',
+        ingredients: 'Prawn tempura covered with dynamite sauce'
+      },
+      {
+        name: 'Ebi Fry',
+        pieces: '4 pcs',
+        price: '₱189',
+        ingredients: '4 pieces prawn tempura'
+      },
+      {
+        name: 'Cucumber Crab Salad',
+        pieces: '—',
+        price: '₱179',
+        ingredients:
+          'Mango • Cucumber • Crabstick • Japanese mayo • Caviar'
+      }
+    ],
 
-  const current = menu[index];
+    'Veggie': [
+      {
+        name: 'Creamy Avo',
+        pieces: '8 pcs',
+        price: '₱99',
+        ingredients: 'Avocado • Cream cheese'
+      },
+      {
+        name: 'Avo Lover',
+        pieces: '8 pcs',
+        price: '₱119',
+        ingredients:
+          'Avocado inside covered with avocado'
+      },
+      {
+        name: 'Veggie Roll',
+        pieces: '8 pcs',
+        price: '₱109',
+        ingredients:
+          'Avocado • Cucumber • Carrots • Lettuce • White sesame'
+      },
+      {
+        name: 'Tropical Garden Roll',
+        pieces: '—',
+        price: '₱199',
+        ingredients:
+          'Mango • Cucumber • Crabstick • Avocado • Carrots • Lettuce • Rice paper • Sweet chili'
+      },
+      {
+        name: 'Tropical Garden Roll — Veggie',
+        pieces: '—',
+        price: '₱159',
+        ingredients:
+          'Mango • Cucumber • Avocado • Carrots • Lettuce • Rice paper • Sweet chili'
+      }
+    ],
 
-  function previous() {
-    setIndex((i) => (i === 0 ? menu.length - 1 : i - 1));
+    'Nigiri & Sashimi': [
+      {
+        name: 'Tamago Nigiri',
+        pieces: '2 pcs',
+        price: '₱89',
+        ingredients: 'Japanese omelette'
+      },
+      {
+        name: 'Salmon Nigiri',
+        pieces: '2 pcs',
+        price: '₱129',
+        ingredients: 'Fresh salmon'
+      },
+      {
+        name: 'Kani Nigiri',
+        pieces: '2 pcs',
+        price: '₱95',
+        ingredients: 'Crabstick'
+      },
+      {
+        name: 'Sake Sashimi',
+        pieces: '4 pcs',
+        price: '₱219',
+        ingredients: 'Fresh slices of salmon'
+      },
+      {
+        name: 'Seared Salmon',
+        pieces: '2 pcs',
+        price: '₱135',
+        ingredients: 'Seared salmon'
+      }
+    ],
+
+    'Platters': [
+      {
+        name: 'Create Your Own Platter',
+        pieces: '32 pcs',
+        price: '₱859',
+        ingredients:
+          'Mix & match any 4 rolls from Classic or Specialty Rolls'
+      },
+      {
+        name: 'Tempura Platter',
+        pieces: '32 pcs',
+        price: '₱759',
+        ingredients:
+          'Mix of tempura rolls from Classic selection'
+      },
+      {
+        name: 'California Party Platter',
+        pieces: '32 pcs',
+        price: '₱689',
+        ingredients:
+          'Mixed California rolls'
+      },
+      {
+        name: 'Mini Harvest Platter',
+        pieces: '32 pcs',
+        price: '₱959',
+        ingredients:
+          'Fresh salmon nigiri • Crabstick nigiri • Tropical garden roll • Seafood rolls'
+      },
+      {
+        name: 'At Home Supreme Platter',
+        pieces: '80 pcs',
+        price: '₱1,699',
+        ingredients:
+          'Mixed sushi rolls and makis'
+      },
+      {
+        name: 'Harvest Platter',
+        pieces: '68 pcs',
+        price: '₱1,899',
+        ingredients:
+          'Fresh salmon nigiri • Crabstick nigiri • Veggie rolls • Seafood rolls'
+      }
+    ]
+  };
+
+  const currentMenu =
+    menuCategories[category] || [];
+
+  const current =
+    currentMenu[menuIndex] ||
+    currentMenu[0];
+
+  function changeCategory(newCategory) {
+    setCategory(newCategory);
+    setMenuIndex(0);
+    setDirection('next');
   }
 
-  function next() {
-    setIndex((i) => (i === menu.length - 1 ? 0 : i + 1));
+  function previousSushi() {
+    setDirection('prev');
+
+    setMenuIndex((index) =>
+      index === 0
+        ? currentMenu.length - 1
+        : index - 1
+    );
+  }
+
+  function nextSushi() {
+    setDirection('next');
+
+    setMenuIndex((index) =>
+      index === currentMenu.length - 1
+        ? 0
+        : index + 1
+    );
   }
 
   return (
-    <div className="home-page">
+    <div className="sushi-home">
 
-      <section className="home-hero">
+      {/* HERO */}
 
-        <div className="hero-inner">
+      <section className="sushi-hero">
 
-          <div className="hero-label">
-            AT HOME SUSHI
+        <div className="hero-content">
+
+          <div className="hero-brand">
+            <img
+              src={logo}
+              alt="At Home Sushi"
+            />
+
+            <span>AT HOME SUSHI</span>
           </div>
 
           <h1>
-            Good sushi.
-            <br />
-            <span>Better rewards.</span>
+            GET MORE FROM
+            <span> EVERY ORDER.</span>
           </h1>
 
           <p>
-            Enjoy your favorites, earn Sushi Points,
-            and make every order count.
+            Every order brings you closer
+            to your next reward.
           </p>
 
-          <div className="hero-buttons">
+          <div className="hero-actions">
 
             <button
-              className="hero-button primary"
+              className="glass-button dark-glass"
               onClick={() =>
                 document
-                  .getElementById('menu-section')
-                  ?.scrollIntoView({ behavior: 'smooth' })
+                  .getElementById('sushi-menu')
+                  ?.scrollIntoView({
+                    behavior: 'smooth'
+                  })
               }
             >
-              Explore sushi
+              Explore Our Sushi
               <ChevronRight size={17} />
             </button>
 
             <button
-              className="hero-button secondary"
+              className="glass-button light-glass"
               onClick={() =>
                 document
-                  .getElementById('points-section')
-                  ?.scrollIntoView({ behavior: 'smooth' })
+                  .getElementById('sushi-points')
+                  ?.scrollIntoView({
+                    behavior: 'smooth'
+                  })
               }
             >
               My Sushi Points
@@ -773,266 +1038,371 @@ function Home({ profile, rewards, onGoRewards }) {
 
       </section>
 
+
+      {/* SUSHI POINTS */}
+
       <section
-        id="points-section"
-        className="home-section points-home"
+        id="sushi-points"
+        className="points-section"
       >
 
-        <div className="section-label">
+        <div className="section-kicker">
           YOUR LOYALTY
         </div>
 
-        <h2>Your Sushi Points</h2>
+        <h2>
+          YOUR SUSHI POINTS
+        </h2>
 
-        <p className="section-description">
-          Every order brings you closer to something delicious.
+        <p className="section-intro">
+          Every order brings you closer
+          to something delicious.
         </p>
 
-        <div className="points-card">
+        <div className="points-glass-card">
 
           <div>
-            <span>POINT BALANCE</span>
+            <span>
+              CURRENT BALANCE
+            </span>
 
-            <strong>{points.toFixed(0)}</strong>
+            <strong>
+              {points.toFixed(0)}
+            </strong>
 
-            <small>SUSHI POINTS</small>
+            <small>
+              SUSHI POINTS
+            </small>
           </div>
 
-          <button onClick={onGoRewards}>
+          <button
+            className="bubble-arrow"
+            onClick={() =>
+              document
+                .getElementById('rewards-preview')
+                ?.scrollIntoView({
+                  behavior: 'smooth'
+                })
+            }
+          >
             <ChevronRight size={20} />
           </button>
 
         </div>
 
-        <div className="earn-steps">
+        <div className="earn-grid">
 
-          <div>
-            <b>01</b>
-            <span>
-              <strong>ORDER</strong>
-              Enjoy your favorite sushi.
-            </span>
+          <div className="earn-item">
+            <span>01</span>
+            <div>
+              <b>ORDER</b>
+              <p>Enjoy your favorite sushi.</p>
+            </div>
           </div>
 
-          <div>
-            <b>02</b>
-            <span>
-              <strong>EARN</strong>
-              ₱100 spent = 1 Sushi Point.
-            </span>
+          <div className="earn-item">
+            <span>02</span>
+            <div>
+              <b>EARN</b>
+              <p>₱100 spent = 1 Sushi Point.</p>
+            </div>
           </div>
 
-          <div>
-            <b>03</b>
-            <span>
-              <strong>REDEEM</strong>
-              Turn points into rewards.
-            </span>
+          <div className="earn-item">
+            <span>03</span>
+            <div>
+              <b>REDEEM</b>
+              <p>Turn points into rewards.</p>
+            </div>
           </div>
 
         </div>
 
       </section>
 
+
+      {/* MENU */}
+
       <section
-        id="menu-section"
-        className="home-section menu-home"
+        id="sushi-menu"
+        className="menu-section"
       >
 
-        <div className="section-label">
+        <div className="section-kicker">
           FROM OUR KITCHEN
         </div>
 
-        <h2>Explore Our Sushi</h2>
+        <h2>
+          EXPLORE OUR SUSHI
+        </h2>
 
-        <p className="section-description">
-          A few favorites from At Home Sushi.
+        <p className="section-intro">
+          Discover something delicious.
         </p>
 
-        <div className="menu-card">
 
-          <button
-            className="menu-arrow"
-            onClick={previous}
-            aria-label="Previous"
-          >
-            ‹
-          </button>
+        {/* CATEGORY BUTTONS */}
 
-          <div className="menu-photo">
+        <div className="menu-categories">
 
-            <img
-              src={current.image}
-              alt={current.name}
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.parentElement.classList.add('missing');
-              }}
-            />
+          {Object.keys(menuCategories).map(
+            (item) => (
+              <button
+                key={item}
+                className={
+                  category === item
+                    ? 'category-active'
+                    : ''
+                }
+                onClick={() =>
+                  changeCategory(item)
+                }
+              >
+                {item}
+              </button>
+            )
+          )}
 
-            <div className="photo-fallback">
-              <span>🍣</span>
-              <small>SUSHI</small>
+        </div>
+
+
+        {/* SUSHI SHOWCASE */}
+
+        {current && (
+          <>
+            <div className="sushi-showcase">
+
+              <button
+                className="carousel-arrow left"
+                onClick={previousSushi}
+                aria-label="Previous sushi"
+              >
+                ‹
+              </button>
+
+              <div
+                className={`sushi-stage sushi-slide-${direction}`}
+                key={`${category}-${current.name}-${menuIndex}`}
+              >
+
+                <div className="sushi-image-wrap">
+
+                  <div className="sushi-photo-placeholder">
+                    <span>🍣</span>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <button
+                className="carousel-arrow right"
+                onClick={nextSushi}
+                aria-label="Next sushi"
+              >
+                ›
+              </button>
+
             </div>
 
-          </div>
 
-          <button
-            className="menu-arrow"
-            onClick={next}
-            aria-label="Next"
-          >
-            ›
-          </button>
+            <div className="sushi-details">
 
-        </div>
+              <div className="sushi-counter">
+                {String(menuIndex + 1).padStart(2, '0')}
 
-        <div className="menu-info">
+                <span>
+                  / {String(currentMenu.length).padStart(2, '0')}
+                </span>
+              </div>
 
-          <div className="menu-count">
-            {String(index + 1).padStart(2, '0')}
-            <span>/ {String(menu.length).padStart(2, '0')}</span>
-          </div>
+              <h3>
+                {current.name}
+              </h3>
 
-          <h3>{current.name}</h3>
+              <p className="sushi-meta">
+                {current.pieces}
+                &nbsp;·&nbsp;
+                {current.price}
+              </p>
 
-          <div className="menu-price">
-            {current.pieces}
-            <span>•</span>
-            {current.price}
-          </div>
+              <p className="ingredients">
+                {current.ingredients}
+              </p>
 
-          <p>{current.ingredients}</p>
+              <button
+                className="order-bubble"
+                onClick={() =>
+                  setOrderOpen(true)
+                }
+              >
+                ORDER THIS
+                <ChevronRight size={17} />
+              </button>
 
-          <button
-            className="order-button"
-            onClick={() => setOrderOpen(true)}
-          >
-            Order this
-            <ChevronRight size={17} />
-          </button>
-
-        </div>
+            </div>
+          </>
+        )}
 
       </section>
 
-      <section className="home-section rewards-home">
 
-        <div className="section-label">
+      {/* REWARDS */}
+
+      <section
+        id="rewards-preview"
+        className="rewards-section"
+      >
+
+        <div className="section-kicker">
           YOUR BENEFITS
         </div>
 
-        <h2>Rewards</h2>
+        <h2>
+          REWARDS
+        </h2>
 
-        <p className="section-description">
-          A little something for every sushi lover.
+        <p className="section-intro">
+          A little something for every
+          sushi lover.
         </p>
 
-        <div className="home-rewards">
+        <div className="modern-rewards">
 
-          {rewards.slice(0, 3).map((reward, i) => (
-            <div className="home-reward" key={reward.id}>
+          {rewards.slice(0, 3).map(
+            (reward, index) => (
 
-              <span>0{i + 1}</span>
+              <div
+                className="modern-reward"
+                key={reward.id}
+              >
 
-              <div>
-                <strong>{reward.name}</strong>
-                <p>
-                  {reward.description ||
-                    'Use your Sushi Points for this reward.'}
-                </p>
+                <span>
+                  0{index + 1}
+                </span>
+
+                <div>
+                  <h3>
+                    {reward.name}
+                  </h3>
+
+                  <p>
+                    {reward.description ||
+                      'Use your Sushi Points for this reward.'}
+                  </p>
+                </div>
+
+                <strong>
+                  {reward.points_required}
+                </strong>
+
               </div>
 
-              <b>
-                {reward.points_required}
-              </b>
-
-            </div>
-          ))}
-
-          {rewards.length === 0 && (
-            <div className="empty-card">
-              Rewards will appear here once available.
-            </div>
+            )
           )}
 
         </div>
 
       </section>
 
+
+      {/* ORDER POPUP */}
+
       {orderOpen && (
+
         <div
-          className="modal-overlay"
-          onClick={() => setOrderOpen(false)}
+          className="order-overlay"
+          onClick={() =>
+            setOrderOpen(false)
+          }
         >
 
           <div
             className="order-modal"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) =>
+              e.stopPropagation()
+            }
           >
 
             <button
               className="modal-close"
-              onClick={() => setOrderOpen(false)}
+              onClick={() =>
+                setOrderOpen(false)
+              }
             >
               <X size={19} />
             </button>
 
-            <div className="section-label">
+            <div className="section-kicker">
               {current.name}
             </div>
 
-            <h2>How would you like to order?</h2>
+            <h2>
+              HOW WOULD YOU
+              <br />
+              LIKE TO ORDER?
+            </h2>
 
             <p>
-              Choose your preferred way to order.
+              Choose how you'd like to
+              order your sushi.
             </p>
 
             <a
-              className="order-choice"
+              className="order-option"
               href="https://www.ordermo.ph/restaurants/at-home-sushi/M8y6MG8S?n=QXQgSG9tZSBTdXNoaQ==&p=cG5n&c=anBn"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <span className="choice-icon">
-                <ShoppingBag size={19} />
+
+              <span className="order-option-icon">
+                <ShoppingBag
+                  size={20}
+                  strokeWidth={1.7}
+                />
               </span>
 
               <span>
-                <strong>Order Online</strong>
+                <b>ORDER ONLINE</b>
                 <small>OrderMo</small>
               </span>
 
               <ChevronRight size={18} />
+
             </a>
 
             <a
-              className="order-choice"
+              className="order-option"
               href="https://www.facebook.com/athomesushibustos"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <span className="choice-icon">
-                <MessageCircle size={19} />
+
+              <span className="order-option-icon">
+                <MessageCircle
+                  size={20}
+                  strokeWidth={1.7}
+                />
               </span>
 
               <span>
-                <strong>Order via Facebook</strong>
+                <b>ORDER VIA FACEBOOK</b>
                 <small>Message At Home Sushi</small>
               </span>
 
               <ChevronRight size={18} />
+
             </a>
 
           </div>
 
         </div>
+
       )}
 
     </div>
   );
 }
-
 /* =====================================================
    DIGITAL CARD
 ===================================================== */
