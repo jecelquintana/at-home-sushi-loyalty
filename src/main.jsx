@@ -12,6 +12,7 @@ import {
   Ticket,
   History,
   QrCode,
+  ChevronRight,
   ScanLine,
   PlusCircle,
   Eye,
@@ -23,7 +24,7 @@ import {
   X,
   ShoppingBag,
   MessageCircle,
-  ChevronRight
+  ArrowLeft
 } from 'lucide-react';
 
 import './styles.css';
@@ -32,27 +33,19 @@ import logo from './logo.jpg';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-const supabase = createClient(
-  supabaseUrl,
-  supabaseKey,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
+const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true
   }
-);
+});
 
 /* =====================================================
-   PASSWORD FIELD
+   PASSWORD
 ===================================================== */
 
-function PasswordField({
-  value,
-  onChange,
-  placeholder = 'At least 8 characters'
-}) {
+function PasswordField({ value, onChange, placeholder }) {
   const [show, setShow] = useState(false);
 
   return (
@@ -64,22 +57,18 @@ function PasswordField({
           type={show ? 'text' : 'password'}
           value={value}
           onChange={onChange}
+          placeholder={placeholder || 'Your password'}
           required
           minLength={8}
-          placeholder={placeholder}
         />
 
         <button
           type="button"
           className="password-toggle"
-          onClick={() => setShow(!show)}
+          onClick={() => setShow((v) => !v)}
           aria-label={show ? 'Hide password' : 'Show password'}
         >
-          {show ? (
-            <EyeOff size={18} strokeWidth={1.6} />
-          ) : (
-            <Eye size={18} strokeWidth={1.6} />
-          )}
+          {show ? <EyeOff size={17} /> : <Eye size={17} />}
         </button>
       </div>
     </div>
@@ -87,20 +76,7 @@ function PasswordField({
 }
 
 /* =====================================================
-   LOADING
-===================================================== */
-
-function LoadingScreen({ text = 'Loading...' }) {
-  return (
-    <div className="loading-screen">
-      <div className="loading-mark">🍣</div>
-      <p>{text}</p>
-    </div>
-  );
-}
-
-/* =====================================================
-   CUSTOMER APP
+   APP
 ===================================================== */
 
 function App() {
@@ -110,36 +86,43 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkSession();
+    let mounted = true;
+
+    async function start() {
+      const { data } = await supabase.auth.getSession();
+
+      if (!mounted) return;
+
+      if (data.session) {
+        setSession(data.session);
+        await loadProfile(data.session.user.id);
+      } else {
+        setLoading(false);
+      }
+    }
+
+    start();
 
     const {
       data: { subscription }
-    } = supabase.auth.onAuthStateChange(
-      (_event, currentSession) => {
-        setSession(currentSession);
+    } = supabase.auth.onAuthStateChange(async (_event, currentSession) => {
+      if (!mounted) return;
 
-        if (currentSession) {
-          loadProfile(currentSession.user.id);
-        } else {
-          setProfile(null);
-          setLoading(false);
-        }
+      setSession(currentSession);
+
+      if (currentSession) {
+        await loadProfile(currentSession.user.id);
+      } else {
+        setProfile(null);
+        setLoading(false);
       }
-    );
+    });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
-
-  async function checkSession() {
-    const { data } = await supabase.auth.getSession();
-
-    if (data.session) {
-      setSession(data.session);
-      await loadProfile(data.session.user.id);
-    } else {
-      setLoading(false);
-    }
-  }
 
   async function loadProfile(id) {
     const { data, error } = await supabase
@@ -158,29 +141,29 @@ function App() {
 
   if (loading) {
     return (
-      <LoadingScreen text="Loading your loyalty club..." />
+      <div className="loading-screen">
+        <div className="loading-mark">🍣</div>
+        <div className="loading-brand">AT HOME SUSHI</div>
+        <div className="loading-text">Loading your loyalty club</div>
+      </div>
     );
   }
 
   if (!session) {
-    return (
-      <Auth
-        mode={mode}
-        setMode={setMode}
-      />
-    );
+    return <Auth mode={mode} setMode={setMode} />;
   }
 
   return (
     <Dashboard
       session={session}
       profile={profile}
+      reloadProfile={() => loadProfile(session.user.id)}
     />
   );
 }
 
 /* =====================================================
-   CUSTOMER AUTH
+   AUTH
 ===================================================== */
 
 function Auth({ mode, setMode }) {
@@ -189,20 +172,18 @@ function Auth({ mode, setMode }) {
   const [phone, setPhone] = useState('');
   const [birthday, setBirthday] = useState('');
   const [password, setPassword] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState('');
 
   const [remember, setRemember] = useState(
     localStorage.getItem('rememberLogin') === 'true'
   );
 
-  const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState('');
-
   useEffect(() => {
-    const savedEmail =
-      localStorage.getItem('savedLoginEmail');
+    const saved = localStorage.getItem('savedLoginEmail');
 
-    if (savedEmail) {
-      setEmail(savedEmail);
+    if (saved) {
+      setEmail(saved);
     }
   }, []);
 
@@ -214,25 +195,17 @@ function Auth({ mode, setMode }) {
 
     if (mode === 'login') {
       if (remember) {
-        localStorage.setItem(
-          'rememberLogin',
-          'true'
-        );
-
-        localStorage.setItem(
-          'savedLoginEmail',
-          email
-        );
+        localStorage.setItem('rememberLogin', 'true');
+        localStorage.setItem('savedLoginEmail', email);
       } else {
         localStorage.removeItem('rememberLogin');
         localStorage.removeItem('savedLoginEmail');
       }
 
-      const { error } =
-        await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
       if (error) {
         setMsg(error.message);
@@ -242,18 +215,17 @@ function Auth({ mode, setMode }) {
       return;
     }
 
-    const { data, error } =
-      await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: name,
-            phone,
-            birthday
-          }
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+          phone,
+          birthday
         }
-      });
+      }
+    });
 
     if (error) {
       setMsg(error.message);
@@ -264,41 +236,35 @@ function Auth({ mode, setMode }) {
     if (data.user) {
       const customerCode =
         Math.random()
-          .toString(16)
+          .toString(36)
           .substring(2, 12)
           .toUpperCase();
 
-      const { error: profileError } =
-        await supabase
-          .from('customers')
-          .insert({
-            id: data.user.id,
-            full_name: name,
-            phone: phone || null,
-            email,
-            birthday: birthday || null,
-            points: 0,
-            stamps: 0,
-            customer_code: customerCode
-          });
+      const { error: profileError } = await supabase
+        .from('customers')
+        .insert({
+          id: data.user.id,
+          full_name: name,
+          phone: phone || null,
+          email,
+          birthday: birthday || null,
+          points: 0,
+          stamps: 0,
+          customer_code: customerCode
+        });
 
       if (profileError) {
-        console.error(
-          'Customer creation error:',
-          profileError
-        );
-
+        console.error(profileError);
         setMsg(
-          'Account created, but your loyalty profile could not be created. Please contact staff.'
+          'Your account was created, but your loyalty profile could not be created. Please contact staff.'
         );
-
         setBusy(false);
         return;
       }
     }
 
     setMsg(
-      'Account created! Check your email to confirm your account, then log in.'
+      'Account created! Please check your email to confirm your account, then log in.'
     );
 
     setMode('login');
@@ -307,209 +273,194 @@ function Auth({ mode, setMode }) {
 
   return (
     <div className="auth-page">
+      <div className="auth-shell">
 
-      <div className="auth-brand">
+        <div className="auth-brand">
+          <img src={logo} alt="At Home Sushi" />
 
-        <img
-          src={logo}
-          className="auth-logo"
-          alt="At Home Sushi"
-        />
+          <h1>AT HOME SUSHI</h1>
 
-        <h1>AT HOME SUSHI</h1>
-
-        <p>LOYALTY CLUB</p>
-
-      </div>
-
-      <div className="auth-card">
-
-        <div className="auth-tabs">
-
-          <button
-            type="button"
-            className={mode === 'login' ? 'active' : ''}
-            onClick={() => {
-              setMode('login');
-              setMsg('');
-            }}
-          >
-            <LogIn size={16} />
-            Log in
-          </button>
-
-          <button
-            type="button"
-            className={mode === 'signup' ? 'active' : ''}
-            onClick={() => {
-              setMode('signup');
-              setMsg('');
-            }}
-          >
-            <UserPlus size={16} />
-            Join
-          </button>
-
+          <span>LOYALTY CLUB</span>
         </div>
 
-        <div className="auth-heading">
+        <div className="auth-card">
 
-          <h2>
-            {mode === 'signup'
-              ? 'Join the Loyalty Club'
-              : 'Welcome back'}
-          </h2>
-
-          <p>
-            {mode === 'signup'
-              ? 'Collect Sushi Points every time you order.'
-              : 'Check your points, rewards and loyalty card.'}
-          </p>
-
-        </div>
-
-        <form onSubmit={submit}>
-
-          {mode === 'signup' && (
-            <>
-              <div className="field">
-                <label>Full name</label>
-
-                <input
-                  value={name}
-                  onChange={(e) =>
-                    setName(e.target.value)
-                  }
-                  required
-                  placeholder="Your name"
-                />
-              </div>
-
-              <div className="field">
-                <label>Phone number</label>
-
-                <input
-                  value={phone}
-                  onChange={(e) =>
-                    setPhone(e.target.value)
-                  }
-                  placeholder="09xxxxxxxxx"
-                />
-              </div>
-
-              <div className="field">
-                <label>Birthday</label>
-
-                <input
-                  type="date"
-                  value={birthday}
-                  onChange={(e) =>
-                    setBirthday(e.target.value)
-                  }
-                />
-              </div>
-            </>
-          )}
-
-          <div className="field">
-            <label>Email</label>
-
-            <input
-              type="email"
-              value={email}
-              onChange={(e) =>
-                setEmail(e.target.value)
-              }
-              required
-              placeholder="you@email.com"
-            />
-          </div>
-
-          <PasswordField
-            value={password}
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
-          />
-
-          {mode === 'login' && (
-            <label className="remember-row">
-
-              <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) =>
-                  setRemember(e.target.checked)
-                }
-              />
-
-              <span>Remember me</span>
-
-            </label>
-          )}
-
-          {msg && (
-            <div className="notice">
-              {msg}
-            </div>
-          )}
-
-          <button
-            className="primary-button"
-            disabled={busy}
-            type="submit"
-          >
-            {busy
-              ? 'Please wait...'
-              : mode === 'signup'
-              ? 'Create my account'
-              : 'Log in'}
-          </button>
-
-        </form>
-
-        {mode === 'login' && (
-          <p className="auth-switch">
-            New here?{' '}
+          <div className="auth-tabs">
+            <button
+              type="button"
+              className={mode === 'login' ? 'active' : ''}
+              onClick={() => {
+                setMode('login');
+                setMsg('');
+              }}
+            >
+              <LogIn size={16} />
+              Log in
+            </button>
 
             <button
               type="button"
+              className={mode === 'signup' ? 'active' : ''}
               onClick={() => {
                 setMode('signup');
                 setMsg('');
               }}
             >
-              Join the club
+              <UserPlus size={16} />
+              Join
             </button>
-          </p>
-        )}
+          </div>
+
+          <div className="auth-heading">
+            <h2>
+              {mode === 'login'
+                ? 'Welcome back'
+                : 'Join the club'}
+            </h2>
+
+            <p>
+              {mode === 'login'
+                ? 'Your sushi rewards are waiting.'
+                : 'Earn Sushi Points with every order.'}
+            </p>
+          </div>
+
+          <form onSubmit={submit}>
+
+            {mode === 'signup' && (
+              <>
+                <div className="field">
+                  <label>Full name</label>
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name"
+                    required
+                  />
+                </div>
+
+                <div className="field">
+                  <label>Phone number</label>
+                  <input
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="09xxxxxxxxx"
+                  />
+                </div>
+
+                <div className="field">
+                  <label>Birthday</label>
+                  <input
+                    type="date"
+                    value={birthday}
+                    onChange={(e) => setBirthday(e.target.value)}
+                  />
+                </div>
+              </>
+            )}
+
+            <div className="field">
+              <label>Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@email.com"
+                required
+              />
+            </div>
+
+            <PasswordField
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Your password"
+            />
+
+            {mode === 'login' && (
+              <label className="remember-row">
+                <input
+                  type="checkbox"
+                  checked={remember}
+                  onChange={(e) => setRemember(e.target.checked)}
+                />
+                <span>Remember me</span>
+              </label>
+            )}
+
+            {msg && (
+              <div className="notice">
+                {msg}
+              </div>
+            )}
+
+            <button
+              className="primary-button"
+              disabled={busy}
+              type="submit"
+            >
+              {busy
+                ? 'Please wait...'
+                : mode === 'login'
+                ? 'Log in'
+                : 'Create my account'}
+            </button>
+
+          </form>
+
+          {mode === 'login' && (
+            <div className="auth-switch">
+              New here?
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('signup');
+                  setMsg('');
+                }}
+              >
+                Join the club
+              </button>
+            </div>
+          )}
+
+          {mode === 'signup' && (
+            <div className="auth-switch">
+              Already a member?
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('login');
+                  setMsg('');
+                }}
+              >
+                Log in
+              </button>
+            </div>
+          )}
+
+        </div>
+
+        <div className="auth-footer">
+          Quick rolls. Bold flavors. Great rewards.
+        </div>
 
       </div>
-
-      <p className="auth-footer">
-        Quick Rolls. Bold Flavors. Great Rewards.
-      </p>
-
     </div>
   );
 }
 
 /* =====================================================
-   CUSTOMER DASHBOARD
+   DASHBOARD
 ===================================================== */
 
-function Dashboard({ session, profile }) {
-  const [birthdayReward, setBirthdayReward] =
-    useState(null);
+function Dashboard({ session, profile, reloadProfile }) {
+  const [tab, setTab] = useState('home');
+  const [rewards, setRewards] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [birthdayReward, setBirthdayReward] = useState(null);
 
-  const [rewards, setRewards] =
-    useState([]);
-
-  const [tx, setTx] =
-    useState([]);
-
-  const [tab, setTab] =
-    useState('home');
+  useEffect(() => {
+    loadDashboard();
+  }, [session.user.id]);
 
   useEffect(() => {
     if (profile) {
@@ -517,9 +468,24 @@ function Dashboard({ session, profile }) {
     }
   }, [profile]);
 
-  useEffect(() => {
-    loadDashboard();
-  }, [session.user.id]);
+  async function loadDashboard() {
+    const { data: rewardsData } = await supabase
+      .from('rewards')
+      .select('*')
+      .eq('active', true)
+      .order('points_required');
+
+    setRewards(rewardsData || []);
+
+    const { data: txData } = await supabase
+      .from('transactions')
+      .select('*')
+      .eq('customer_id', session.user.id)
+      .order('created_at', { ascending: false })
+      .limit(30);
+
+    setTransactions(txData || []);
+  }
 
   async function checkBirthdayReward() {
     if (!profile?.birthday) return;
@@ -527,59 +493,34 @@ function Dashboard({ session, profile }) {
     const today = new Date();
     const birthday = new Date(profile.birthday);
 
-    const isBirthday =
+    const birthdayToday =
       today.getMonth() === birthday.getMonth() &&
       today.getDate() === birthday.getDate();
 
-    if (!isBirthday) return;
+    if (!birthdayToday) return;
 
     const year = today.getFullYear();
 
-    const { data: alreadyClaimed } =
-      await supabase
-        .from('birthday_claims')
-        .select('id')
-        .eq('customer_id', profile.id)
-        .eq('birthday_year', year)
-        .maybeSingle();
+    const { data: claimed } = await supabase
+      .from('birthday_claims')
+      .select('id')
+      .eq('customer_id', profile.id)
+      .eq('birthday_year', year)
+      .maybeSingle();
 
-    if (alreadyClaimed) return;
+    if (claimed) return;
 
-    const { data: reward } =
-      await supabase
-        .from('birthday_rewards')
-        .select('*')
-        .eq('active', true)
-        .order('id', { ascending: true })
-        .limit(1)
-        .maybeSingle();
+    const { data: reward } = await supabase
+      .from('birthday_rewards')
+      .select('*')
+      .eq('active', true)
+      .order('id', { ascending: true })
+      .limit(1)
+      .maybeSingle();
 
     if (reward) {
       setBirthdayReward(reward);
     }
-  }
-
-  async function loadDashboard() {
-    const { data: rewardsData } =
-      await supabase
-        .from('rewards')
-        .select('*')
-        .eq('active', true)
-        .order('points_required');
-
-    setRewards(rewardsData || []);
-
-    const { data: transactions } =
-      await supabase
-        .from('transactions')
-        .select('*')
-        .eq('customer_id', session.user.id)
-        .order('created_at', {
-          ascending: false
-        })
-        .limit(20);
-
-    setTx(transactions || []);
   }
 
   async function logout() {
@@ -588,7 +529,11 @@ function Dashboard({ session, profile }) {
 
   if (!profile) {
     return (
-      <LoadingScreen text="Preparing your loyalty card..." />
+      <div className="loading-screen">
+        <div className="loading-mark">🍣</div>
+        <div className="loading-brand">AT HOME SUSHI</div>
+        <div className="loading-text">Preparing your loyalty card</div>
+      </div>
     );
   }
 
@@ -596,53 +541,37 @@ function Dashboard({ session, profile }) {
     <div className="app-shell">
 
       <header className="app-header">
-
         <div className="header-brand">
-
-          <img
-            src={logo}
-            alt="At Home Sushi"
-          />
+          <img src={logo} alt="At Home Sushi" />
 
           <div>
             <strong>AT HOME SUSHI</strong>
             <span>LOYALTY CLUB</span>
           </div>
-
         </div>
 
         <button
-          className="header-icon"
+          className="header-action"
           onClick={logout}
           aria-label="Log out"
         >
           <LogOut size={18} />
         </button>
-
       </header>
 
-      <main className="app-content">
+      <main className="app-main">
 
         {birthdayReward && (
-          <div className="birthday-banner">
-
-            <div>
-              <span className="small-label">
-                <Cake size={14} />
-                BIRTHDAY REWARD
-              </span>
-
-              <h3>{birthdayReward.name}</h3>
-
-              <p>
-                {birthdayReward.description}
-              </p>
-
-              <strong>
-                {birthdayReward.reward_text}
-              </strong>
+          <div className="birthday-card">
+            <div className="birthday-icon">
+              <Cake size={19} />
             </div>
 
+            <div>
+              <span>YOUR BIRTHDAY REWARD</span>
+              <strong>{birthdayReward.name}</strong>
+              <p>{birthdayReward.reward_text}</p>
+            </div>
           </div>
         )}
 
@@ -650,6 +579,7 @@ function Dashboard({ session, profile }) {
           <Home
             profile={profile}
             rewards={rewards}
+            onGoRewards={() => setTab('rewards')}
           />
         )}
 
@@ -661,11 +591,12 @@ function Dashboard({ session, profile }) {
           <Rewards
             profile={profile}
             rewards={rewards}
+            onRefresh={reloadProfile}
           />
         )}
 
         {tab === 'history' && (
-          <HistoryTab tx={tx} />
+          <HistoryTab transactions={transactions} />
         )}
 
       </main>
@@ -714,187 +645,79 @@ function Dashboard({ session, profile }) {
    HOME
 ===================================================== */
 
-function Home({ profile, rewards }) {
-  const [menuIndex, setMenuIndex] = useState(0);
-  const [orderOpen, setOrderOpen] = useState(false);
-
+function Home({ profile, rewards, onGoRewards }) {
   const points = Number(profile.points || 0);
 
   const menu = [
     {
-      name: 'Spicy Salmon Roll',
-      pieces: '8 pcs',
-      price: '₱219',
-      ingredients:
-        'Fresh salmon • Cucumber • Black & white sesame • Spicy salmon mix',
-      image: '/sushi/spicy-salmon-roll.png'
-    },
-    {
       name: 'California Roll',
-      pieces: '8 pcs',
       price: '₱189',
-      ingredients:
-        'Avocado • Mango • Cucumber • Crabstick • Japanese mayo',
+      pieces: '8 pcs',
+      ingredients: 'Avocado • Mango • Cucumber • Crabstick • Japanese Mayo',
       image: '/sushi/california-roll.png'
     },
     {
-      name: 'Green Dragon',
+      name: 'Spicy Salmon Roll',
+      price: '₱219',
       pieces: '8 pcs',
-      price: '₱209',
-      ingredients:
-        'Prawn tempura • Fresh avocado • Teriyaki • Spicy mayo',
+      ingredients: 'Fresh Salmon • Cucumber • Sesame • Spicy Salmon Mix',
+      image: '/sushi/spicy-salmon-roll.png'
+    },
+    {
+      name: 'Green Dragon',
+      price: '₱219',
+      pieces: '8 pcs',
+      ingredients: 'Prawn Tempura • Fresh Avocado • Teriyaki • Spicy Mayo',
       image: '/sushi/green-dragon-roll.png'
     },
     {
-      name: 'Shrimp Avo Roll',
-      pieces: '8 pcs',
-      price: '₱205',
-      ingredients:
-        'Prawn tempura • Avocado • White sesame seeds',
-      image: '/sushi/shrimp-avo-roll.png'
-    },
-    {
-      name: 'Spicy California',
-      pieces: '8 pcs',
-      price: '₱195',
-      ingredients:
-        'Avocado • Mango • Cucumber • Crabstick • Japanese mayo • Togarashi',
-      image: '/sushi/spicy-california.png'
-    },
-    {
       name: 'Crispy Cream',
-      pieces: '8 pcs',
       price: '₱209',
-      ingredients:
-        'Prawn tempura • Avocado • Cucumber • Tamago • Cream cheese',
+      pieces: '8 pcs',
+      ingredients: 'Prawn Tempura • Avocado • Cucumber • Tamago • Cream Cheese',
       image: '/sushi/crispy-cream.png'
     },
     {
-      name: 'Crunchy California',
-      pieces: '8 pcs',
-      price: '₱189',
-      ingredients:
-        'California roll covered with crispy tanuki',
-      image: '/sushi/crunchy-california.png'
-    },
-    {
-      name: 'Chicken Katsu Roll',
-      pieces: '8 pcs',
-      price: '₱209',
-      ingredients:
-        'Chicken katsu • Cucumber • Crispy tanuki • Teriyaki • Sweet chili',
-      image: '/sushi/chicken-katsu-roll.png'
-    },
-    {
       name: 'Hurricane Roll',
-      pieces: '8 pcs',
       price: '₱219',
-      ingredients:
-        'Avocado • Crabsticks • Cucumber • Crabstick salad • Spring onion • Caviar',
+      pieces: '8 pcs',
+      ingredients: 'Avocado • Crabstick • Cucumber • Crabstick Salad • Caviar',
       image: '/sushi/hurricane-roll.png'
     },
     {
       name: 'Super California',
-      pieces: '8 pcs',
       price: '₱209',
-      ingredients:
-        'Avocado • Mango • Cucumber • Crabstick • Japanese mayo • Caviar',
+      pieces: '8 pcs',
+      ingredients: 'Avocado • Mango • Cucumber • Crabstick • Japanese Mayo • Caviar',
       image: '/sushi/super-california.png'
     },
     {
-      name: 'Crunchy Tempura',
-      pieces: '8 pcs',
-      price: '₱199',
-      ingredients:
-        'Prawn tempura • Cucumber • Crispy tanuki • Sweet chili • Teriyaki',
-      image: '/sushi/crunchy-tempura.png'
-    },
-    {
-      name: 'Sphinx Roll',
-      pieces: '8 pcs',
-      price: '₱219',
-      ingredients:
-        'Prawn tempura • Avocado • Cucumber • Fried salmon • Crispy nori',
-      image: '/sushi/sphinx-roll.png'
-    },
-    {
-      name: 'Crunchy Potato',
-      pieces: '8 pcs',
-      price: '₱219',
-      ingredients:
-        'Prawn tempura • Avocado • Cucumber • Crabstick salad • Crispy potato',
-      image: '/sushi/crunchy-potato.png'
-    },
-    {
-      name: 'Passion Rainbow',
-      pieces: '8 pcs',
-      price: '₱219',
-      ingredients:
-        'Fresh salmon • Avocado • Cucumber • Crabstick • Japanese mayo • Caviar',
-      image: '/sushi/passion-rainbow.png'
-    },
-    {
-      name: 'Kani Aburi Roll',
-      pieces: '8 pcs',
+      name: 'Volcano Roll',
       price: '₱229',
-      ingredients:
-        'Prawn tempura • Tamago • Avocado • Seared crabstick • Spicy mayo',
-      image: '/sushi/kani-aburi-roll.png'
-    },
-    {
-      name: 'Imperial Salmon',
       pieces: '8 pcs',
-      price: '₱239',
-      ingredients:
-        'Prawn tempura • Mango • Cucumber • Cream cheese • Seared salmon',
-      image: '/sushi/imperial-salmon.png'
+      ingredients: 'Prawn Tempura • Avocado • Cucumber • Spicy Prawn Mix • Crispy Chips',
+      image: '/sushi/volcano-roll.png'
     },
     {
       name: 'At Home Supreme Roll',
-      pieces: '8 pcs',
       price: '₱239',
-      ingredients:
-        'Prawn tempura • Avocado • Tamago • Cream cheese • Seared salmon • Crispy potato',
+      pieces: '8 pcs',
+      ingredients: 'Prawn Tempura • Avocado • Tamago • Cream Cheese • Seared Salmon',
       image: '/sushi/at-home-supreme-roll.png'
-    },
-    {
-      name: 'Crab Lava Roll',
-      pieces: '8 pcs',
-      price: '₱239',
-      ingredients:
-        'Tempura crabstick • Avocado • Spicy mayo crab • Crispy tanuki',
-      image: '/sushi/crab-lava-roll.png'
-    },
-    {
-      name: 'Cheezy Tempura',
-      pieces: '8 pcs',
-      price: '₱229',
-      ingredients:
-        'Prawn tempura • Tamago • Carrots • Cream cheese • Cheddar cheese',
-      image: '/sushi/cheezy-tempura.png'
-    },
-    {
-      name: 'Volcano Roll',
-      pieces: '8 pcs',
-      price: '₱229',
-      ingredients:
-        'Prawn tempura • Avocado • Cucumber • Cream cheese • Spicy prawn mix',
-      image: '/sushi/volcano-roll.png'
     }
   ];
 
-  const current = menu[menuIndex];
+  const [index, setIndex] = useState(0);
+  const [orderOpen, setOrderOpen] = useState(false);
 
-  function previousSushi() {
-    setMenuIndex((index) =>
-      index === 0 ? menu.length - 1 : index - 1
-    );
+  const current = menu[index];
+
+  function previous() {
+    setIndex((i) => (i === 0 ? menu.length - 1 : i - 1));
   }
 
-  function nextSushi() {
-    setMenuIndex((index) =>
-      index === menu.length - 1 ? 0 : index + 1
-    );
+  function next() {
+    setIndex((i) => (i === menu.length - 1 ? 0 : i + 1));
   }
 
   return (
@@ -904,45 +727,41 @@ function Home({ profile, rewards }) {
 
         <div className="hero-inner">
 
-          <span className="hero-kicker">
+          <div className="hero-label">
             AT HOME SUSHI
-          </span>
+          </div>
 
           <h1>
-            More sushi.
+            Good sushi.
             <br />
-            More rewards.
+            <span>Better rewards.</span>
           </h1>
 
           <p>
-            Earn Sushi Points every time
-            you order your favorites.
+            Enjoy your favorites, earn Sushi Points,
+            and make every order count.
           </p>
 
           <div className="hero-buttons">
 
             <button
-              className="dark-button"
+              className="hero-button primary"
               onClick={() =>
                 document
-                  .getElementById('menu')
-                  ?.scrollIntoView({
-                    behavior: 'smooth'
-                  })
+                  .getElementById('menu-section')
+                  ?.scrollIntoView({ behavior: 'smooth' })
               }
             >
-              Explore Sushi
-              <ChevronRight size={16} />
+              Explore sushi
+              <ChevronRight size={17} />
             </button>
 
             <button
-              className="outline-button"
+              className="hero-button secondary"
               onClick={() =>
                 document
-                  .getElementById('points')
-                  ?.scrollIntoView({
-                    behavior: 'smooth'
-                  })
+                  .getElementById('points-section')
+                  ?.scrollIntoView({ behavior: 'smooth' })
               }
             >
               My Sushi Points
@@ -955,58 +774,60 @@ function Home({ profile, rewards }) {
       </section>
 
       <section
-        id="points"
-        className="home-section points-section"
+        id="points-section"
+        className="home-section points-home"
       >
 
-        <span className="section-label">
+        <div className="section-label">
           YOUR LOYALTY
-        </span>
+        </div>
 
         <h2>Your Sushi Points</h2>
 
         <p className="section-description">
-          Every order brings you closer
-          to something delicious.
+          Every order brings you closer to something delicious.
         </p>
 
         <div className="points-card">
 
           <div>
-            <span>AVAILABLE BALANCE</span>
+            <span>POINT BALANCE</span>
 
-            <strong>
-              {points.toFixed(0)}
-            </strong>
+            <strong>{points.toFixed(0)}</strong>
 
             <small>SUSHI POINTS</small>
           </div>
 
-          <Star
-            size={28}
-            strokeWidth={1.4}
-          />
+          <button onClick={onGoRewards}>
+            <ChevronRight size={20} />
+          </button>
 
         </div>
 
         <div className="earn-steps">
 
           <div>
-            <span>01</span>
-            <b>ORDER</b>
-            <p>Enjoy your favorite sushi.</p>
+            <b>01</b>
+            <span>
+              <strong>ORDER</strong>
+              Enjoy your favorite sushi.
+            </span>
           </div>
 
           <div>
-            <span>02</span>
-            <b>EARN</b>
-            <p>₱100 spent = 1 Sushi Point.</p>
+            <b>02</b>
+            <span>
+              <strong>EARN</strong>
+              ₱100 spent = 1 Sushi Point.
+            </span>
           </div>
 
           <div>
-            <span>03</span>
-            <b>REDEEM</b>
-            <p>Turn points into rewards.</p>
+            <b>03</b>
+            <span>
+              <strong>REDEEM</strong>
+              Turn points into rewards.
+            </span>
           </div>
 
         </div>
@@ -1014,26 +835,25 @@ function Home({ profile, rewards }) {
       </section>
 
       <section
-        id="menu"
-        className="home-section menu-section"
+        id="menu-section"
+        className="home-section menu-home"
       >
 
-        <span className="section-label">
+        <div className="section-label">
           FROM OUR KITCHEN
-        </span>
+        </div>
 
         <h2>Explore Our Sushi</h2>
 
         <p className="section-description">
-          Some of our favorites, made fresh
-          for every order.
+          A few favorites from At Home Sushi.
         </p>
 
-        <div className="menu-carousel">
+        <div className="menu-card">
 
           <button
-            className="carousel-button"
-            onClick={previousSushi}
+            className="menu-arrow"
+            onClick={previous}
             aria-label="Previous"
           >
             ‹
@@ -1046,22 +866,20 @@ function Home({ profile, rewards }) {
               alt={current.name}
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
-                e.currentTarget.parentElement.classList.add(
-                  'photo-fallback'
-                );
+                e.currentTarget.parentElement.classList.add('missing');
               }}
             />
 
-            <div className="photo-fallback-content">
+            <div className="photo-fallback">
               <span>🍣</span>
-              <small>At Home Sushi</small>
+              <small>SUSHI</small>
             </div>
 
           </div>
 
           <button
-            className="carousel-button"
-            onClick={nextSushi}
+            className="menu-arrow"
+            onClick={next}
             aria-label="Next"
           >
             ›
@@ -1071,11 +889,10 @@ function Home({ profile, rewards }) {
 
         <div className="menu-info">
 
-          <span className="menu-number">
-            {String(menuIndex + 1).padStart(2, '0')}
-            {' / '}
-            {String(menu.length).padStart(2, '0')}
-          </span>
+          <div className="menu-count">
+            {String(index + 1).padStart(2, '0')}
+            <span>/ {String(menu.length).padStart(2, '0')}</span>
+          </div>
 
           <h3>{current.name}</h3>
 
@@ -1091,7 +908,7 @@ function Home({ profile, rewards }) {
             className="order-button"
             onClick={() => setOrderOpen(true)}
           >
-            Order This
+            Order this
             <ChevronRight size={17} />
           </button>
 
@@ -1099,46 +916,45 @@ function Home({ profile, rewards }) {
 
       </section>
 
-      <section className="home-section rewards-preview">
+      <section className="home-section rewards-home">
 
-        <span className="section-label">
+        <div className="section-label">
           YOUR BENEFITS
-        </span>
+        </div>
 
         <h2>Rewards</h2>
 
         <p className="section-description">
-          A little something for every
-          sushi lover.
+          A little something for every sushi lover.
         </p>
 
-        <div className="preview-rewards">
+        <div className="home-rewards">
 
-          {rewards.slice(0, 3).map((reward, index) => (
-            <div
-              className="preview-reward"
-              key={reward.id}
-            >
+          {rewards.slice(0, 3).map((reward, i) => (
+            <div className="home-reward" key={reward.id}>
 
-              <span>
-                0{index + 1}
-              </span>
+              <span>0{i + 1}</span>
 
               <div>
-                <h3>{reward.name}</h3>
-
+                <strong>{reward.name}</strong>
                 <p>
                   {reward.description ||
                     'Use your Sushi Points for this reward.'}
                 </p>
               </div>
 
-              <strong>
+              <b>
                 {reward.points_required}
-              </strong>
+              </b>
 
             </div>
           ))}
+
+          {rewards.length === 0 && (
+            <div className="empty-card">
+              Rewards will appear here once available.
+            </div>
+          )}
 
         </div>
 
@@ -1159,36 +975,31 @@ function Home({ profile, rewards }) {
               className="modal-close"
               onClick={() => setOrderOpen(false)}
             >
-              <X size={18} />
+              <X size={19} />
             </button>
 
-            <span className="section-label">
+            <div className="section-label">
               {current.name}
-            </span>
+            </div>
 
-            <h2>
-              How would you
-              <br />
-              like to order?
-            </h2>
+            <h2>How would you like to order?</h2>
 
             <p>
-              Choose how you'd like to
-              order your sushi.
+              Choose your preferred way to order.
             </p>
 
             <a
-              className="order-option"
+              className="order-choice"
               href="https://www.ordermo.ph/restaurants/at-home-sushi/M8y6MG8S?n=QXQgSG9tZSBTdXNoaQ==&p=cG5n&c=anBn"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <span className="order-option-icon">
+              <span className="choice-icon">
                 <ShoppingBag size={19} />
               </span>
 
               <span>
-                <b>ORDER ONLINE</b>
+                <strong>Order Online</strong>
                 <small>OrderMo</small>
               </span>
 
@@ -1196,17 +1007,17 @@ function Home({ profile, rewards }) {
             </a>
 
             <a
-              className="order-option"
+              className="order-choice"
               href="https://www.facebook.com/athomesushibustos"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <span className="order-option-icon">
+              <span className="choice-icon">
                 <MessageCircle size={19} />
               </span>
 
               <span>
-                <b>ORDER VIA FACEBOOK</b>
+                <strong>Order via Facebook</strong>
                 <small>Message At Home Sushi</small>
               </span>
 
@@ -1230,13 +1041,21 @@ function DigitalCard({ profile }) {
   return (
     <div className="page-container">
 
+      <div className="page-heading">
+        <span className="section-label">YOUR MEMBERSHIP</span>
+        <h1>My Card</h1>
+      </div>
+
       <div className="digital-card">
 
-        <span className="section-label">
-          AT HOME SUSHI
-        </span>
+        <div className="digital-top">
+          <div>
+            <strong>AT HOME SUSHI</strong>
+            <span>LOYALTY CLUB</span>
+          </div>
 
-        <h1>My Loyalty Card</h1>
+          <QrCode size={20} />
+        </div>
 
         <div className="qr-box">
           <QRCodeSVG
@@ -1246,32 +1065,30 @@ function DigitalCard({ profile }) {
           />
         </div>
 
-        <h2>{profile.full_name}</h2>
+        <div className="digital-member">
+          <span>MEMBER</span>
+          <strong>{profile.full_name}</strong>
+          <small>{profile.customer_code}</small>
+        </div>
 
-        <p className="customer-code">
-          {profile.customer_code}
-        </p>
-
-        <div className="balance-cards">
+        <div className="digital-balances">
 
           <div>
-            <small>SUSHI POINTS</small>
+            <span>POINTS</span>
             <strong>
               {Number(profile.points || 0).toFixed(0)}
             </strong>
           </div>
 
           <div>
-            <small>STAMPS</small>
-            <strong>
-              {profile.stamps || 0}
-            </strong>
+            <span>STAMPS</span>
+            <strong>{profile.stamps || 0}</strong>
           </div>
 
         </div>
 
-        <p className="card-help">
-          Show this QR code at checkout.
+        <p className="digital-note">
+          Show this QR code to staff at checkout.
         </p>
 
       </div>
@@ -1284,119 +1101,21 @@ function DigitalCard({ profile }) {
    REWARDS
 ===================================================== */
 
-function Rewards({ profile, rewards }) {
-  const [redeeming, setRedeeming] = useState(false);
-
-  if (redeeming) {
-    return (
-      <RedeemPoints
-        profile={profile}
-        rewards={rewards}
-        onClose={() => setRedeeming(false)}
-      />
-    );
-  }
-
-  return (
-    <div className="page-container">
-
-      <div className="page-heading">
-
-        <div>
-          <span className="section-label">
-            YOUR BENEFITS
-          </span>
-
-          <h1>Rewards</h1>
-        </div>
-
-        <Gift size={24} strokeWidth={1.5} />
-
-      </div>
-
-      <p className="page-intro">
-        You have{' '}
-        <strong>
-          {Number(profile.points || 0).toFixed(0)}
-        </strong>{' '}
-        Sushi Points.
-      </p>
-
-      <div className="reward-list">
-
-        {rewards.map((reward) => (
-          <div
-            className="reward-card"
-            key={reward.id}
-          >
-
-            <div className="reward-icon">
-              <Gift size={20} />
-            </div>
-
-            <div className="reward-content">
-
-              <h3>{reward.name}</h3>
-
-              <p>
-                {reward.description ||
-                  'Use your Sushi Points for this reward.'}
-              </p>
-
-              <span>
-                {reward.points_required} points
-              </span>
-
-            </div>
-
-          </div>
-        ))}
-
-      </div>
-
-      {rewards.length > 0 && (
-        <button
-          className="primary-button redeem-main-button"
-          onClick={() => setRedeeming(true)}
-        >
-          <Gift size={18} />
-          Use My Sushi Points
-        </button>
-      )}
-
-    </div>
-  );
-}
-
-/* =====================================================
-   REDEEM POINTS
-===================================================== */
-
-function RedeemPoints({
-  profile,
-  rewards,
-  onClose
-}) {
-  const [selectedReward, setSelectedReward] =
-    useState(null);
-
+function Rewards({ profile, rewards, onRefresh }) {
+  const [selected, setSelected] = useState(null);
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
 
   const points = Number(profile.points || 0);
 
-  async function createRedemption() {
-    if (!selectedReward) {
-      setMsg('Please select a reward.');
-      return;
-    }
+  async function redeem() {
+    if (!selected) return;
 
-    const required =
-      Number(selectedReward.points_required);
+    const required = Number(selected.points_required);
 
     if (points < required) {
-      setMsg('You do not have enough points.');
+      setMsg('You do not have enough Sushi Points.');
       return;
     }
 
@@ -1410,21 +1129,20 @@ function RedeemPoints({
         .substring(2, 7)
         .toUpperCase();
 
-    const { data, error } =
-      await supabase
-        .from('point_redemptions')
-        .insert({
-          customer_id: profile.id,
-          reward_id: selectedReward.id,
-          points_used: required,
-          redemption_code: redemptionCode,
-          status: 'pending'
-        })
-        .select()
-        .single();
+    const { data, error } = await supabase
+      .from('point_redemptions')
+      .insert({
+        customer_id: profile.id,
+        reward_id: selected.id,
+        points_used: required,
+        redemption_code: redemptionCode,
+        status: 'pending'
+      })
+      .select()
+      .single();
 
     if (error) {
-      console.error('Redemption error:', error);
+      console.error(error);
       setMsg(error.message);
       setBusy(false);
       return;
@@ -1435,30 +1153,31 @@ function RedeemPoints({
   }
 
   async function copyCode() {
-    await navigator.clipboard.writeText(code);
-    setMsg('Code copied!');
+    try {
+      await navigator.clipboard.writeText(code);
+      setMsg('Code copied!');
+    } catch {
+      setMsg('Please copy the code manually.');
+    }
   }
 
   if (code) {
     return (
       <div className="page-container">
 
-        <div className="redemption-success">
+        <div className="success-card">
 
-          <CheckCircle
-            size={48}
-            strokeWidth={1.4}
-          />
+          <CheckCircle size={46} />
 
           <span className="section-label">
             REDEMPTION CODE
           </span>
 
-          <h1>Show this code to staff</h1>
+          <h1>Show this to staff</h1>
 
           <p>
-            Do not close this screen until
-            staff confirms your redemption.
+            Staff will confirm your redemption before
+            your points are deducted.
           </p>
 
           <div className="redemption-code">
@@ -1470,20 +1189,20 @@ function RedeemPoints({
             onClick={copyCode}
           >
             <Copy size={17} />
-            Copy Code
+            Copy code
           </button>
 
-          {msg && (
-            <div className="notice">
-              {msg}
-            </div>
-          )}
+          {msg && <div className="notice">{msg}</div>}
 
           <button
-            className="secondary-button"
-            onClick={onClose}
+            className="text-button"
+            onClick={() => {
+              setCode('');
+              setSelected(null);
+              setMsg('');
+            }}
           >
-            Back to Rewards
+            Back to rewards
           </button>
 
         </div>
@@ -1496,77 +1215,47 @@ function RedeemPoints({
     <div className="page-container">
 
       <div className="page-heading">
-
-        <div>
-          <span className="section-label">
-            REDEEM
-          </span>
-
-          <h1>Use Points</h1>
-        </div>
-
-        <button
-          className="header-icon"
-          onClick={onClose}
-        >
-          <X size={19} />
-        </button>
-
+        <span className="section-label">YOUR BENEFITS</span>
+        <h1>Rewards</h1>
+        <p>
+          You have <strong>{points.toFixed(0)} Sushi Points</strong>.
+        </p>
       </div>
-
-      <p className="page-intro">
-        Available balance:{' '}
-        <strong>
-          {points.toFixed(0)} Sushi Points
-        </strong>
-      </p>
 
       <div className="reward-list">
 
         {rewards.map((reward) => {
-
-          const required =
-            Number(reward.points_required);
-
-          const available =
-            points >= required;
-
-          const selected =
-            selectedReward?.id === reward.id;
+          const required = Number(reward.points_required);
+          const available = points >= required;
+          const isSelected = selected?.id === reward.id;
 
           return (
             <button
               type="button"
               key={reward.id}
-              className={`redeem-reward ${
-                selected ? 'selected' : ''
-              }`}
+              className={`reward-card ${
+                isSelected ? 'selected' : ''
+              } ${!available ? 'locked' : ''}`}
               disabled={!available}
-              onClick={() =>
-                available &&
-                setSelectedReward(reward)
-              }
+              onClick={() => setSelected(reward)}
             >
 
-              <div className="reward-icon">
-                <Gift size={19} />
-              </div>
+              <span className="reward-number">
+                <Gift size={18} />
+              </span>
 
-              <div>
+              <span className="reward-content">
                 <strong>{reward.name}</strong>
 
-                <p>
-                  {reward.description || ''}
-                </p>
+                <small>
+                  {reward.description ||
+                    'Use your Sushi Points for this reward.'}
+                </small>
 
-                <span>
-                  {required} points
-                </span>
-              </div>
+                <b>{required} points</b>
+              </span>
 
-              {!available && (
-                <small>Not enough</small>
-              )}
+              <ChevronRight size={18} />
 
             </button>
           );
@@ -1574,45 +1263,26 @@ function RedeemPoints({
 
       </div>
 
-      {selectedReward && (
-        <div className="redeem-confirm">
+      {selected && (
+        <div className="redeem-box">
 
-          <span className="section-label">
-            CONFIRM REWARD
-          </span>
+          <span className="section-label">CONFIRM REWARD</span>
 
-          <h3>
-            Redeem {selectedReward.name}?
-          </h3>
+          <h2>Redeem {selected.name}?</h2>
 
           <p>
-            This will create a redemption
-            code for{' '}
-            <strong>
-              {selectedReward.points_required}
-              {' '}points.
-            </strong>
+            This will create a redemption code for{' '}
+            <strong>{selected.points_required} points.</strong>
           </p>
 
-          <p>
-            Your points will only be deducted
-            after staff confirms the redemption.
-          </p>
-
-          {msg && (
-            <div className="notice">
-              {msg}
-            </div>
-          )}
+          {msg && <div className="notice">{msg}</div>}
 
           <button
             className="primary-button"
-            onClick={createRedemption}
+            onClick={redeem}
             disabled={busy}
           >
-            {busy
-              ? 'Creating Code...'
-              : 'Generate Redemption Code'}
+            {busy ? 'Creating code...' : 'Generate redemption code'}
           </button>
 
         </div>
@@ -1626,60 +1296,39 @@ function RedeemPoints({
    HISTORY
 ===================================================== */
 
-function HistoryTab({ tx }) {
+function HistoryTab({ transactions }) {
   return (
     <div className="page-container">
 
       <div className="page-heading">
-
-        <div>
-          <span className="section-label">
-            YOUR ACTIVITY
-          </span>
-
-          <h1>History</h1>
-        </div>
-
-        <History
-          size={24}
-          strokeWidth={1.5}
-        />
-
+        <span className="section-label">YOUR ACTIVITY</span>
+        <h1>History</h1>
       </div>
 
-      {tx.length === 0 ? (
-        <div className="empty-state">
-
-          <History size={34} />
-
-          <p>No transactions yet.</p>
-
+      {transactions.length === 0 ? (
+        <div className="empty-card large">
+          <History size={25} />
+          <strong>No transactions yet</strong>
+          <p>Your activity will appear here.</p>
         </div>
       ) : (
-        <div className="transaction-list">
+        <div className="history-list">
 
-          {tx.map((transaction) => (
-            <div
-              className="transaction"
-              key={transaction.id}
-            >
+          {transactions.map((tx) => (
+            <div className="history-card" key={tx.id}>
 
               <div>
                 <strong>
-                  {transaction.transaction_type}
+                  {tx.transaction_type}
                 </strong>
 
-                <span>
-                  {new Date(
-                    transaction.created_at
-                  ).toLocaleString()}
-                </span>
+                <small>
+                  {new Date(tx.created_at).toLocaleString()}
+                </small>
               </div>
 
-              <b>
-                +{Number(
-                  transaction.points_earned || 0
-                ).toFixed(2)}
+              <b className="history-points">
+                +{Number(tx.points_earned || 0).toFixed(2)}
               </b>
 
             </div>
@@ -1697,48 +1346,31 @@ function HistoryTab({ tx }) {
 ===================================================== */
 
 function Staff() {
-  const [staffSession, setStaffSession] =
-    useState(null);
+  const [staffSession, setStaffSession] = useState(null);
+  const [checking, setChecking] = useState(true);
 
-  const [checking, setChecking] =
-    useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const [email, setEmail] =
-    useState('');
+  const [remember, setRemember] = useState(
+    localStorage.getItem('staffRemember') === 'true'
+  );
 
-  const [password, setPassword] =
-    useState('');
+  const [customerCode, setCustomerCode] = useState('');
+  const [customer, setCustomer] = useState(null);
 
-  const [remember, setRemember] =
-    useState(
-      localStorage.getItem('staffRemember') === 'true'
-    );
+  const [amount, setAmount] = useState('');
+  const [notes, setNotes] = useState('');
 
-  const [customerCode, setCustomerCode] =
-    useState('');
-
-  const [customer, setCustomer] =
-    useState(null);
-
-  const [amount, setAmount] =
-    useState('');
-
-  const [notes, setNotes] =
-    useState('');
-
-  const [msg, setMsg] =
-    useState('');
-
-  const [busy, setBusy] =
-    useState(false);
+  const [msg, setMsg] = useState('');
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     checkStaffSession();
   }, []);
 
   async function checkStaffSession() {
-    const { data } =
-      await supabase.auth.getSession();
+    const { data } = await supabase.auth.getSession();
 
     setStaffSession(data.session);
     setChecking(false);
@@ -1747,18 +1379,13 @@ function Staff() {
   async function staffLogin(e) {
     e.preventDefault();
 
-    setMsg('');
     setBusy(true);
+    setMsg('');
 
     if (remember) {
-      localStorage.setItem(
-        'staffRemember',
-        'true'
-      );
+      localStorage.setItem('staffRemember', 'true');
     } else {
-      localStorage.removeItem(
-        'staffRemember'
-      );
+      localStorage.removeItem('staffRemember');
     }
 
     const { data, error } =
@@ -1783,11 +1410,10 @@ function Staff() {
   }
 
   async function findCustomer() {
+    const code = customerCode.trim();
+
     setMsg('');
     setCustomer(null);
-
-    const code =
-      customerCode.trim();
 
     if (!code) {
       setMsg('Please enter the customer QR code.');
@@ -1817,10 +1443,7 @@ function Staff() {
 
     setCustomer(data);
     setNotes(data.notes || '');
-
-    setMsg(
-      `Customer found: ${data.full_name}`
-    );
+    setMsg(`Customer found: ${data.full_name}`);
   }
 
   async function addPoints() {
@@ -1829,33 +1452,23 @@ function Staff() {
       return;
     }
 
-    const purchase =
-      parseFloat(amount);
+    const purchase = parseFloat(amount);
 
-    if (
-      Number.isNaN(purchase) ||
-      purchase <= 0
-    ) {
+    if (!Number.isFinite(purchase) || purchase <= 0) {
       setMsg('Enter a valid purchase amount.');
       return;
     }
 
-    const points =
-      purchase / 100;
+    const points = purchase / 100;
+    const newPoints = Number(customer.points || 0) + points;
 
     setBusy(true);
     setMsg('');
 
-    const newPoints =
-      Number(customer.points || 0) +
-      points;
-
     const { error: updateError } =
       await supabase
         .from('customers')
-        .update({
-          points: newPoints
-        })
+        .update({ points: newPoints })
         .eq('id', customer.id);
 
     if (updateError) {
@@ -1885,11 +1498,7 @@ function Staff() {
     });
 
     setAmount('');
-
-    setMsg(
-      `Success! ${points.toFixed(2)} Sushi Points added.`
-    );
-
+    setMsg(`Success! ${points.toFixed(2)} Sushi Points added.`);
     setBusy(false);
   }
 
@@ -1929,42 +1538,34 @@ function Staff() {
     }
 
     if (!customer.birthday) {
-      setMsg(
-        'This customer has no birthday saved.'
-      );
+      setMsg('This customer has no birthday saved.');
       return;
     }
 
     const today = new Date();
-    const birthday =
-      new Date(customer.birthday);
+    const birthday = new Date(customer.birthday);
 
     const isBirthday =
       today.getMonth() === birthday.getMonth() &&
       today.getDate() === birthday.getDate();
 
     if (!isBirthday) {
-      setMsg(
-        'Today is not this customer’s birthday.'
-      );
+      setMsg('Today is not this customer’s birthday.');
       return;
     }
 
-    const year =
-      today.getFullYear();
+    const year = today.getFullYear();
 
     setBusy(true);
     setMsg('');
 
-    const {
-      data: alreadyClaimed,
-      error: checkError
-    } = await supabase
-      .from('birthday_claims')
-      .select('id')
-      .eq('customer_id', customer.id)
-      .eq('birthday_year', year)
-      .maybeSingle();
+    const { data: claimed, error: checkError } =
+      await supabase
+        .from('birthday_claims')
+        .select('id')
+        .eq('customer_id', customer.id)
+        .eq('birthday_year', year)
+        .maybeSingle();
 
     if (checkError) {
       setMsg(checkError.message);
@@ -1972,26 +1573,20 @@ function Staff() {
       return;
     }
 
-    if (alreadyClaimed) {
-      setMsg(
-        'Birthday reward has already been claimed this year.'
-      );
+    if (claimed) {
+      setMsg('Birthday reward already claimed this year.');
       setBusy(false);
       return;
     }
 
-    const {
-      data: reward,
-      error: rewardError
-    } = await supabase
-      .from('birthday_rewards')
-      .select('*')
-      .eq('active', true)
-      .order('id', {
-        ascending: true
-      })
-      .limit(1)
-      .maybeSingle();
+    const { data: reward, error: rewardError } =
+      await supabase
+        .from('birthday_rewards')
+        .select('*')
+        .eq('active', true)
+        .order('id', { ascending: true })
+        .limit(1)
+        .maybeSingle();
 
     if (rewardError) {
       setMsg(rewardError.message);
@@ -2000,21 +1595,18 @@ function Staff() {
     }
 
     if (!reward) {
-      setMsg(
-        'No active birthday reward found.'
-      );
+      setMsg('No active birthday reward found.');
       setBusy(false);
       return;
     }
 
-    const {
-      error: claimError
-    } = await supabase
-      .from('birthday_claims')
-      .insert({
-        customer_id: customer.id,
-        birthday_year: year
-      });
+    const { error: claimError } =
+      await supabase
+        .from('birthday_claims')
+        .insert({
+          customer_id: customer.id,
+          birthday_year: year
+        });
 
     if (claimError) {
       setMsg(claimError.message);
@@ -2022,16 +1614,17 @@ function Staff() {
       return;
     }
 
-    setMsg(
-      `Birthday reward claimed: ${reward.reward_text}`
-    );
-
+    setMsg(`Birthday reward claimed: ${reward.reward_text}`);
     setBusy(false);
   }
 
   if (checking) {
     return (
-      <LoadingScreen text="Checking staff access..." />
+      <div className="loading-screen">
+        <div className="loading-mark">🍣</div>
+        <div className="loading-brand">AT HOME SUSHI</div>
+        <div className="loading-text">Checking staff access</div>
+      </div>
     );
   }
 
@@ -2039,90 +1632,65 @@ function Staff() {
     return (
       <div className="auth-page">
 
-        <div className="auth-brand">
+        <div className="auth-shell">
 
-          <img
-            src={logo}
-            className="auth-logo staff-auth-logo"
-            alt="At Home Sushi"
-          />
+          <div className="auth-brand">
+            <img src={logo} alt="At Home Sushi" />
 
-          <h1>AT HOME SUSHI</h1>
+            <h1>AT HOME SUSHI</h1>
 
-          <p>STAFF ACCESS</p>
-
-        </div>
-
-        <div className="auth-card">
-
-          <div className="auth-heading">
-
-            <h2>Staff Login</h2>
-
-            <p>
-              Sign in to manage customer
-              loyalty points.
-            </p>
-
+            <span>STAFF ACCESS</span>
           </div>
 
-          <form onSubmit={staffLogin}>
+          <div className="auth-card">
 
-            <div className="field">
-              <label>Email</label>
-
-              <input
-                type="email"
-                value={email}
-                onChange={(e) =>
-                  setEmail(e.target.value)
-                }
-                required
-                placeholder="Staff email"
-              />
+            <div className="auth-heading">
+              <h2>Staff Login</h2>
+              <p>Manage customer points and rewards.</p>
             </div>
 
-            <PasswordField
-              value={password}
-              onChange={(e) =>
-                setPassword(e.target.value)
-              }
-              placeholder="Staff password"
-            />
+            <form onSubmit={staffLogin}>
 
-            <label className="remember-row">
+              <div className="field">
+                <label>Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Staff email"
+                  required
+                />
+              </div>
 
-              <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) =>
-                  setRemember(e.target.checked)
-                }
+              <PasswordField
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Staff password"
               />
 
-              <span>Remember me</span>
+              <label className="remember-row">
+                <input
+                  type="checkbox"
+                  checked={remember}
+                  onChange={(e) => setRemember(e.target.checked)}
+                />
+                <span>Remember me</span>
+              </label>
 
-            </label>
+              {msg && <div className="notice">{msg}</div>}
 
-            {msg && (
-              <div className="notice">
-                {msg}
-              </div>
-            )}
+              <button
+                className="primary-button"
+                type="submit"
+                disabled={busy}
+              >
+                <LogIn size={17} />
+                {busy ? 'Logging in...' : 'Log in'}
+              </button>
 
-            <button
-              type="submit"
-              className="primary-button"
-              disabled={busy}
-            >
-              <LogIn size={17} />
+            </form>
 
-              {busy
-                ? 'Logging in...'
-                : 'Log in'}
-            </button>
-
-          </form>
+          </div>
 
         </div>
 
@@ -2131,26 +1699,21 @@ function Staff() {
   }
 
   return (
-    <div className="app-shell">
+    <div className="staff-shell">
 
       <header className="app-header">
 
         <div className="header-brand">
-
-          <img
-            src={logo}
-            alt="At Home Sushi"
-          />
+          <img src={logo} alt="At Home Sushi" />
 
           <div>
             <strong>AT HOME SUSHI</strong>
             <span>STAFF PANEL</span>
           </div>
-
         </div>
 
         <button
-          className="header-icon"
+          className="header-action"
           onClick={staffLogout}
         >
           <LogOut size={18} />
@@ -2158,56 +1721,37 @@ function Staff() {
 
       </header>
 
-      <main className="staff-container">
+      <main className="staff-main">
 
         <div className="staff-heading">
-
           <span>STAFF</span>
-
-          <h1>
-            Customer Loyalty
-          </h1>
-
-          <p>
-            Scan or enter a customer's
-            loyalty code to manage points.
-          </p>
-
+          <h1>Customer Points</h1>
+          <p>Scan or enter a customer's loyalty code.</p>
         </div>
 
         <div className="staff-card">
 
-          <span className="section-label">
+          <div className="section-label">
             FIND CUSTOMER
-          </span>
+          </div>
 
           <div className="field">
-
-            <label>
-              Customer QR / Code
-            </label>
+            <label>Customer QR / Code</label>
 
             <input
               value={customerCode}
-              onChange={(e) =>
-                setCustomerCode(e.target.value)
-              }
+              onChange={(e) => setCustomerCode(e.target.value)}
               placeholder="Enter customer code"
             />
-
           </div>
 
           <button
-            type="button"
             className="primary-button"
             onClick={findCustomer}
             disabled={busy}
           >
-            <ScanLine size={17} />
-
-            {busy
-              ? 'Finding...'
-              : 'Find Customer'}
+            <ScanLine size={18} />
+            {busy ? 'Finding...' : 'Find Customer'}
           </button>
 
         </div>
@@ -2215,135 +1759,99 @@ function Staff() {
         {customer && (
           <div className="staff-card customer-card">
 
-            <span className="section-label">
+            <div className="section-label">
               CUSTOMER
-            </span>
+            </div>
 
-            <h2>
-              {customer.full_name}
-            </h2>
+            <h2>{customer.full_name}</h2>
 
             {customer.email && (
-              <p className="muted">
-                {customer.email}
-              </p>
+              <p className="staff-muted">{customer.email}</p>
             )}
 
             {customer.phone && (
-              <p className="muted">
-                {customer.phone}
-              </p>
+              <p className="staff-muted">{customer.phone}</p>
             )}
 
             <div className="staff-balances">
 
               <div>
                 <Star size={18} />
-
-                <span>CURRENT POINTS</span>
-
+                <span>POINTS</span>
                 <strong>
-                  {Number(
-                    customer.points || 0
-                  ).toFixed(0)}
+                  {Number(customer.points || 0).toFixed(2)}
                 </strong>
               </div>
 
               <div>
                 <Ticket size={18} />
-
                 <span>STAMPS</span>
-
-                <strong>
-                  {customer.stamps || 0}
-                </strong>
+                <strong>{customer.stamps || 0}</strong>
               </div>
 
             </div>
 
             {customer.birthday && (
-              <p className="muted birthday-info">
-
+              <p className="staff-muted birthday-line">
                 <Cake size={15} />
-
                 Birthday:{' '}
-
-                {new Date(
-                  customer.birthday
-                ).toLocaleDateString()}
-
+                {new Date(customer.birthday).toLocaleDateString()}
               </p>
             )}
 
             <div className="staff-divider" />
 
-            <span className="section-label">
+            <div className="section-label">
               ADD POINTS
-            </span>
+            </div>
 
             <div className="field">
-
-              <label>
-                Purchase Amount
-              </label>
+              <label>Purchase amount</label>
 
               <input
                 type="number"
                 min="0"
                 step="0.01"
                 value={amount}
-                onChange={(e) =>
-                  setAmount(e.target.value)
-                }
+                onChange={(e) => setAmount(e.target.value)}
                 placeholder="₱0.00"
               />
-
             </div>
 
-            {amount &&
-              Number(amount) > 0 && (
-                <p className="points-preview">
-                  Points to add:{' '}
-                  <strong>
-                    {(
-                      Number(amount) / 100
-                    ).toFixed(2)}
-                  </strong>
-                </p>
-              )}
+            {amount && Number(amount) > 0 && (
+              <p className="points-preview">
+                Points to add:{' '}
+                <strong>
+                  {(Number(amount) / 100).toFixed(2)}
+                </strong>
+              </p>
+            )}
 
             <button
-              type="button"
               className="primary-button"
               onClick={addPoints}
               disabled={busy}
             >
-              <PlusCircle size={17} />
-
-              {busy
-                ? 'Updating...'
-                : 'Add Points'}
+              <PlusCircle size={18} />
+              {busy ? 'Updating...' : 'Add Points'}
             </button>
 
             <button
-              type="button"
-              className="birthday-button"
+              className="secondary-staff-button"
               onClick={claimBirthdayReward}
               disabled={busy}
             >
               <Cake size={17} />
-
               Claim Birthday Reward
             </button>
 
             <div className="staff-divider" />
 
-            <span className="section-label">
+            <div className="section-label">
               CUSTOMER NOTES
-            </span>
+            </div>
 
             <div className="field">
-
               <label>
                 <FileText size={14} />
                 Notes
@@ -2351,23 +1859,17 @@ function Staff() {
 
               <textarea
                 value={notes}
-                onChange={(e) =>
-                  setNotes(e.target.value)
-                }
+                onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add notes about this customer..."
               />
-
             </div>
 
             <button
-              type="button"
-              className="secondary-button"
+              className="secondary-staff-button"
               onClick={saveNotes}
               disabled={busy}
             >
-              {busy
-                ? 'Saving...'
-                : 'Save Notes'}
+              {busy ? 'Saving...' : 'Save Notes'}
             </button>
 
           </div>
@@ -2391,10 +1893,6 @@ function Staff() {
 
 const path = window.location.pathname;
 
-createRoot(
-  document.getElementById('root')
-).render(
-  path === '/staff'
-    ? <Staff />
-    : <App />
+createRoot(document.getElementById('root')).render(
+  path === '/staff' ? <Staff /> : <App />
 );
