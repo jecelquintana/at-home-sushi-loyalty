@@ -23,7 +23,9 @@ import {
   Copy,
   X,
   ShoppingBag,
-  MessageCircle
+  MessageCircle,
+  ArrowRight,
+  Sparkles
 } from 'lucide-react';
 
 import './styles.css';
@@ -45,6 +47,24 @@ const supabase = createClient(
 );
 
 /* =====================================================
+   LOADING SCREEN
+===================================================== */
+
+function LoadingScreen({ text = 'Loading...' }) {
+  return (
+    <div className="screen">
+      <div className="loading-mark">
+        <span />
+        <span />
+        <span />
+      </div>
+
+      <p>{text}</p>
+    </div>
+  );
+}
+
+/* =====================================================
    PASSWORD FIELD
 ===================================================== */
 
@@ -56,7 +76,7 @@ function PasswordField({
   const [show, setShow] = useState(false);
 
   return (
-    <div className="password-field">
+    <div className="field-group">
       <label>Password</label>
 
       <div className="password-wrap">
@@ -73,7 +93,9 @@ function PasswordField({
           type="button"
           className="password-toggle"
           onClick={() => setShow(!show)}
-          aria-label={show ? 'Hide password' : 'Show password'}
+          aria-label={
+            show ? 'Hide password' : 'Show password'
+          }
         >
           {show ? (
             <EyeOff size={18} />
@@ -87,7 +109,7 @@ function PasswordField({
 }
 
 /* =====================================================
-   CUSTOMER APP
+   MAIN CUSTOMER APP
 ===================================================== */
 
 function App() {
@@ -136,7 +158,7 @@ function App() {
       .single();
 
     if (error) {
-      console.error('Customer profile:', error);
+      console.error('Customer profile error:', error);
     }
 
     setProfile(data || null);
@@ -145,16 +167,7 @@ function App() {
 
   if (loading) {
     return (
-      <div className="screen">
-        <div className="loader">
-          <img
-            src={logo}
-            alt="At Home Sushi"
-          />
-        </div>
-
-        <p>Loading At Home Sushi Loyalty Club...</p>
-      </div>
+      <LoadingScreen text="Loading At Home Sushi..." />
     );
   }
 
@@ -285,7 +298,7 @@ function Auth({ mode, setMode }) {
         );
 
         setMsg(
-          'Account created, but customer profile could not be created. Please contact staff.'
+          'Account created, but your loyalty profile could not be created. Please contact staff.'
         );
 
         setBusy(false);
@@ -303,13 +316,15 @@ function Auth({ mode, setMode }) {
   return (
     <div className="auth-wrap">
 
-      <div className="brand">
+      <div className="auth-brand">
 
-        <img
-          src={logo}
-          className="logo"
-          alt="At Home Sushi"
-        />
+        <div className="auth-logo-wrap">
+          <img
+            src={logo}
+            className="auth-logo"
+            alt="At Home Sushi"
+          />
+        </div>
 
         <h1>AT HOME SUSHI</h1>
 
@@ -323,7 +338,11 @@ function Auth({ mode, setMode }) {
 
           <button
             type="button"
-            className={mode === 'login' ? 'active' : ''}
+            className={
+              mode === 'login'
+                ? 'active'
+                : ''
+            }
             onClick={() => {
               setMode('login');
               setMsg('');
@@ -335,7 +354,11 @@ function Auth({ mode, setMode }) {
 
           <button
             type="button"
-            className={mode === 'signup' ? 'active' : ''}
+            className={
+              mode === 'signup'
+                ? 'active'
+                : ''
+            }
             onClick={() => {
               setMode('signup');
               setMsg('');
@@ -347,24 +370,28 @@ function Auth({ mode, setMode }) {
 
         </div>
 
-        <h2>
-          {mode === 'signup'
-            ? 'Join the Loyalty Club'
-            : 'Welcome back!'}
-        </h2>
+        <div className="auth-heading">
 
-        <p className="muted">
-          {mode === 'signup'
-            ? 'Collect points every time you enjoy At Home Sushi.'
-            : 'Check your points, stamps and rewards.'}
-        </p>
+          <h2>
+            {mode === 'signup'
+              ? 'Join the Loyalty Club'
+              : 'Welcome back'}
+          </h2>
+
+          <p>
+            {mode === 'signup'
+              ? 'Collect Sushi Points every time you order.'
+              : 'Your sushi rewards are waiting for you.'}
+          </p>
+
+        </div>
 
         <form onSubmit={submit}>
 
           {mode === 'signup' && (
             <>
-              <label>
-                Full name
+              <div className="field-group">
+                <label>Full name</label>
 
                 <input
                   value={name}
@@ -374,10 +401,10 @@ function Auth({ mode, setMode }) {
                   required
                   placeholder="Your name"
                 />
-              </label>
+              </div>
 
-              <label>
-                Phone number
+              <div className="field-group">
+                <label>Phone number</label>
 
                 <input
                   value={phone}
@@ -386,10 +413,10 @@ function Auth({ mode, setMode }) {
                   }
                   placeholder="09xxxxxxxxx"
                 />
-              </label>
+              </div>
 
-              <label>
-                Birthday
+              <div className="field-group">
+                <label>Birthday</label>
 
                 <input
                   type="date"
@@ -398,12 +425,12 @@ function Auth({ mode, setMode }) {
                     setBirthday(e.target.value)
                   }
                 />
-              </label>
+              </div>
             </>
           )}
 
-          <label>
-            Email
+          <div className="field-group">
+            <label>Email</label>
 
             <input
               type="email"
@@ -414,7 +441,7 @@ function Auth({ mode, setMode }) {
               required
               placeholder="you@email.com"
             />
-          </label>
+          </div>
 
           <PasswordField
             value={password}
@@ -425,6 +452,7 @@ function Auth({ mode, setMode }) {
 
           {mode === 'login' && (
             <label className="remember-row">
+
               <input
                 type="checkbox"
                 checked={remember}
@@ -434,6 +462,7 @@ function Auth({ mode, setMode }) {
               />
 
               <span>Remember me</span>
+
             </label>
           )}
 
@@ -453,6 +482,10 @@ function Auth({ mode, setMode }) {
               : mode === 'signup'
               ? 'Create my account'
               : 'Log in'}
+
+            {!busy && (
+              <ArrowRight size={17} />
+            )}
           </button>
 
         </form>
@@ -460,6 +493,7 @@ function Auth({ mode, setMode }) {
         {mode === 'login' && (
           <p className="switch">
             New here?{' '}
+
             <button
               type="button"
               onClick={() => {
@@ -474,7 +508,7 @@ function Auth({ mode, setMode }) {
 
       </div>
 
-      <p className="footer">
+      <p className="auth-footer">
         Quick Rolls. Bold Flavors. Great Rewards.
       </p>
 
@@ -566,7 +600,10 @@ function Dashboard({
       await supabase
         .from('transactions')
         .select('*')
-        .eq('customer_id', session.user.id)
+        .eq(
+          'customer_id',
+          session.user.id
+        )
         .order('created_at', {
           ascending: false
         })
@@ -581,11 +618,7 @@ function Dashboard({
 
   if (!profile) {
     return (
-      <div className="screen">
-        <p>
-          Creating your loyalty card...
-        </p>
-      </div>
+      <LoadingScreen text="Preparing your loyalty card..." />
     );
   }
 
@@ -595,6 +628,7 @@ function Dashboard({
       <header className="topbar">
 
         <div className="topbar-brand">
+
           <img
             src={logo}
             alt="At Home Sushi"
@@ -604,6 +638,7 @@ function Dashboard({
             <b>AT HOME SUSHI</b>
             <span>LOYALTY CLUB</span>
           </div>
+
         </div>
 
         <button
@@ -611,7 +646,7 @@ function Dashboard({
           onClick={logout}
           title="Log out"
         >
-          <LogOut size={19} />
+          <LogOut size={18} />
         </button>
 
       </header>
@@ -621,10 +656,12 @@ function Dashboard({
         {birthdayReward && (
           <div className="birthday-banner">
 
-            <div>
+            <div className="birthday-icon">
+              <Cake size={20} />
+            </div>
 
+            <div>
               <span className="eyebrow">
-                <Cake size={15} />
                 BIRTHDAY REWARD
               </span>
 
@@ -639,7 +676,6 @@ function Dashboard({
               <strong>
                 {birthdayReward.reward_text}
               </strong>
-
             </div>
 
           </div>
@@ -653,9 +689,7 @@ function Dashboard({
         )}
 
         {tab === 'card' && (
-          <DigitalCard
-            profile={profile}
-          />
+          <DigitalCard profile={profile} />
         )}
 
         {tab === 'rewards' && (
@@ -674,34 +708,50 @@ function Dashboard({
       <nav className="nav">
 
         <button
-          className={tab === 'home' ? 'sel' : ''}
+          className={
+            tab === 'home'
+              ? 'sel'
+              : ''
+          }
           onClick={() => setTab('home')}
         >
-          <Star size={20} />
+          <Star size={19} />
           <span>Home</span>
         </button>
 
         <button
-          className={tab === 'card' ? 'sel' : ''}
+          className={
+            tab === 'card'
+              ? 'sel'
+              : ''
+          }
           onClick={() => setTab('card')}
         >
-          <QrCode size={20} />
+          <QrCode size={19} />
           <span>My Card</span>
         </button>
 
         <button
-          className={tab === 'rewards' ? 'sel' : ''}
+          className={
+            tab === 'rewards'
+              ? 'sel'
+              : ''
+          }
           onClick={() => setTab('rewards')}
         >
-          <Gift size={20} />
+          <Gift size={19} />
           <span>Rewards</span>
         </button>
 
         <button
-          className={tab === 'history' ? 'sel' : ''}
+          className={
+            tab === 'history'
+              ? 'sel'
+              : ''
+          }
           onClick={() => setTab('history')}
         >
-          <History size={20} />
+          <History size={19} />
           <span>History</span>
         </button>
 
@@ -715,169 +765,56 @@ function Dashboard({
    HOME
 ===================================================== */
 
-function Home({ profile, rewards }) {
-  const [menuIndex, setMenuIndex] = useState(0);
-  const [orderOpen, setOrderOpen] = useState(false);
+function Home({
+  profile,
+  rewards
+}) {
+  const [menuIndex, setMenuIndex] =
+    useState(0);
 
-  const points = Number(profile.points || 0);
+  const [orderOpen, setOrderOpen] =
+    useState(false);
 
-  /*
-    MENU DATA
-    These are the actual menu names/prices
-    you provided.
-  */
+  const points =
+    Number(profile.points || 0);
 
   const menu = [
-    {
-      name: 'Spicy Salmon Roll',
-      pieces: '8 pcs',
-      price: '₱219',
-      ingredients:
-        'Fresh salmon • Cucumber • Sesame • Spicy salmon mix'
-    },
     {
       name: 'California Roll',
       pieces: '8 pcs',
       price: '₱189',
       ingredients:
-        'Avocado • Mango • Cucumber • Crabstick • Japanese mayo'
+        'Avocado • Mango • Cucumber • Crabstick • Japanese Mayo',
+      image: '/sushi/california-roll.png'
     },
     {
-      name: 'Green Dragon',
+      name: 'Green Dragon Roll',
       pieces: '8 pcs',
       price: '₱219',
       ingredients:
-        'Prawn tempura • Fresh avocado • Teriyaki • Spicy mayo'
-    },
-    {
-      name: 'Shrimp Avo Roll',
-      pieces: '8 pcs',
-      price: '₱205',
-      ingredients:
-        'Prawn tempura • Avocado • White sesame'
-    },
-    {
-      name: 'Spicy California',
-      pieces: '8 pcs',
-      price: '₱195',
-      ingredients:
-        'Avocado • Mango • Cucumber • Crabstick • Togarashi'
-    },
-    {
-      name: 'Creamy Salmon Avo',
-      pieces: '8 pcs',
-      price: '₱209',
-      ingredients:
-        'Fresh salmon • Cream cheese • Avocado • Sesame'
-    },
-    {
-      name: 'Crispy Cream',
-      pieces: '8 pcs',
-      price: '₱209',
-      ingredients:
-        'Prawn tempura • Avocado • Cucumber • Tamago • Cream cheese'
-    },
-    {
-      name: 'Crunchy California',
-      pieces: '8 pcs',
-      price: '₱189',
-      ingredients:
-        'California roll covered with crispy tanuki'
-    },
-    {
-      name: 'Chicken Katsu Roll',
-      pieces: '8 pcs',
-      price: '₱209',
-      ingredients:
-        'Chicken katsu • Cucumber • Crispy tanuki • Teriyaki'
-    },
-    {
-      name: 'Hurricane Roll',
-      pieces: '8 pcs',
-      price: '₱219',
-      ingredients:
-        'Avocado • Crabstick • Cucumber • Crabstick salad • Caviar'
-    },
-    {
-      name: 'Super California',
-      pieces: '8 pcs',
-      price: '₱209',
-      ingredients:
-        'Avocado • Mango • Cucumber • Crabstick • Japanese mayo • Caviar'
-    },
-    {
-      name: 'Crunchy Tempura',
-      pieces: '8 pcs',
-      price: '₱199',
-      ingredients:
-        'Prawn tempura • Cucumber • Crispy tanuki • Sweet chili • Teriyaki'
-    },
-    {
-      name: 'Sphinx Roll',
-      pieces: '8 pcs',
-      price: '₱219',
-      ingredients:
-        'Prawn tempura • Avocado • Cucumber • Fried salmon • Crispy nori'
-    },
-    {
-      name: 'Crunchy Potato',
-      pieces: '8 pcs',
-      price: '₱219',
-      ingredients:
-        'Prawn tempura • Avocado • Cucumber • Crabstick salad • Crispy potato'
-    },
-    {
-      name: 'Passion Rainbow',
-      pieces: '8 pcs',
-      price: '₱219',
-      ingredients:
-        'Fresh salmon • Avocado • Cucumber • Crabstick • Caviar'
-    },
-    {
-      name: 'Kani Aburi Roll',
-      pieces: '8 pcs',
-      price: '₱229',
-      ingredients:
-        'Prawn tempura • Tamago • Avocado • Seared crabstick • Spicy mayo'
-    },
-    {
-      name: 'Imperial Salmon',
-      pieces: '8 pcs',
-      price: '₱239',
-      ingredients:
-        'Prawn tempura • Mango • Cucumber • Cream cheese • Seared salmon'
-    },
-    {
-      name: 'At Home Supreme Roll',
-      pieces: '8 pcs',
-      price: '₱239',
-      ingredients:
-        'Prawn tempura • Avocado • Tamago • Cream cheese • Seared salmon'
-    },
-    {
-      name: 'Crab Lava Roll',
-      pieces: '8 pcs',
-      price: '₱239',
-      ingredients:
-        'Tempura crabstick • Avocado • Spicy mayo crab • Crispy tanuki'
-    },
-    {
-      name: 'Cheezy Tempura',
-      pieces: '8 pcs',
-      price: '₱229',
-      ingredients:
-        'Prawn tempura • Tamago • Carrots • Cream cheese • Cheddar cheese'
+        'Prawn Tempura • Fresh Avocado • Teriyaki • Spicy Mayo',
+      image: '/sushi/green-dragon-roll.png'
     },
     {
       name: 'Volcano Roll',
       pieces: '8 pcs',
       price: '₱229',
       ingredients:
-        'Prawn tempura • Avocado • Cucumber • Cream cheese • Spicy prawn mix'
+        'Prawn Tempura • Avocado • Cucumber • Spicy Prawn Tempura Mix',
+      image: '/sushi/volcano-roll.png'
+    },
+    {
+      name: 'Super California',
+      pieces: '8 pcs',
+      price: '₱209',
+      ingredients:
+        'Avocado • Mango • Cucumber • Crabstick • Japanese Mayo • Caviar',
+      image: '/sushi/super-california-roll.png'
     }
   ];
 
-  const current = menu[menuIndex];
+  const current =
+    menu[menuIndex];
 
   function previousSushi() {
     setMenuIndex((index) =>
@@ -904,29 +841,20 @@ function Home({ profile, rewards }) {
 
         <div className="hero-content">
 
-          <div className="hero-brand">
-            <img
-              src={logo}
-              alt="At Home Sushi"
-            />
-
-            <span>
-              AT HOME SUSHI
-            </span>
-          </div>
-
-          <div className="section-kicker">
-            LOYALTY CLUB
-          </div>
+          <span className="hero-kicker">
+            AT HOME SUSHI
+          </span>
 
           <h1>
-            GET MORE FROM
-            <span> EVERY ORDER.</span>
+            GOOD SUSHI.
+            <br />
+            <span>GREAT REWARDS.</span>
           </h1>
 
           <p>
-            Every order brings you closer
-            to your next reward.
+            Earn Sushi Points with every
+            order and enjoy rewards along
+            the way.
           </p>
 
           <div className="hero-actions">
@@ -964,7 +892,7 @@ function Home({ profile, rewards }) {
 
       </section>
 
-      {/* POINTS */}
+      {/* SUSHI POINTS */}
 
       <section
         id="sushi-points"
@@ -1006,7 +934,9 @@ function Home({ profile, rewards }) {
             className="bubble-arrow"
             onClick={() =>
               document
-                .getElementById('rewards-preview')
+                .getElementById(
+                  'rewards-preview'
+                )
                 ?.scrollIntoView({
                   behavior: 'smooth'
                 })
@@ -1072,7 +1002,7 @@ function Home({ profile, rewards }) {
         </h2>
 
         <p className="section-intro">
-          Discover something delicious.
+          A few favorites from At Home Sushi.
         </p>
 
         <div className="sushi-showcase">
@@ -1092,11 +1022,27 @@ function Home({ profile, rewards }) {
 
             <div className="sushi-image-wrap">
 
+              <img
+                src={current.image}
+                alt={current.name}
+                className="sushi-image"
+                onError={(e) => {
+                  e.currentTarget.style.display =
+                    'none';
+
+                  e.currentTarget.parentElement.classList.add(
+                    'photo-missing'
+                  );
+                }}
+              />
+
               <div className="photo-placeholder">
-                <span>🍣</span>
+                <span>
+                  <Sparkles size={24} />
+                </span>
 
                 <small>
-                  AT HOME SUSHI
+                  SUSHI PHOTO
                 </small>
               </div>
 
@@ -1117,10 +1063,14 @@ function Home({ profile, rewards }) {
         <div className="sushi-details">
 
           <div className="sushi-counter">
-            {String(menuIndex + 1).padStart(2, '0')}
+            {String(
+              menuIndex + 1
+            ).padStart(2, '0')}
 
             <span>
-              / {String(menu.length).padStart(2, '0')}
+              / {String(
+                menu.length
+              ).padStart(2, '0')}
             </span>
           </div>
 
@@ -1130,7 +1080,7 @@ function Home({ profile, rewards }) {
 
           <p className="sushi-meta">
             {current.pieces}
-            &nbsp;·&nbsp;
+            {' · '}
             {current.price}
           </p>
 
@@ -1140,7 +1090,9 @@ function Home({ profile, rewards }) {
 
           <button
             className="order-bubble"
-            onClick={() => setOrderOpen(true)}
+            onClick={() =>
+              setOrderOpen(true)
+            }
           >
             ORDER THIS
             <ChevronRight size={17} />
@@ -1172,8 +1124,9 @@ function Home({ profile, rewards }) {
 
         <div className="modern-rewards">
 
-          {rewards.slice(0, 3).map(
-            (reward, index) => (
+          {rewards
+            .slice(0, 3)
+            .map((reward, index) => (
 
               <div
                 className="modern-reward"
@@ -1203,8 +1156,7 @@ function Home({ profile, rewards }) {
 
               </div>
 
-            )
-          )}
+            ))}
 
         </div>
 
@@ -1213,10 +1165,11 @@ function Home({ profile, rewards }) {
       {/* ORDER MODAL */}
 
       {orderOpen && (
-
         <div
           className="order-overlay"
-          onClick={() => setOrderOpen(false)}
+          onClick={() =>
+            setOrderOpen(false)
+          }
         >
 
           <div
@@ -1231,6 +1184,7 @@ function Home({ profile, rewards }) {
               onClick={() =>
                 setOrderOpen(false)
               }
+              aria-label="Close"
             >
               <X size={19} />
             </button>
@@ -1246,8 +1200,8 @@ function Home({ profile, rewards }) {
             </h2>
 
             <p>
-              Choose how you'd like to
-              order your sushi.
+              Choose where you'd like
+              to place your order.
             </p>
 
             <a
@@ -1289,7 +1243,9 @@ function Home({ profile, rewards }) {
 
               <span>
                 <b>ORDER VIA FACEBOOK</b>
-                <small>Message At Home Sushi</small>
+                <small>
+                  Message At Home Sushi
+                </small>
               </span>
 
               <ChevronRight size={18} />
@@ -1299,7 +1255,6 @@ function Home({ profile, rewards }) {
           </div>
 
         </div>
-
       )}
 
     </div>
@@ -1327,8 +1282,10 @@ function DigitalCard({ profile }) {
         <div className="qr">
 
           <QRCodeSVG
-            value={profile.customer_code || ''}
-            size={210}
+            value={
+              profile.customer_code || ''
+            }
+            size={190}
             includeMargin
           />
 
@@ -1345,7 +1302,6 @@ function DigitalCard({ profile }) {
         <div className="balance-grid">
 
           <div className="mini">
-
             <small>POINTS</small>
 
             <b>
@@ -1353,17 +1309,14 @@ function DigitalCard({ profile }) {
                 profile.points || 0
               ).toFixed(2)}
             </b>
-
           </div>
 
           <div className="mini">
-
             <small>STAMPS</small>
 
             <b>
               {profile.stamps || 0}
             </b>
-
           </div>
 
         </div>
@@ -1406,7 +1359,7 @@ function Rewards({
           {Number(
             profile.points || 0
           ).toFixed(2)}{' '}
-          points
+          Sushi Points
         </b>.
       </p>
 
@@ -1420,7 +1373,7 @@ function Rewards({
           >
 
             <div className="reward-icon">
-              <Gift />
+              <Gift size={20} />
             </div>
 
             <div>
@@ -1436,7 +1389,9 @@ function Rewards({
             </div>
 
             <strong>
-              {reward.points_required} pts
+              {reward.points_required}
+              {' '}
+              pts
             </strong>
 
           </div>
@@ -1444,284 +1399,6 @@ function Rewards({
         ))}
 
       </div>
-
-    </div>
-  );
-}
-
-/* =====================================================
-   REDEEM POINTS
-===================================================== */
-
-function RedeemPoints({
-  profile,
-  rewards,
-  onClose
-}) {
-  const [selectedReward, setSelectedReward] =
-    useState(null);
-
-  const [code, setCode] =
-    useState('');
-
-  const [busy, setBusy] =
-    useState(false);
-
-  const [msg, setMsg] =
-    useState('');
-
-  const points =
-    Number(profile.points || 0);
-
-  async function createRedemption() {
-    if (!selectedReward) {
-      setMsg('Please select a reward.');
-      return;
-    }
-
-    const requiredPoints =
-      Number(
-        selectedReward.points_required
-      );
-
-    if (points < requiredPoints) {
-      setMsg(
-        'You do not have enough points.'
-      );
-      return;
-    }
-
-    setBusy(true);
-    setMsg('');
-
-    const redemptionCode =
-      'AHS-' +
-      Math.random()
-        .toString(36)
-        .substring(2, 7)
-        .toUpperCase();
-
-    const { data, error } =
-      await supabase
-        .from('point_redemptions')
-        .insert({
-          customer_id: profile.id,
-          reward_id: selectedReward.id,
-          points_used: requiredPoints,
-          redemption_code: redemptionCode,
-          status: 'pending'
-        })
-        .select()
-        .single();
-
-    if (error) {
-      console.error(
-        'Redemption error:',
-        error
-      );
-
-      setMsg(error.message);
-      setBusy(false);
-      return;
-    }
-
-    setCode(data.redemption_code);
-    setBusy(false);
-  }
-
-  async function copyCode() {
-    await navigator.clipboard.writeText(code);
-    setMsg('Code copied!');
-  }
-
-  if (code) {
-    return (
-      <div className="container center">
-
-        <div className="card digital">
-
-          <CheckCircle
-            size={50}
-            style={{
-              marginBottom: 10
-            }}
-          />
-
-          <span className="eyebrow">
-            REDEMPTION CODE
-          </span>
-
-          <h2>
-            Show this code to staff
-          </h2>
-
-          <p className="muted">
-            Do not close this screen until
-            staff confirms your redemption.
-          </p>
-
-          <div className="redemption-code">
-            {code}
-          </div>
-
-          <button
-            type="button"
-            className="primary"
-            onClick={copyCode}
-          >
-            <Copy size={18} />
-            Copy Code
-          </button>
-
-          {msg && (
-            <div className="notice">
-              {msg}
-            </div>
-          )}
-
-          <button
-            type="button"
-            className="birthday-button"
-            onClick={onClose}
-          >
-            Back to Rewards
-          </button>
-
-        </div>
-
-      </div>
-    );
-  }
-
-  return (
-    <div className="container">
-
-      <div className="page-heading-row">
-
-        <div>
-          <h1>
-            Use Points
-          </h1>
-
-          <p className="muted">
-            You have{' '}
-            <b>
-              {points.toFixed(2)} points
-            </b>
-          </p>
-        </div>
-
-        <button
-          type="button"
-          className="iconbtn"
-          onClick={onClose}
-        >
-          <X size={20} />
-        </button>
-
-      </div>
-
-      <div className="reward-list">
-
-        {rewards.map((reward) => {
-
-          const required =
-            Number(
-              reward.points_required
-            );
-
-          const available =
-            points >= required;
-
-          const selected =
-            selectedReward?.id === reward.id;
-
-          return (
-            <button
-              type="button"
-              key={reward.id}
-              onClick={() =>
-                available &&
-                setSelectedReward(reward)
-              }
-              disabled={!available}
-              className={`card reward reward-select ${
-                selected ? 'selected' : ''
-              }`}
-            >
-
-              <div className="reward-icon">
-                <Gift />
-              </div>
-
-              <div>
-
-                <b>
-                  {reward.name}
-                </b>
-
-                <p>
-                  {reward.description || ''}
-                </p>
-
-                <small>
-                  {required} points
-                </small>
-
-              </div>
-
-              {!available && (
-                <small>
-                  Not enough
-                </small>
-              )}
-
-            </button>
-          );
-        })}
-
-      </div>
-
-      {selectedReward && (
-        <div className="card redeem-confirm">
-
-          <h3>
-            Redeem {selectedReward.name}?
-          </h3>
-
-          <p className="muted">
-            This will create a redemption
-            code for{' '}
-            <b>
-              {selectedReward.points_required}
-              {' '}points.
-            </b>
-          </p>
-
-          <p className="muted">
-            Your points will only be deducted
-            after staff confirms the code.
-          </p>
-
-          {msg && (
-            <div className="notice">
-              {msg}
-            </div>
-          )}
-
-          <button
-            type="button"
-            className="primary"
-            onClick={createRedemption}
-            disabled={busy}
-          >
-            {busy
-              ? 'Creating Code...'
-              : 'Generate Redemption Code'}
-          </button>
-
-        </div>
-      )}
 
     </div>
   );
@@ -1736,21 +1413,15 @@ function HistoryTab({ tx }) {
     <div className="container">
 
       <div className="page-title">
-        <History
-          size={22}
-          strokeWidth={1.7}
-        />
-
-        <h1>
-          History
-        </h1>
+        <History size={22} />
+        <h1>History</h1>
       </div>
 
       {tx.length === 0 ? (
 
         <div className="card empty">
 
-          <History />
+          <History size={28} />
 
           <p>
             No transactions yet.
@@ -1803,7 +1474,7 @@ function HistoryTab({ tx }) {
 }
 
 /* =====================================================
-   STAFF PANEL
+   STAFF APP
 ===================================================== */
 
 function Staff() {
@@ -1894,8 +1565,6 @@ function Staff() {
     setStaffSession(null);
   }
 
-  /* FIND CUSTOMER */
-
   async function findCustomer() {
     setMsg('');
     setCustomer(null);
@@ -1922,11 +1591,6 @@ function Staff() {
     setBusy(false);
 
     if (error) {
-      console.error(
-        'Find customer error:',
-        error
-      );
-
       setMsg(error.message);
       return;
     }
@@ -1945,8 +1609,6 @@ function Staff() {
       `Customer found: ${data.full_name}`
     );
   }
-
-  /* ADD POINTS */
 
   async function addPoints() {
     if (!customer) {
@@ -1988,15 +1650,7 @@ function Staff() {
         .eq('id', customer.id);
 
     if (updateError) {
-      console.error(
-        'Points update error:',
-        updateError
-      );
-
-      setMsg(
-        updateError.message
-      );
-
+      setMsg(updateError.message);
       setBusy(false);
       return;
     }
@@ -2005,21 +1659,18 @@ function Staff() {
       await supabase
         .from('transactions')
         .insert({
-          customer_id: customer.id,
-          transaction_type: 'purchase',
-          points_earned: points
+          customer_id:
+            customer.id,
+          transaction_type:
+            'purchase',
+          points_earned:
+            points
         });
 
     if (transactionError) {
-      console.error(
-        'Transaction error:',
-        transactionError
-      );
-
       setMsg(
         transactionError.message
       );
-
       setBusy(false);
       return;
     }
@@ -2037,8 +1688,6 @@ function Staff() {
 
     setBusy(false);
   }
-
-  /* SAVE NOTES */
 
   async function saveNotes() {
     if (!customer) {
@@ -2074,8 +1723,6 @@ function Staff() {
 
     setBusy(false);
   }
-
-  /* BIRTHDAY REWARD */
 
   async function claimBirthdayReward() {
     if (!customer) {
@@ -2142,7 +1789,6 @@ function Staff() {
       setMsg(
         'Birthday reward has already been claimed this year.'
       );
-
       setBusy(false);
       return;
     }
@@ -2164,7 +1810,6 @@ function Staff() {
       setMsg(
         rewardError.message
       );
-
       setBusy(false);
       return;
     }
@@ -2173,7 +1818,6 @@ function Staff() {
       setMsg(
         'No active birthday reward found.'
       );
-
       setBusy(false);
       return;
     }
@@ -2183,15 +1827,16 @@ function Staff() {
     } = await supabase
       .from('birthday_claims')
       .insert({
-        customer_id: customer.id,
-        birthday_year: year
+        customer_id:
+          customer.id,
+        birthday_year:
+          year
       });
 
     if (claimError) {
       setMsg(
         claimError.message
       );
-
       setBusy(false);
       return;
     }
@@ -2203,40 +1848,25 @@ function Staff() {
     setBusy(false);
   }
 
-  /* CHECKING */
-
   if (checking) {
     return (
-      <div className="screen">
-
-        <div className="loader">
-          <img
-            src={logo}
-            alt="At Home Sushi"
-          />
-        </div>
-
-        <p>
-          Checking staff access...
-        </p>
-
-      </div>
+      <LoadingScreen text="Checking staff access..." />
     );
   }
-
-  /* STAFF LOGIN */
 
   if (!staffSession) {
     return (
       <div className="auth-wrap">
 
-        <div className="brand">
+        <div className="auth-brand">
 
-          <img
-            src={logo}
-            className="staff-logo"
-            alt="At Home Sushi"
-          />
+          <div className="auth-logo-wrap staff-logo-wrap">
+            <img
+              src={logo}
+              className="auth-logo"
+              alt="At Home Sushi"
+            />
+          </div>
 
           <h1>
             AT HOME SUSHI
@@ -2250,26 +1880,25 @@ function Staff() {
 
         <div className="card auth-card">
 
-          <div className="staff-login-heading">
-            <span className="eyebrow">
-              STAFF
-            </span>
+          <div className="auth-heading">
 
             <h2>
               Staff Login
             </h2>
 
-            <p className="muted">
-              Sign in to manage customer points.
+            <p>
+              Manage customer points and rewards.
             </p>
+
           </div>
 
-          <form
-            onSubmit={staffLogin}
-          >
+          <form onSubmit={staffLogin}>
 
-            <label>
-              Email
+            <div className="field-group">
+
+              <label>
+                Email
+              </label>
 
               <input
                 type="email"
@@ -2280,7 +1909,8 @@ function Staff() {
                 required
                 placeholder="Staff email"
               />
-            </label>
+
+            </div>
 
             <PasswordField
               value={password}
@@ -2296,7 +1926,9 @@ function Staff() {
                 type="checkbox"
                 checked={remember}
                 onChange={(e) =>
-                  setRemember(e.target.checked)
+                  setRemember(
+                    e.target.checked
+                  )
                 }
               />
 
@@ -2334,8 +1966,6 @@ function Staff() {
     );
   }
 
-  /* STAFF DASHBOARD */
-
   return (
     <div className="app">
 
@@ -2349,15 +1979,8 @@ function Staff() {
           />
 
           <div>
-
-            <b>
-              AT HOME SUSHI
-            </b>
-
-            <span>
-              STAFF PANEL
-            </span>
-
+            <b>AT HOME SUSHI</b>
+            <span>STAFF PANEL</span>
           </div>
 
         </div>
@@ -2367,22 +1990,27 @@ function Staff() {
           onClick={staffLogout}
           title="Log out"
         >
-          <LogOut size={19} />
+          <LogOut size={18} />
         </button>
 
       </header>
 
       <main className="container">
 
-        <div className="hero">
+        <div className="staff-page-heading">
 
-          <p>
+          <span className="section-kicker">
             STAFF
-          </p>
+          </span>
 
           <h1>
-            Add Customer Points
+            Customer Loyalty
           </h1>
+
+          <p className="muted">
+            Scan or enter a customer code
+            to manage their Sushi Points.
+          </p>
 
         </div>
 
@@ -2390,17 +2018,41 @@ function Staff() {
 
         <div className="card staff-card">
 
-          <label>
-            Customer QR / Code
-          </label>
+          <div className="card-heading">
 
-          <input
-            value={customerCode}
-            onChange={(e) =>
-              setCustomerCode(e.target.value)
-            }
-            placeholder="Enter customer code"
-          />
+            <div className="card-heading-icon">
+              <ScanLine size={19} />
+            </div>
+
+            <div>
+              <h3>
+                Find Customer
+              </h3>
+
+              <p>
+                Enter the customer QR code.
+              </p>
+            </div>
+
+          </div>
+
+          <div className="field-group">
+
+            <label>
+              Customer QR / Code
+            </label>
+
+            <input
+              value={customerCode}
+              onChange={(e) =>
+                setCustomerCode(
+                  e.target.value
+                )
+              }
+              placeholder="Enter customer code"
+            />
+
+          </div>
 
           <button
             type="button"
@@ -2422,7 +2074,7 @@ function Staff() {
         {/* CUSTOMER */}
 
         {customer && (
-          <div className="card staff-card customer-card">
+          <div className="card staff-card">
 
             <span className="eyebrow">
               CUSTOMER
@@ -2444,11 +2096,16 @@ function Staff() {
               </p>
             )}
 
-            <div className="balance-grid">
+            <div
+              className="balance-grid"
+              style={{
+                marginTop: 18
+              }}
+            >
 
               <div className="balance">
 
-                <Star />
+                <Star size={18} />
 
                 <small>
                   CURRENT POINTS
@@ -2464,7 +2121,7 @@ function Staff() {
 
               <div className="balance">
 
-                <Ticket />
+                <Ticket size={18} />
 
                 <small>
                   STAMPS
@@ -2479,7 +2136,7 @@ function Staff() {
             </div>
 
             {customer.birthday && (
-              <p className="muted birthday-info">
+              <p className="muted staff-birthday">
 
                 <Cake size={15} />
 
@@ -2492,37 +2149,45 @@ function Staff() {
               </p>
             )}
 
+            <div className="staff-divider" />
+
             {/* ADD POINTS */}
 
-            <label>
-              Purchase Amount
-            </label>
+            <div className="field-group">
 
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              value={amount}
-              onChange={(e) =>
-                setAmount(e.target.value)
-              }
-              placeholder="₱0.00"
-            />
+              <label>
+                Purchase Amount
+              </label>
+
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={amount}
+                onChange={(e) =>
+                  setAmount(
+                    e.target.value
+                  )
+                }
+                placeholder="₱0.00"
+              />
+
+            </div>
 
             {amount &&
               Number(amount) > 0 && (
-                <p className="muted">
+                <div className="points-preview">
+                  <span>
+                    Points to add
+                  </span>
 
-                  Points to add:{' '}
-
-                  <b>
+                  <strong>
                     {(
                       Number(amount) /
                       100
                     ).toFixed(2)}
-                  </b>
-
-                </p>
+                  </strong>
+                </div>
               )}
 
             <button
@@ -2545,7 +2210,9 @@ function Staff() {
             <button
               type="button"
               className="birthday-button"
-              onClick={claimBirthdayReward}
+              onClick={
+                claimBirthdayReward
+              }
               disabled={busy}
             >
 
@@ -2560,20 +2227,32 @@ function Staff() {
 
             {/* NOTES */}
 
-            <div className="notes-section">
+            <div className="staff-notes">
 
-              <label>
+              <div className="card-heading">
 
-                <FileText size={14} />
+                <div className="card-heading-icon">
+                  <FileText size={18} />
+                </div>
 
-                Customer Notes
+                <div>
+                  <h3>
+                    Customer Notes
+                  </h3>
 
-              </label>
+                  <p>
+                    Add notes for future orders.
+                  </p>
+                </div>
+
+              </div>
 
               <textarea
                 value={notes}
                 onChange={(e) =>
-                  setNotes(e.target.value)
+                  setNotes(
+                    e.target.value
+                  )
                 }
                 placeholder="Add notes about this customer..."
               />
@@ -2584,11 +2263,9 @@ function Staff() {
                 onClick={saveNotes}
                 disabled={busy}
               >
-
                 {busy
                   ? 'Saving...'
                   : 'Save Notes'}
-
               </button>
 
             </div>
@@ -2597,7 +2274,7 @@ function Staff() {
         )}
 
         {msg && (
-          <div className="notice staff-notice">
+          <div className="notice staff-message">
             {msg}
           </div>
         )}
