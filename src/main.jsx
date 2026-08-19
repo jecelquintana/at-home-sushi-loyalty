@@ -18,7 +18,10 @@ import {
   Eye,
   EyeOff,
   Cake,
-  FileText
+  FileText,
+  CheckCircle,
+  Copy,
+  X
 } from 'lucide-react';
 
 import './styles.css';
@@ -975,6 +978,301 @@ function DigitalCard({ profile }) {
 /* =====================================================
    REWARDS
 ===================================================== */
+/* =====================================================
+   REDEEM POINTS
+===================================================== */
+
+function RedeemPoints({
+  profile,
+  rewards,
+  onClose
+}) {
+  const [selectedReward, setSelectedReward] = useState(null);
+  const [code, setCode] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState('');
+
+  const points = Number(profile.points || 0);
+
+  async function createRedemption() {
+    if (!selectedReward) {
+      setMsg('Please select a reward.');
+      return;
+    }
+
+    const requiredPoints =
+      Number(selectedReward.points_required);
+
+    if (points < requiredPoints) {
+      setMsg('You do not have enough points.');
+      return;
+    }
+
+    setBusy(true);
+    setMsg('');
+
+    const redemptionCode =
+      'AHS-' +
+      Math.random()
+        .toString(36)
+        .substring(2, 7)
+        .toUpperCase();
+
+    const { data, error } =
+      await supabase
+        .from('point_redemptions')
+        .insert({
+          customer_id: profile.id,
+          reward_id: selectedReward.id,
+          points_used: requiredPoints,
+          redemption_code: redemptionCode,
+          status: 'pending'
+        })
+        .select()
+        .single();
+
+    if (error) {
+      console.error(
+        'Redemption error:',
+        error
+      );
+
+      setMsg(error.message);
+      setBusy(false);
+      return;
+    }
+
+    setCode(data.redemption_code);
+    setBusy(false);
+  }
+
+  async function copyCode() {
+    await navigator.clipboard.writeText(code);
+    setMsg('Code copied!');
+  }
+
+  if (code) {
+    return (
+      <div className="container center">
+
+        <div className="card digital">
+
+          <CheckCircle
+            size={50}
+            style={{ marginBottom: 10 }}
+          />
+
+          <span className="eyebrow">
+            REDEMPTION CODE
+          </span>
+
+          <h2>
+            Show this code to staff
+          </h2>
+
+          <p className="muted">
+            Do not close this screen until
+            staff confirms your redemption.
+          </p>
+
+          <div
+            style={{
+              fontSize: '32px',
+              fontWeight: '800',
+              letterSpacing: '4px',
+              padding: '20px 10px',
+              margin: '20px 0',
+              borderRadius: '14px',
+              background: '#181818'
+            }}
+          >
+            {code}
+          </div>
+
+          <button
+            type="button"
+            className="primary"
+            onClick={copyCode}
+          >
+            <Copy size={18} />
+            Copy Code
+          </button>
+
+          {msg && (
+            <div className="notice">
+              {msg}
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="birthday-button"
+            onClick={onClose}
+          >
+            Back to Rewards
+          </button>
+
+        </div>
+
+      </div>
+    );
+  }
+
+  return (
+    <div className="container">
+
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: 20
+        }}
+      >
+
+        <div>
+          <h1>
+            Use Points
+          </h1>
+
+          <p className="muted">
+            You have{' '}
+            <b>
+              {points.toFixed(2)} points
+            </b>
+          </p>
+        </div>
+
+        <button
+          type="button"
+          className="iconbtn"
+          onClick={onClose}
+        >
+          <X size={20} />
+        </button>
+
+      </div>
+
+      <div className="reward-list">
+
+        {rewards.map((reward) => {
+
+          const required =
+            Number(
+              reward.points_required
+            );
+
+          const available =
+            points >= required;
+
+          const selected =
+            selectedReward?.id === reward.id;
+
+          return (
+            <button
+              type="button"
+              key={reward.id}
+              onClick={() =>
+                available &&
+                setSelectedReward(reward)
+              }
+              disabled={!available}
+              style={{
+                width: '100%',
+                textAlign: 'left',
+                border: selected
+                  ? '2px solid white'
+                  : '1px solid #292929',
+                opacity: available ? 1 : 0.45,
+                cursor: available
+                  ? 'pointer'
+                  : 'not-allowed'
+              }}
+              className="card reward"
+            >
+
+              <div className="reward-icon">
+                <Gift />
+              </div>
+
+              <div>
+
+                <b>
+                  {reward.name}
+                </b>
+
+                <p>
+                  {reward.description || ''}
+                </p>
+
+                <small>
+                  {required} points
+                </small>
+
+              </div>
+
+              {!available && (
+                <small>
+                  Not enough
+                </small>
+              )}
+
+            </button>
+          );
+        })}
+
+      </div>
+
+      {selectedReward && (
+        <div
+          className="card"
+          style={{
+            padding: 20,
+            marginTop: 20
+          }}
+        >
+
+          <h3>
+            Redeem {selectedReward.name}?
+          </h3>
+
+          <p className="muted">
+            This will create a redemption
+            code for{' '}
+            <b>
+              {selectedReward.points_required}
+              {' '}points.
+            </b>
+          </p>
+
+          <p className="muted">
+            Your points will only be deducted
+            after staff confirms the code.
+          </p>
+
+          {msg && (
+            <div className="notice">
+              {msg}
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="primary"
+            onClick={createRedemption}
+            disabled={busy}
+          >
+            {busy
+              ? 'Creating Code...'
+              : 'Generate Redemption Code'}
+          </button>
+
+        </div>
+      )}
+
+    </div>
+  );
+}
 
 function Rewards({
   profile,
