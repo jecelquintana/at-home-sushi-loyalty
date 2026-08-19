@@ -2244,6 +2244,1135 @@ input[type="date"] {
 .sushi-home .sushi-kicker {
   color: #8f8f8f;
 }
+/* =====================================================
+   AT HOME SUSHI — PREMIUM CUSTOMER HOMEPAGE
+===================================================== */
+
+.sushi-home {
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(165, 72, 62, 0.08),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      #f7f5ef 0%,
+      #efede6 50%,
+      #f8f6f1 100%
+    );
+  color: #191918;
+  overflow: hidden;
+  position: relative;
+}
+
+/* subtle Japanese-inspired background pattern */
+
+.sushi-home::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.13;
+
+  background-image:
+    radial-gradient(
+      circle at 20% 20%,
+      transparent 0,
+      transparent 70px,
+      rgba(25, 25, 24, 0.08) 71px,
+      transparent 72px
+    ),
+    repeating-radial-gradient(
+      ellipse at 50% 100%,
+      transparent 0,
+      transparent 35px,
+      rgba(25, 25, 24, 0.045) 36px,
+      transparent 37px
+    );
+
+  background-size:
+    280px 280px,
+    420px 210px;
+
+  z-index: 0;
+}
+
+.sushi-home > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.sushi-hero {
+  min-height: 720px;
+
+  display: flex;
+  align-items: center;
+
+  position: relative;
+
+  padding:
+    100px
+    max(24px, calc((100% - 1180px) / 2));
+
+  overflow: hidden;
+}
+
+.sushi-hero::after {
+  content: "";
+
+  position: absolute;
+
+  width: 520px;
+  height: 520px;
+
+  right: -130px;
+  top: 100px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(165, 72, 62, 0.10),
+      transparent 68%
+    );
+
+  filter: blur(10px);
+
+  pointer-events: none;
+}
+
+.japanese-watermark {
+  position: absolute;
+
+  right: 6%;
+  top: 50%;
+
+  transform:
+    translateY(-50%)
+    rotate(-8deg);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: clamp(120px, 18vw, 280px);
+
+  font-weight: 400;
+
+  letter-spacing: -12px;
+
+  color: rgba(25, 25, 24, 0.035);
+
+  white-space: nowrap;
+
+  user-select: none;
+}
+
+.hero-content {
+  max-width: 720px;
+}
+
+.hero-label,
+.section-kicker {
+  font-size: 10px;
+
+  letter-spacing: 3px;
+
+  color: #8f4038;
+
+  font-weight: 500;
+
+  margin-bottom: 15px;
+}
+
+.hero-content h1 {
+  margin: 0;
+
+  max-width: 700px;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: clamp(48px, 7vw, 92px);
+
+  line-height: 0.98;
+
+  letter-spacing: -3px;
+
+  font-weight: 400;
+
+  color: #191918;
+}
+
+.hero-content h1 span {
+  display: block;
+
+  color: #8f4038;
+
+  font-weight: 400;
+}
+
+.hero-content > p {
+  max-width: 450px;
+
+  margin:
+    25px 0 0;
+
+  font-size: 16px;
+
+  line-height: 1.7;
+
+  color: #66635d;
+
+  font-weight: 400;
+}
+
+/* =====================================================
+   GLASS BUTTONS
+===================================================== */
+
+.hero-actions {
+  display: flex;
+
+  gap: 10px;
+
+  flex-wrap: wrap;
+
+  margin-top: 30px;
+}
+
+.glass-button {
+  border: 1px solid rgba(25, 25, 24, 0.14);
+
+  border-radius: 999px;
+
+  padding:
+    13px
+    18px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  cursor: pointer;
+
+  font-size: 12px;
+
+  letter-spacing: 0.5px;
+
+  font-weight: 500;
+
+  backdrop-filter: blur(18px);
+
+  -webkit-backdrop-filter: blur(18px);
+
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.glass-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 30px rgba(25, 25, 24, 0.10);
+}
+
+.dark-glass {
+  background:
+    rgba(25, 25, 24, 0.88);
+
+  color: white;
+}
+
+.light-glass {
+  background:
+    rgba(255, 255, 255, 0.45);
+
+  color: #242320;
+}
+
+/* =====================================================
+   POINTS SECTION
+===================================================== */
+
+.points-section,
+.menu-section,
+.rewards-section {
+  width: min(1050px, calc(100% - 36px));
+
+  margin: auto;
+
+  padding:
+    110px 0;
+}
+
+.points-section h2,
+.menu-section h2,
+.rewards-section h2 {
+  margin: 0;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: clamp(38px, 5vw, 64px);
+
+  font-weight: 400;
+
+  letter-spacing: -2px;
+
+  color: #191918;
+}
+
+.section-intro {
+  margin:
+    12px 0 30px;
+
+  color: #706d67;
+
+  font-size: 14px;
+
+  font-weight: 400;
+}
+
+/* =====================================================
+   POINTS GLASS CARD
+===================================================== */
+
+.points-glass-card {
+  margin-top: 35px;
+
+  padding: 30px;
+
+  border-radius: 28px;
+
+  border: 1px solid rgba(255, 255, 255, 0.75);
+
+  background:
+    rgba(255, 255, 255, 0.48);
+
+  box-shadow:
+    0 25px 70px rgba(40, 37, 31, 0.09);
+
+  backdrop-filter: blur(25px);
+
+  -webkit-backdrop-filter: blur(25px);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+}
+
+.points-glass-card span,
+.points-glass-card small {
+  display: block;
+
+  color: #77736b;
+
+  font-size: 9px;
+
+  letter-spacing: 2px;
+
+  font-weight: 500;
+}
+
+.points-glass-card strong {
+  display: block;
+
+  margin:
+    4px 0;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 58px;
+
+  font-weight: 400;
+
+  line-height: 1;
+}
+
+.bubble-arrow {
+  width: 48px;
+
+  height: 48px;
+
+  border-radius: 50%;
+
+  border: 1px solid rgba(25, 25, 24, 0.12);
+
+  background:
+    rgba(255, 255, 255, 0.48);
+
+  color: #292825;
+
+  display: grid;
+
+  place-items: center;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(12px);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.bubble-arrow:hover {
+  transform: translateX(3px);
+
+  background:
+    rgba(255, 255, 255, 0.78);
+}
+
+/* =====================================================
+   HOW YOU EARN
+===================================================== */
+
+.earn-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 1px;
+
+  margin-top: 28px;
+
+  border-top:
+    1px solid rgba(25, 25, 24, 0.10);
+
+  border-bottom:
+    1px solid rgba(25, 25, 24, 0.10);
+}
+
+.earn-item {
+  padding: 24px 10px;
+
+  display: flex;
+
+  gap: 15px;
+}
+
+.earn-item > span {
+  font-size: 10px;
+
+  color: #9a968e;
+}
+
+.earn-item b {
+  font-size: 12px;
+
+  font-weight: 600;
+
+  letter-spacing: 1px;
+}
+
+.earn-item p {
+  margin: 5px 0 0;
+
+  color: #77736b;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+}
+
+/* =====================================================
+   MENU
+===================================================== */
+
+.menu-section {
+  text-align: center;
+
+  max-width: 1100px;
+}
+
+.sushi-showcase {
+  position: relative;
+
+  min-height: 430px;
+
+  margin-top: 30px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+.sushi-stage {
+  width: min(520px, 75vw);
+
+  animation:
+    sushiEnter 0.55s ease both;
+}
+
+@keyframes sushiEnter {
+  from {
+    opacity: 0;
+    transform:
+      translateY(20px)
+      scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+.sushi-image-wrap {
+  width: 100%;
+
+  aspect-ratio: 1 / 0.72;
+
+  position: relative;
+
+  display: grid;
+
+  place-items: center;
+}
+
+.sushi-image {
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: contain;
+
+  filter:
+    drop-shadow(
+      0 35px 25px
+      rgba(25, 25, 24, 0.20)
+    );
+
+  animation:
+    sushiFloat 4s ease-in-out infinite;
+}
+
+@keyframes sushiFloat {
+  0%,
+  100% {
+    transform:
+      translateY(0)
+      rotate(-1deg);
+  }
+
+  50% {
+    transform:
+      translateY(-10px)
+      rotate(1deg);
+  }
+}
+
+.photo-placeholder {
+  position: absolute;
+
+  inset: 0;
+
+  display: grid;
+
+  place-items: center;
+
+  align-content: center;
+
+  gap: 8px;
+
+  color: rgba(25, 25, 24, 0.30);
+
+  pointer-events: none;
+}
+
+.photo-placeholder span {
+  font-size: 90px;
+
+  filter:
+    grayscale(1);
+
+  opacity: 0.35;
+}
+
+.photo-placeholder small {
+  font-size: 9px;
+
+  letter-spacing: 2px;
+}
+
+.photo-missing .photo-placeholder {
+  display: grid;
+}
+
+.sushi-image-wrap:not(.photo-missing)
+  .photo-placeholder {
+  display: none;
+}
+
+/* =====================================================
+   CAROUSEL ARROWS
+===================================================== */
+
+.carousel-arrow {
+  position: absolute;
+
+  width: 52px;
+
+  height: 52px;
+
+  border-radius: 50%;
+
+  border: 1px solid rgba(25, 25, 24, 0.13);
+
+  background:
+    rgba(255, 255, 255, 0.40);
+
+  color: #252421;
+
+  font-size: 30px;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  display: grid;
+
+  place-items: center;
+
+  backdrop-filter: blur(15px);
+
+  z-index: 2;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.carousel-arrow:hover {
+  background:
+    rgba(255, 255, 255, 0.75);
+
+  transform: scale(1.06);
+}
+
+.carousel-arrow.left {
+  left: 4%;
+}
+
+.carousel-arrow.right {
+  right: 4%;
+}
+
+/* =====================================================
+   SUSHI DETAILS
+===================================================== */
+
+.sushi-details {
+  max-width: 600px;
+
+  margin:
+    -10px auto 0;
+}
+
+.sushi-counter {
+  font-size: 11px;
+
+  letter-spacing: 2px;
+
+  color: #8f4038;
+}
+
+.sushi-counter span {
+  color: #aaa59d;
+}
+
+.sushi-details h3 {
+  margin:
+    8px 0 5px;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 34px;
+
+  font-weight: 400;
+
+  color: #191918;
+}
+
+.sushi-meta {
+  margin: 0;
+
+  font-size: 13px;
+
+  color: #55524d;
+}
+
+.ingredients {
+  margin:
+    10px 0 20px;
+
+  color: #858078;
+
+  font-size: 12px;
+}
+
+.order-bubble {
+  border: 1px solid rgba(25, 25, 24, 0.15);
+
+  border-radius: 999px;
+
+  background:
+    rgba(255, 255, 255, 0.55);
+
+  color: #191918;
+
+  padding:
+    13px 21px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  cursor: pointer;
+
+  font-size: 11px;
+
+  letter-spacing: 1px;
+
+  font-weight: 500;
+
+  backdrop-filter: blur(16px);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.order-bubble:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 30px rgba(25, 25, 24, 0.10);
+}
+
+/* =====================================================
+   REWARDS
+===================================================== */
+
+.rewards-section {
+  padding-bottom: 150px;
+}
+
+.modern-rewards {
+  margin-top: 35px;
+
+  border-top:
+    1px solid rgba(25, 25, 24, 0.12);
+}
+
+.modern-reward {
+  padding:
+    22px 5px;
+
+  display: grid;
+
+  grid-template-columns: 45px 1fr auto;
+
+  align-items: center;
+
+  gap: 15px;
+
+  border-bottom:
+    1px solid rgba(25, 25, 24, 0.12);
+
+  transition:
+    padding 0.25s ease;
+}
+
+.modern-reward:hover {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.modern-reward > span {
+  color: #9b978f;
+
+  font-size: 10px;
+}
+
+.modern-reward h3 {
+  margin: 0;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 20px;
+
+  font-weight: 400;
+}
+
+.modern-reward p {
+  margin:
+    5px 0 0;
+
+  color: #858078;
+
+  font-size: 12px;
+}
+
+.modern-reward strong {
+  font-size: 12px;
+
+  font-weight: 500;
+
+  color: #8f4038;
+}
+
+/* =====================================================
+   ORDER MODAL
+===================================================== */
+
+.order-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 100;
+
+  display: grid;
+
+  place-items: center;
+
+  padding: 20px;
+
+  background:
+    rgba(20, 19, 17, 0.35);
+
+  backdrop-filter: blur(10px);
+
+  animation:
+    fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.order-modal {
+  width: min(430px, 100%);
+
+  position: relative;
+
+  padding: 35px;
+
+  border-radius: 30px;
+
+  background:
+    rgba(247, 245, 239, 0.90);
+
+  border:
+    1px solid rgba(255, 255, 255, 0.80);
+
+  box-shadow:
+    0 30px 90px rgba(0, 0, 0, 0.25);
+
+  backdrop-filter: blur(25px);
+
+  animation:
+    modalUp 0.3s ease;
+}
+
+@keyframes modalUp {
+  from {
+    opacity: 0;
+    transform:
+      translateY(20px)
+      scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+.modal-close {
+  position: absolute;
+
+  right: 18px;
+
+  top: 18px;
+
+  width: 38px;
+
+  height: 38px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid rgba(25, 25, 24, 0.12);
+
+  background:
+    rgba(255, 255, 255, 0.50);
+
+  color: #333;
+
+  display: grid;
+
+  place-items: center;
+
+  cursor: pointer;
+}
+
+.order-modal h2 {
+  margin:
+    5px 0 10px;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-weight: 400;
+
+  font-size: 32px;
+
+  line-height: 1.05;
+}
+
+.order-modal > p {
+  color: #77736b;
+
+  font-size: 13px;
+
+  margin-bottom: 22px;
+}
+
+.order-option {
+  text-decoration: none;
+
+  color: #191918;
+
+  display: grid;
+
+  grid-template-columns:
+    45px 1fr auto;
+
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 15px;
+
+  margin-top: 10px;
+
+  border:
+    1px solid rgba(25, 25, 24, 0.10);
+
+  border-radius: 18px;
+
+  background:
+    rgba(255, 255, 255, 0.48);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.order-option:hover {
+  transform: translateY(-2px);
+
+  background:
+    rgba(255, 255, 255, 0.75);
+}
+
+.order-option-icon {
+  width: 45px;
+
+  height: 45px;
+
+  border-radius: 14px;
+
+  background:
+    rgba(255, 255, 255, 0.65);
+
+  display: grid;
+
+  place-items: center;
+
+  font-size: 19px;
+}
+
+.order-option b,
+.order-option small {
+  display: block;
+}
+
+.order-option b {
+  font-size: 12px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.5px;
+}
+
+.order-option small {
+  margin-top: 3px;
+
+  color: #858078;
+
+  font-size: 11px;
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 700px) {
+
+  .sushi-hero {
+    min-height: 650px;
+
+    padding:
+      80px 24px;
+  }
+
+  .hero-content h1 {
+    font-size: 51px;
+
+    letter-spacing: -2px;
+  }
+
+  .japanese-watermark {
+    right: -100px;
+
+    top: 42%;
+
+    font-size: 150px;
+  }
+
+  .points-section,
+  .menu-section,
+  .rewards-section {
+    padding:
+      75px 0;
+  }
+
+  .earn-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .earn-item {
+    border-bottom:
+      1px solid rgba(25, 25, 24, 0.08);
+  }
+
+  .earn-item:last-child {
+    border-bottom: 0;
+  }
+
+  .points-glass-card {
+    padding: 24px;
+  }
+
+  .points-glass-card strong {
+    font-size: 48px;
+  }
+
+  .sushi-showcase {
+    min-height: 330px;
+  }
+
+  .sushi-stage {
+    width: 85vw;
+  }
+
+  .carousel-arrow {
+    width: 44px;
+
+    height: 44px;
+
+    font-size: 25px;
+  }
+
+  .carousel-arrow.left {
+    left: 0;
+  }
+
+  .carousel-arrow.right {
+    right: 0;
+  }
+
+  .sushi-details h3 {
+    font-size: 29px;
+  }
+
+  .order-modal {
+    padding: 28px 22px;
+  }
+}
+
+@media (max-width: 420px) {
+
+  .hero-content h1 {
+    font-size: 43px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .glass-button {
+    justify-content: center;
+  }
+
+  .points-glass-card {
+    border-radius: 22px;
+  }
+
+  .modern-reward {
+    grid-template-columns:
+      32px 1fr auto;
+  }
+
+}
 
 .sushi-home .reward-progress i {
   background: #f1eee8;
