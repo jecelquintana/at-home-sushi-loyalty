@@ -2322,8 +2322,7 @@ function Settings({
       </button>
     </div>
   );
-
-function Staff() 
+function Staff() {
   const [staffSession, setStaffSession] =
     useState(null);
 
