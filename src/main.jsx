@@ -100,7 +100,7 @@ function App() {
 
       if (data.session) {
         setSession(data.session);
-        await loadProfile(data.session.user.id);
+        await loadProfile(data.session.user);
       } else {
         setLoading(false);
       }
@@ -116,7 +116,7 @@ function App() {
       setSession(currentSession);
 
       if (currentSession) {
-        await loadProfile(currentSession.user.id);
+        await loadProfile(currentSession.user);
       } else {
         setProfile(null);
         setLoading(false);
@@ -129,18 +129,80 @@ function App() {
     };
   }, []);
 
-  async function loadProfile(id) {
+  /* =====================================================
+     LOAD OR CREATE CUSTOMER PROFILE
+  ===================================================== */
+
+  async function loadProfile(user) {
+    if (!user?.id) {
+      setProfile(null);
+      setLoading(false);
+      return;
+    }
+
     const { data, error } = await supabase
       .from('customers')
       .select('*')
-      .eq('id', id)
+      .eq('id', user.id)
       .maybeSingle();
 
     if (error) {
       console.error('Customer profile error:', error);
+      setProfile(null);
+      setLoading(false);
+      return;
     }
 
-    setProfile(data || null);
+    /* ===================================================
+       PROFILE ALREADY EXISTS
+    =================================================== */
+
+    if (data) {
+      setProfile(data);
+      setLoading(false);
+      return;
+    }
+
+    /* ===================================================
+       PROFILE DOES NOT EXIST
+       CREATE IT NOW
+    =================================================== */
+
+    const metadata = user.user_metadata || {};
+
+    const newCustomer = {
+      id: user.id,
+      full_name: metadata.full_name || '',
+      phone: metadata.phone || null,
+      email: user.email || null,
+      birthday: metadata.birthday || null,
+      points: 0,
+      stamps: 0
+    };
+
+    console.log('Creating customer profile:', newCustomer);
+
+    const {
+      data: createdProfile,
+      error: createError
+    } = await supabase
+      .from('customers')
+      .insert(newCustomer)
+      .select()
+      .single();
+
+    if (createError) {
+      console.error(
+        'Could not create customer profile:',
+        createError
+      );
+
+      setProfile(null);
+      setLoading(false);
+      return;
+    }
+
+    setProfile(createdProfile);
     setLoading(false);
   }
 
@@ -169,7 +231,9 @@ function App() {
     <Dashboard
       session={session}
       profile={profile}
-      reloadProfile={() => loadProfile(session.user.id)}
+      reloadProfile={() =>
+        loadProfile(session.user)
+      }
     />
   );
 }
@@ -205,9 +269,9 @@ function Auth({ mode, setMode }) {
     setBusy(true);
     setMsg('');
 
-    /* =========================
+    /* ===================================================
        LOGIN
-    ========================= */
+    =================================================== */
 
     if (mode === 'login') {
       if (remember) {
@@ -220,7 +284,7 @@ function Auth({ mode, setMode }) {
 
       const { error } =
         await supabase.auth.signInWithPassword({
-          email,
+          email: email.trim(),
           password
         });
 
@@ -232,36 +296,77 @@ function Auth({ mode, setMode }) {
       return;
     }
 
-    /* =========================
+    /* ===================================================
        SIGN UP
-    ========================= */
+    =================================================== */
+
+    if (!name.trim()) {
+      setMsg('Please enter your full name.');
+      setBusy(false);
+      return;
+    }
 
     const { data, error } =
       await supabase.auth.signUp({
-        email,
+        email: email.trim(),
         password,
         options: {
           data: {
-            full_name: name,
-            phone,
-            birthday
+            full_name: name.trim(),
+            phone: phone.trim() || null,
+            birthday: birthday || null
           }
         }
       });
 
     if (error) {
+      console.error('Signup error:', error);
       setMsg(error.message);
       setBusy(false);
       return;
     }
 
-   
-    /* =========================
+    /* ===================================================
+       IF SUPABASE RETURNS A SESSION
+       CREATE PROFILE IMMEDIATELY
+    =================================================== */
+
+    if (data?.session && data?.user) {
+      const user = data.user;
+
+      const {
+        error: profileError
+      } = await supabase
+        .from('customers')
+        .insert({
+          id: user.id,
+          full_name: name.trim(),
+          phone: phone.trim() || null,
+          email: user.email || email.trim(),
+          birthday: birthday || null,
+          points: 0,
+          stamps: 0
+        });
+
+      if (profileError) {
+        console.error(
+          'Profile creation error:',
+          profileError
+        );
+      }
+    }
+
+    /* ===================================================
        SUCCESS
-    ========================= */
+    =================================================== */
+
+    setName('');
+    setPhone('');
+    setBirthday('');
+    setPassword('');
 
     setMsg(
-      'Account created! Please check your email to confirm your account, then log in.'
+      'Account created successfully! Please check your email to confirm your account, then log in.'
     );
 
     setMode('login');
@@ -343,10 +448,7 @@ function Auth({ mode, setMode }) {
             {mode === 'signup' && (
               <>
                 <div className="field">
-
-                  <label>
-                    Full name
-                  </label>
+                  <label>Full name</label>
 
                   <input
                     value={name}
@@ -356,14 +458,10 @@ function Auth({ mode, setMode }) {
                     placeholder="Your name"
                     required
                   />
-
                 </div>
 
                 <div className="field">
-
-                  <label>
-                    Phone number
-                  </label>
+                  <label>Phone number</label>
 
                   <input
                     value={phone}
@@ -372,14 +470,10 @@ function Auth({ mode, setMode }) {
                     }
                     placeholder="09xxxxxxxxx"
                   />
-
                 </div>
 
                 <div className="field">
-
-                  <label>
-                    Birthday
-                  </label>
+                  <label>Birthday</label>
 
                   <input
                     type="date"
@@ -388,16 +482,13 @@ function Auth({ mode, setMode }) {
                       setBirthday(e.target.value)
                     }
                   />
-
                 </div>
               </>
             )}
 
             <div className="field">
 
-              <label>
-                Email
-              </label>
+              <label>Email</label>
 
               <input
                 type="email"
@@ -503,6 +594,7 @@ function Auth({ mode, setMode }) {
     </div>
   );
 }
+
 /* =====================================================
    DASHBOARD
 ===================================================== */
@@ -515,8 +607,7 @@ function Dashboard({
   const [tab, setTab] = useState('home');
   const [rewards, setRewards] = useState([]);
   const [transactions, setTransactions] = useState([]);
-  const [birthdayReward, setBirthdayReward] =
-    useState(null);
+  const [birthdayReward, setBirthdayReward] = useState(null);
 
   useEffect(() => {
     loadDashboard();
@@ -529,12 +620,14 @@ function Dashboard({
   }, [profile]);
 
   async function loadDashboard() {
-    const { data: rewardsData, error: rewardsError } =
-      await supabase
-        .from('rewards')
-        .select('*')
-        .eq('active', true)
-        .order('points_required');
+    const {
+      data: rewardsData,
+      error: rewardsError
+    } = await supabase
+      .from('rewards')
+      .select('*')
+      .eq('active', true)
+      .order('points_required');
 
     if (rewardsError) {
       console.error(
@@ -615,9 +708,11 @@ function Dashboard({
     return (
       <div className="loading-screen">
         <div className="loading-mark">🍣</div>
+
         <div className="loading-brand">
           AT HOME SUSHI
         </div>
+
         <div className="loading-text">
           Preparing your loyalty card
         </div>
@@ -778,7 +873,6 @@ function Dashboard({
 
 /* =====================================================
    HOME
-   MENU IS NOW LOADED FROM SUPABASE
 ===================================================== */
 
 function Home({
@@ -799,10 +893,6 @@ function Home({
 
   const [selectedMenuItem, setSelectedMenuItem] =
     useState(null);
-
-  /* =====================================================
-     LOAD MENU FROM SUPABASE
-  ===================================================== */
 
   useEffect(() => {
     loadMenu();
@@ -836,10 +926,6 @@ function Home({
     setMenuLoading(false);
   }
 
-  /* =====================================================
-     CATEGORIES
-  ===================================================== */
-
   const categories = [
     { id: 'all', label: 'All' },
     { id: 'appetizers', label: 'Appetizers' },
@@ -868,10 +954,6 @@ function Home({
 
   return (
     <div className="home-page">
-
-      {/* =================================================
-          HERO
-      ================================================= */}
 
       <section className="home-hero">
 
@@ -926,10 +1008,6 @@ function Home({
         </div>
 
       </section>
-
-      {/* =================================================
-          POINTS
-      ================================================= */}
 
       <section
         id="points-section"
@@ -1002,10 +1080,6 @@ function Home({
 
       </section>
 
-      {/* =================================================
-          MENU
-      ================================================= */}
-
       <section
         id="menu-section"
         className="home-section menu-home"
@@ -1042,10 +1116,9 @@ function Home({
 
         </div>
 
-        {/* MENU LOADING */}
-
         {menuLoading && (
           <div className="empty-card large">
+
             <div className="loading-mark">
               🍣
             </div>
@@ -1057,10 +1130,9 @@ function Home({
             <p>
               Please wait a moment.
             </p>
+
           </div>
         )}
-
-        {/* EMPTY MENU */}
 
         {!menuLoading &&
           filteredMenu.length === 0 && (
@@ -1080,8 +1152,6 @@ function Home({
 
             </div>
           )}
-
-        {/* MENU GRID */}
 
         {!menuLoading &&
           filteredMenu.length > 0 && (
@@ -1116,13 +1186,6 @@ function Home({
                         </small>
                       </div>
                     )}
-
-                    <div className="photo-fallback">
-                      <span>🍣</span>
-                      <small>
-                        AT HOME SUSHI
-                      </small>
-                    </div>
 
                   </div>
 
@@ -1162,10 +1225,6 @@ function Home({
           )}
 
       </section>
-
-      {/* =================================================
-          REWARDS PREVIEW
-      ================================================= */}
 
       <section className="home-section rewards-home">
 
@@ -1230,10 +1289,6 @@ function Home({
         </button>
 
       </section>
-
-      {/* =================================================
-          ORDER MODAL
-      ================================================= */}
 
       {orderOpen &&
         selectedMenuItem && (
@@ -1371,9 +1426,7 @@ function DigitalCard({ profile }) {
         <div className="qr-box">
 
           <QRCodeSVG
-            value={
-              profile.customer_code || ''
-            }
+            value={profile.customer_code || ''}
             size={190}
             includeMargin
           />
@@ -2204,6 +2257,7 @@ function Staff() {
   if (checking) {
     return (
       <div className="loading-screen">
+
         <div className="loading-mark">
           🍣
         </div>
@@ -2215,6 +2269,7 @@ function Staff() {
         <div className="loading-text">
           Checking staff access
         </div>
+
       </div>
     );
   }
