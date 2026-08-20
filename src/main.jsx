@@ -199,299 +199,125 @@ function Auth({ mode, setMode }) {
     }
   }, []);
 
-  async function submit(e) {
-    e.preventDefault();
+ async function submit(e) {
+  e.preventDefault();
 
-    setBusy(true);
-    setMsg('');
+  setBusy(true);
+  setMsg('');
 
-    if (mode === 'login') {
-      if (remember) {
-        localStorage.setItem('rememberLogin', 'true');
-        localStorage.setItem('savedLoginEmail', email);
-      } else {
-        localStorage.removeItem('rememberLogin');
-        localStorage.removeItem('savedLoginEmail');
-      }
+  /* =========================
+     LOGIN
+  ========================= */
 
-      const { error } =
-        await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
+  if (mode === 'login') {
+    if (remember) {
+      localStorage.setItem(
+        'rememberLogin',
+        'true'
+      );
 
-      if (error) {
-        setMsg(error.message);
-      }
+      localStorage.setItem(
+        'savedLoginEmail',
+        email
+      );
+    } else {
+      localStorage.removeItem(
+        'rememberLogin'
+      );
 
-      setBusy(false);
-      return;
+      localStorage.removeItem(
+        'savedLoginEmail'
+      );
     }
 
-    const { data, error } =
-      await supabase.auth.signUp({
+    const { error } =
+      await supabase.auth.signInWithPassword({
         email,
-        password,
-        options: {
-          data: {
-            full_name: name,
-            phone,
-            birthday
-          }
-        }
+        password
       });
 
     if (error) {
       setMsg(error.message);
+    }
+
+    setBusy(false);
+    return;
+  }
+
+  /* =========================
+     SIGN UP
+  ========================= */
+
+  const { data, error } =
+    await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+          phone,
+          birthday
+        }
+      }
+    });
+
+  if (error) {
+    setMsg(error.message);
+    setBusy(false);
+    return;
+  }
+
+  /* =========================
+     CREATE CUSTOMER PROFILE
+  ========================= */
+
+  if (data.user) {
+    const customerCode =
+      Math.random()
+        .toString(36)
+        .substring(2, 12)
+        .toUpperCase();
+
+    const { error: profileError } =
+      await supabase
+        .from('customers')
+        .insert({
+          id: data.user.id,
+          full_name: name,
+          phone: phone || null,
+          email,
+          birthday: birthday || null,
+          points: 0,
+          stamps: 0,
+          customer_code: customerCode
+        });
+
+    if (profileError) {
+      console.error(
+        'Profile creation error:',
+        profileError
+      );
+
+      setMsg(
+        'Your account was created, but your loyalty profile could not be created. Please contact staff.'
+      );
+
       setBusy(false);
       return;
     }
+  }
 
-if (data.user) {
+  /* =========================
+     SUCCESS
+  ========================= */
+
   setMsg(
     'Account created! Please check your email to confirm your account, then log in.'
   );
 
   setMode('login');
   setBusy(false);
-  return;
 }
-
-      if (profileError) {
-        console.error(
-          'Profile creation error:',
-          profileError
-        );
-
-        setMsg(
-          'Your account was created, but your loyalty profile could not be created. Please contact staff.'
-        );
-
-        setBusy(false);
-        return;
-      }
-    }
-
-    setMsg(
-      'Account created! Please check your email to confirm your account, then log in.'
-    );
-
-    setMode('login');
-    setBusy(false);
-  }
-
-  return (
-    <div className="auth-page">
-      <div className="auth-shell">
-
-        <div className="auth-brand">
-          <img
-            src={logo}
-            alt="At Home Sushi"
-          />
-
-          <h1>AT HOME SUSHI</h1>
-          <span>LOYALTY CLUB</span>
-        </div>
-
-        <div className="auth-card">
-
-          <div className="auth-tabs">
-
-            <button
-              type="button"
-              className={
-                mode === 'login'
-                  ? 'active'
-                  : ''
-              }
-              onClick={() => {
-                setMode('login');
-                setMsg('');
-              }}
-            >
-              <LogIn size={16} />
-              Log in
-            </button>
-
-            <button
-              type="button"
-              className={
-                mode === 'signup'
-                  ? 'active'
-                  : ''
-              }
-              onClick={() => {
-                setMode('signup');
-                setMsg('');
-              }}
-            >
-              <UserPlus size={16} />
-              Join
-            </button>
-
-          </div>
-
-          <div className="auth-heading">
-
-            <h2>
-              {mode === 'login'
-                ? 'Welcome back'
-                : 'Join the club'}
-            </h2>
-
-            <p>
-              {mode === 'login'
-                ? 'Your sushi rewards are waiting.'
-                : 'Earn Sushi Points with every order.'}
-            </p>
-
-          </div>
-
-          <form onSubmit={submit}>
-
-            {mode === 'signup' && (
-              <>
-                <div className="field">
-                  <label>Full name</label>
-
-                  <input
-                    value={name}
-                    onChange={(e) =>
-                      setName(e.target.value)
-                    }
-                    placeholder="Your name"
-                    required
-                  />
-                </div>
-
-                <div className="field">
-                  <label>Phone number</label>
-
-                  <input
-                    value={phone}
-                    onChange={(e) =>
-                      setPhone(e.target.value)
-                    }
-                    placeholder="09xxxxxxxxx"
-                  />
-                </div>
-
-                <div className="field">
-                  <label>Birthday</label>
-
-                  <input
-                    type="date"
-                    value={birthday}
-                    onChange={(e) =>
-                      setBirthday(e.target.value)
-                    }
-                  />
-                </div>
-              </>
-            )}
-
-            <div className="field">
-              <label>Email</label>
-
-              <input
-                type="email"
-                value={email}
-                onChange={(e) =>
-                  setEmail(e.target.value)
-                }
-                placeholder="you@email.com"
-                required
-              />
-            </div>
-
-            <PasswordField
-              value={password}
-              onChange={(e) =>
-                setPassword(e.target.value)
-              }
-              placeholder="Your password"
-            />
-
-            {mode === 'login' && (
-              <label className="remember-row">
-
-                <input
-                  type="checkbox"
-                  checked={remember}
-                  onChange={(e) =>
-                    setRemember(e.target.checked)
-                  }
-                />
-
-                <span>Remember me</span>
-
-              </label>
-            )}
-
-            {msg && (
-              <div className="notice">
-                {msg}
-              </div>
-            )}
-
-            <button
-              className="primary-button"
-              disabled={busy}
-              type="submit"
-            >
-              {busy
-                ? 'Please wait...'
-                : mode === 'login'
-                ? 'Log in'
-                : 'Create my account'}
-            </button>
-
-          </form>
-
-          {mode === 'login' && (
-            <div className="auth-switch">
-              New here?
-
-              <button
-                type="button"
-                onClick={() => {
-                  setMode('signup');
-                  setMsg('');
-                }}
-              >
-                Join the club
-              </button>
-            </div>
-          )}
-
-          {mode === 'signup' && (
-            <div className="auth-switch">
-              Already a member?
-
-              <button
-                type="button"
-                onClick={() => {
-                  setMode('login');
-                  setMsg('');
-                }}
-              >
-                Log in
-              </button>
-            </div>
-          )}
-
-        </div>
-
-        <div className="auth-footer">
-          Quick rolls. Bold flavors. Great rewards.
-        </div>
-
-      </div>
-    </div>
-  );
-}
-
 /* =====================================================
    DASHBOARD
 ===================================================== */
