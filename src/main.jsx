@@ -23,8 +23,7 @@ import {
   Copy,
   X,
   ShoppingBag,
-  MessageCircle,
-  ArrowLeft
+  MessageCircle
 } from 'lucide-react';
 
 import './styles.css';
@@ -42,7 +41,7 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
 });
 
 /* =====================================================
-   PASSWORD
+   PASSWORD FIELD
 ===================================================== */
 
 function PasswordField({ value, onChange, placeholder }) {
@@ -89,9 +88,15 @@ function App() {
     let mounted = true;
 
     async function start() {
-      const { data } = await supabase.auth.getSession();
+      const { data, error } = await supabase.auth.getSession();
 
       if (!mounted) return;
+
+      if (error) {
+        console.error('Session error:', error);
+        setLoading(false);
+        return;
+      }
 
       if (data.session) {
         setSession(data.session);
@@ -129,10 +134,10 @@ function App() {
       .from('customers')
       .select('*')
       .eq('id', id)
-      .single();
+      .maybeSingle();
 
     if (error) {
-      console.error('Customer profile:', error);
+      console.error('Customer profile error:', error);
     }
 
     setProfile(data || null);
@@ -144,13 +149,20 @@ function App() {
       <div className="loading-screen">
         <div className="loading-mark">🍣</div>
         <div className="loading-brand">AT HOME SUSHI</div>
-        <div className="loading-text">Loading your loyalty club</div>
+        <div className="loading-text">
+          Loading your loyalty club
+        </div>
       </div>
     );
   }
 
   if (!session) {
-    return <Auth mode={mode} setMode={setMode} />;
+    return (
+      <Auth
+        mode={mode}
+        setMode={setMode}
+      />
+    );
   }
 
   return (
@@ -202,10 +214,11 @@ function Auth({ mode, setMode }) {
         localStorage.removeItem('savedLoginEmail');
       }
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+      const { error } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
 
       if (error) {
         setMsg(error.message);
@@ -215,17 +228,18 @@ function Auth({ mode, setMode }) {
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: name,
-          phone,
-          birthday
+    const { data, error } =
+      await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+            phone,
+            birthday
+          }
         }
-      }
-    });
+      });
 
     if (error) {
       setMsg(error.message);
@@ -240,24 +254,30 @@ function Auth({ mode, setMode }) {
           .substring(2, 12)
           .toUpperCase();
 
-      const { error: profileError } = await supabase
-        .from('customers')
-        .insert({
-          id: data.user.id,
-          full_name: name,
-          phone: phone || null,
-          email,
-          birthday: birthday || null,
-          points: 0,
-          stamps: 0,
-          customer_code: customerCode
-        });
+      const { error: profileError } =
+        await supabase
+          .from('customers')
+          .insert({
+            id: data.user.id,
+            full_name: name,
+            phone: phone || null,
+            email,
+            birthday: birthday || null,
+            points: 0,
+            stamps: 0,
+            customer_code: customerCode
+          });
 
       if (profileError) {
-        console.error(profileError);
+        console.error(
+          'Profile creation error:',
+          profileError
+        );
+
         setMsg(
           'Your account was created, but your loyalty profile could not be created. Please contact staff.'
         );
+
         setBusy(false);
         return;
       }
@@ -276,19 +296,26 @@ function Auth({ mode, setMode }) {
       <div className="auth-shell">
 
         <div className="auth-brand">
-          <img src={logo} alt="At Home Sushi" />
+          <img
+            src={logo}
+            alt="At Home Sushi"
+          />
 
           <h1>AT HOME SUSHI</h1>
-
           <span>LOYALTY CLUB</span>
         </div>
 
         <div className="auth-card">
 
           <div className="auth-tabs">
+
             <button
               type="button"
-              className={mode === 'login' ? 'active' : ''}
+              className={
+                mode === 'login'
+                  ? 'active'
+                  : ''
+              }
               onClick={() => {
                 setMode('login');
                 setMsg('');
@@ -300,7 +327,11 @@ function Auth({ mode, setMode }) {
 
             <button
               type="button"
-              className={mode === 'signup' ? 'active' : ''}
+              className={
+                mode === 'signup'
+                  ? 'active'
+                  : ''
+              }
               onClick={() => {
                 setMode('signup');
                 setMsg('');
@@ -309,9 +340,11 @@ function Auth({ mode, setMode }) {
               <UserPlus size={16} />
               Join
             </button>
+
           </div>
 
           <div className="auth-heading">
+
             <h2>
               {mode === 'login'
                 ? 'Welcome back'
@@ -323,6 +356,7 @@ function Auth({ mode, setMode }) {
                 ? 'Your sushi rewards are waiting.'
                 : 'Earn Sushi Points with every order.'}
             </p>
+
           </div>
 
           <form onSubmit={submit}>
@@ -331,9 +365,12 @@ function Auth({ mode, setMode }) {
               <>
                 <div className="field">
                   <label>Full name</label>
+
                   <input
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) =>
+                      setName(e.target.value)
+                    }
                     placeholder="Your name"
                     required
                   />
@@ -341,19 +378,25 @@ function Auth({ mode, setMode }) {
 
                 <div className="field">
                   <label>Phone number</label>
+
                   <input
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e) =>
+                      setPhone(e.target.value)
+                    }
                     placeholder="09xxxxxxxxx"
                   />
                 </div>
 
                 <div className="field">
                   <label>Birthday</label>
+
                   <input
                     type="date"
                     value={birthday}
-                    onChange={(e) => setBirthday(e.target.value)}
+                    onChange={(e) =>
+                      setBirthday(e.target.value)
+                    }
                   />
                 </div>
               </>
@@ -361,10 +404,13 @@ function Auth({ mode, setMode }) {
 
             <div className="field">
               <label>Email</label>
+
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
                 placeholder="you@email.com"
                 required
               />
@@ -372,18 +418,25 @@ function Auth({ mode, setMode }) {
 
             <PasswordField
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) =>
+                setPassword(e.target.value)
+              }
               placeholder="Your password"
             />
 
             {mode === 'login' && (
               <label className="remember-row">
+
                 <input
                   type="checkbox"
                   checked={remember}
-                  onChange={(e) => setRemember(e.target.checked)}
+                  onChange={(e) =>
+                    setRemember(e.target.checked)
+                  }
                 />
+
                 <span>Remember me</span>
+
               </label>
             )}
 
@@ -410,6 +463,7 @@ function Auth({ mode, setMode }) {
           {mode === 'login' && (
             <div className="auth-switch">
               New here?
+
               <button
                 type="button"
                 onClick={() => {
@@ -425,6 +479,7 @@ function Auth({ mode, setMode }) {
           {mode === 'signup' && (
             <div className="auth-switch">
               Already a member?
+
               <button
                 type="button"
                 onClick={() => {
@@ -452,11 +507,16 @@ function Auth({ mode, setMode }) {
    DASHBOARD
 ===================================================== */
 
-function Dashboard({ session, profile, reloadProfile }) {
+function Dashboard({
+  session,
+  profile,
+  reloadProfile
+}) {
   const [tab, setTab] = useState('home');
   const [rewards, setRewards] = useState([]);
   const [transactions, setTransactions] = useState([]);
-  const [birthdayReward, setBirthdayReward] = useState(null);
+  const [birthdayReward, setBirthdayReward] =
+    useState(null);
 
   useEffect(() => {
     loadDashboard();
@@ -469,20 +529,40 @@ function Dashboard({ session, profile, reloadProfile }) {
   }, [profile]);
 
   async function loadDashboard() {
-    const { data: rewardsData } = await supabase
-      .from('rewards')
-      .select('*')
-      .eq('active', true)
-      .order('points_required');
+    const { data: rewardsData, error: rewardsError } =
+      await supabase
+        .from('rewards')
+        .select('*')
+        .eq('active', true)
+        .order('points_required');
+
+    if (rewardsError) {
+      console.error(
+        'Rewards error:',
+        rewardsError
+      );
+    }
 
     setRewards(rewardsData || []);
 
-    const { data: txData } = await supabase
+    const {
+      data: txData,
+      error: txError
+    } = await supabase
       .from('transactions')
       .select('*')
       .eq('customer_id', session.user.id)
-      .order('created_at', { ascending: false })
+      .order('created_at', {
+        ascending: false
+      })
       .limit(30);
+
+    if (txError) {
+      console.error(
+        'Transactions error:',
+        txError
+      );
+    }
 
     setTransactions(txData || []);
   }
@@ -501,22 +581,26 @@ function Dashboard({ session, profile, reloadProfile }) {
 
     const year = today.getFullYear();
 
-    const { data: claimed } = await supabase
-      .from('birthday_claims')
-      .select('id')
-      .eq('customer_id', profile.id)
-      .eq('birthday_year', year)
-      .maybeSingle();
+    const { data: claimed } =
+      await supabase
+        .from('birthday_claims')
+        .select('id')
+        .eq('customer_id', profile.id)
+        .eq('birthday_year', year)
+        .maybeSingle();
 
     if (claimed) return;
 
-    const { data: reward } = await supabase
-      .from('birthday_rewards')
-      .select('*')
-      .eq('active', true)
-      .order('id', { ascending: true })
-      .limit(1)
-      .maybeSingle();
+    const { data: reward } =
+      await supabase
+        .from('birthday_rewards')
+        .select('*')
+        .eq('active', true)
+        .order('id', {
+          ascending: true
+        })
+        .limit(1)
+        .maybeSingle();
 
     if (reward) {
       setBirthdayReward(reward);
@@ -531,8 +615,12 @@ function Dashboard({ session, profile, reloadProfile }) {
     return (
       <div className="loading-screen">
         <div className="loading-mark">🍣</div>
-        <div className="loading-brand">AT HOME SUSHI</div>
-        <div className="loading-text">Preparing your loyalty card</div>
+        <div className="loading-brand">
+          AT HOME SUSHI
+        </div>
+        <div className="loading-text">
+          Preparing your loyalty card
+        </div>
       </div>
     );
   }
@@ -541,13 +629,19 @@ function Dashboard({ session, profile, reloadProfile }) {
     <div className="app-shell">
 
       <header className="app-header">
+
         <div className="header-brand">
-          <img src={logo} alt="At Home Sushi" />
+
+          <img
+            src={logo}
+            alt="At Home Sushi"
+          />
 
           <div>
             <strong>AT HOME SUSHI</strong>
             <span>LOYALTY CLUB</span>
           </div>
+
         </div>
 
         <button
@@ -557,21 +651,32 @@ function Dashboard({ session, profile, reloadProfile }) {
         >
           <LogOut size={18} />
         </button>
+
       </header>
 
       <main className="app-main">
 
         {birthdayReward && (
           <div className="birthday-card">
+
             <div className="birthday-icon">
               <Cake size={19} />
             </div>
 
             <div>
-              <span>YOUR BIRTHDAY REWARD</span>
-              <strong>{birthdayReward.name}</strong>
-              <p>{birthdayReward.reward_text}</p>
+              <span>
+                YOUR BIRTHDAY REWARD
+              </span>
+
+              <strong>
+                {birthdayReward.name}
+              </strong>
+
+              <p>
+                {birthdayReward.reward_text}
+              </p>
             </div>
+
           </div>
         )}
 
@@ -579,12 +684,16 @@ function Dashboard({ session, profile, reloadProfile }) {
           <Home
             profile={profile}
             rewards={rewards}
-            onGoRewards={() => setTab('rewards')}
+            onGoRewards={() =>
+              setTab('rewards')
+            }
           />
         )}
 
         {tab === 'card' && (
-          <DigitalCard profile={profile} />
+          <DigitalCard
+            profile={profile}
+          />
         )}
 
         {tab === 'rewards' && (
@@ -596,7 +705,9 @@ function Dashboard({ session, profile, reloadProfile }) {
         )}
 
         {tab === 'history' && (
-          <HistoryTab transactions={transactions} />
+          <HistoryTab
+            transactions={transactions}
+          />
         )}
 
       </main>
@@ -604,32 +715,56 @@ function Dashboard({ session, profile, reloadProfile }) {
       <nav className="bottom-nav">
 
         <button
-          className={tab === 'home' ? 'selected' : ''}
-          onClick={() => setTab('home')}
+          className={
+            tab === 'home'
+              ? 'selected'
+              : ''
+          }
+          onClick={() =>
+            setTab('home')
+          }
         >
           <Star size={20} />
           <span>Home</span>
         </button>
 
         <button
-          className={tab === 'card' ? 'selected' : ''}
-          onClick={() => setTab('card')}
+          className={
+            tab === 'card'
+              ? 'selected'
+              : ''
+          }
+          onClick={() =>
+            setTab('card')
+          }
         >
           <QrCode size={20} />
           <span>My Card</span>
         </button>
 
         <button
-          className={tab === 'rewards' ? 'selected' : ''}
-          onClick={() => setTab('rewards')}
+          className={
+            tab === 'rewards'
+              ? 'selected'
+              : ''
+          }
+          onClick={() =>
+            setTab('rewards')
+          }
         >
           <Gift size={20} />
           <span>Rewards</span>
         </button>
 
         <button
-          className={tab === 'history' ? 'selected' : ''}
-          onClick={() => setTab('history')}
+          className={
+            tab === 'history'
+              ? 'selected'
+              : ''
+          }
+          onClick={() =>
+            setTab('history')
+          }
         >
           <History size={20} />
           <span>History</span>
@@ -645,8 +780,14 @@ function Dashboard({ session, profile, reloadProfile }) {
    HOME
 ===================================================== */
 
-function Home({ profile, rewards, onGoRewards }) {
-  const points = Number(profile.points || 0);
+function Home({
+  profile,
+  rewards,
+  onGoRewards
+}) {
+  const points = Number(
+    profile.points || 0
+  );
 
   const menu = [
     {
@@ -654,82 +795,100 @@ function Home({ profile, rewards, onGoRewards }) {
       category: 'classic',
       price: '₱189',
       pieces: '8 pcs',
-      ingredients: 'Avocado • Mango • Cucumber • Crabstick • Japanese Mayo',
-      image: '/sushi/california-roll.png'
+      ingredients:
+        'Avocado • Mango • Cucumber • Crabstick • Japanese Mayo',
+      image:
+        '/sushi/california-roll.png'
     },
     {
       name: 'Spicy Salmon Roll',
       category: 'specialty',
       price: '₱219',
       pieces: '8 pcs',
-      ingredients: 'Fresh Salmon • Cucumber • Sesame • Spicy Salmon Mix',
-      image: '/sushi/spicy-salmon-roll.png'
+      ingredients:
+        'Fresh Salmon • Cucumber • Sesame • Spicy Salmon Mix',
+      image:
+        '/sushi/spicy-salmon-roll.png'
     },
     {
       name: 'Green Dragon',
       category: 'specialty',
       price: '₱219',
       pieces: '8 pcs',
-      ingredients: 'Prawn Tempura • Fresh Avocado • Teriyaki • Spicy Mayo',
-      image: '/sushi/green-dragon-roll.png'
+      ingredients:
+        'Prawn Tempura • Fresh Avocado • Teriyaki • Spicy Mayo',
+      image:
+        '/sushi/green-dragon-roll.png'
     },
     {
       name: 'Crispy Cream',
       category: 'specialty',
       price: '₱209',
       pieces: '8 pcs',
-      ingredients: 'Prawn Tempura • Avocado • Cucumber • Tamago • Cream Cheese',
-      image: '/sushi/crispy-cream.png'
+      ingredients:
+        'Prawn Tempura • Avocado • Cucumber • Tamago • Cream Cheese',
+      image:
+        '/sushi/crispy-cream.png'
     },
     {
       name: 'Hurricane Roll',
       category: 'specialty',
       price: '₱219',
       pieces: '8 pcs',
-      ingredients: 'Avocado • Crabstick • Cucumber • Crabstick Salad • Caviar',
-      image: '/sushi/hurricane-roll.png'
+      ingredients:
+        'Avocado • Crabstick • Cucumber • Crabstick Salad • Caviar',
+      image:
+        '/sushi/hurricane-roll.png'
     },
     {
       name: 'Super California',
       category: 'specialty',
       price: '₱209',
       pieces: '8 pcs',
-      ingredients: 'Avocado • Mango • Cucumber • Crabstick • Japanese Mayo • Caviar',
-      image: '/sushi/super-california.png'
+      ingredients:
+        'Avocado • Mango • Cucumber • Crabstick • Japanese Mayo • Caviar',
+      image:
+        '/sushi/super-california.png'
     },
     {
       name: 'Volcano Roll',
       category: 'signature',
       price: '₱229',
       pieces: '8 pcs',
-      ingredients: 'Prawn Tempura • Avocado • Cucumber • Spicy Prawn Mix • Crispy Chips',
-      image: '/sushi/volcano-roll.png'
+      ingredients:
+        'Prawn Tempura • Avocado • Cucumber • Spicy Prawn Mix • Crispy Chips',
+      image:
+        '/sushi/volcano-roll.png'
     },
     {
       name: 'At Home Supreme Roll',
       category: 'signature',
       price: '₱239',
       pieces: '8 pcs',
-      ingredients: 'Prawn Tempura • Avocado • Tamago • Cream Cheese • Seared Salmon',
-      image: '/sushi/at-home-supreme-roll.png'
+      ingredients:
+        'Prawn Tempura • Avocado • Tamago • Cream Cheese • Seared Salmon',
+      image:
+        '/sushi/at-home-supreme-roll.png'
     },
-
-    // Confirmed additional menu items
     {
       name: 'Dynamite Shrimp',
       category: 'appetizers',
       price: '₱189',
       pieces: '',
-      ingredients: 'Prawn tempura covered with dynamite sauce',
-      image: '/sushi/dynamite-shrimp.png'
+      ingredients:
+        'Prawn tempura covered with dynamite sauce',
+      image:
+        '/sushi/dynamite-shrimp.png'
     },
     {
       name: 'Cucumber Crab Salad',
       category: 'appetizers',
       price: '₱179',
       pieces: '',
-      ingredients: 'Mango • Cucumber • Crabstick • Japanese Mayo • Caviar',
-      image: '/sushi/cucumber-crab-salad.png'
+      ingredients:
+        'Mango • Cucumber • Crabstick • Japanese Mayo • Caviar',
+      image:
+        '/sushi/cucumber-crab-salad.png'
     },
     {
       name: 'Tropical Garden Roll',
@@ -738,41 +897,48 @@ function Home({ profile, rewards, onGoRewards }) {
       pieces: '',
       ingredients:
         'Mango • Cucumber • Crabstick • Avocado • Carrots • Lettuce • Rice Paper • Sweet Chili Sauce',
-      image: '/sushi/tropical-garden-roll.png'
+      image:
+        '/sushi/tropical-garden-roll.png'
     },
     {
       name: 'Ebi Fry',
       category: 'appetizers',
       price: '₱189',
       pieces: '4 pcs',
-      ingredients: 'Prawn tempura',
-      image: '/sushi/ebi-fry.png'
+      ingredients:
+        'Prawn tempura',
+      image:
+        '/sushi/ebi-fry.png'
     },
-
-    // Veggie
     {
       name: 'Creamy Avo',
       category: 'veggie',
       price: '₱99',
       pieces: '8 pcs',
-      ingredients: 'Avocado • Cream Cheese',
-      image: '/sushi/creamy-avo.png'
+      ingredients:
+        'Avocado • Cream Cheese',
+      image:
+        '/sushi/creamy-avo.png'
     },
     {
       name: 'Avo Lover',
       category: 'veggie',
       price: '₱119',
       pieces: '8 pcs',
-      ingredients: 'Avocado inside • Covered with avocado',
-      image: '/sushi/avo-lover.png'
+      ingredients:
+        'Avocado inside • Covered with avocado',
+      image:
+        '/sushi/avo-lover.png'
     },
     {
       name: 'Veggie Roll',
       category: 'veggie',
       price: '₱109',
       pieces: '8 pcs',
-      ingredients: 'Avocado • Cucumber • Carrots • Lettuce • White Sesame',
-      image: '/sushi/veggie-roll.png'
+      ingredients:
+        'Avocado • Cucumber • Carrots • Lettuce • White Sesame',
+      image:
+        '/sushi/veggie-roll.png'
     },
     {
       name: 'Tropical Garden Roll — Veggie',
@@ -781,61 +947,67 @@ function Home({ profile, rewards, onGoRewards }) {
       pieces: '',
       ingredients:
         'Mango • Cucumber • Avocado • Carrots • Lettuce • Rice Paper • Sweet Chili Sauce',
-      image: '/sushi/tropical-garden-veggie.png'
+      image:
+        '/sushi/tropical-garden-veggie.png'
     },
-
-    // Nigiri
     {
       name: 'Tamago Nigiri',
       category: 'nigiri',
       price: '₱89',
       pieces: '2 pcs',
-      ingredients: 'Tamago',
-      image: '/sushi/tamago-nigiri.png'
+      ingredients:
+        'Tamago',
+      image:
+        '/sushi/tamago-nigiri.png'
     },
     {
       name: 'Salmon Nigiri',
       category: 'nigiri',
       price: '₱129',
       pieces: '2 pcs',
-      ingredients: 'Fresh Salmon',
-      image: '/sushi/salmon-nigiri.png'
+      ingredients:
+        'Fresh Salmon',
+      image:
+        '/sushi/salmon-nigiri.png'
     },
     {
       name: 'Kani Nigiri',
       category: 'nigiri',
       price: '₱95',
       pieces: '2 pcs',
-      ingredients: 'Kani',
-      image: '/sushi/kani-nigiri.png'
+      ingredients:
+        'Kani',
+      image:
+        '/sushi/kani-nigiri.png'
     },
     {
       name: 'Seared Salmon',
       category: 'nigiri',
       price: '₱135',
       pieces: '2 pcs',
-      ingredients: 'Seared Salmon',
-      image: '/sushi/seared-salmon.png'
+      ingredients:
+        'Seared Salmon',
+      image:
+        '/sushi/seared-salmon.png'
     },
-
-    // Sashimi
     {
       name: 'Sake Sashimi',
       category: 'sashimi',
       price: '₱219',
       pieces: '4 pcs',
-      ingredients: 'Fresh slices of salmon',
-      image: '/sushi/sake-sashimi.png'
+      ingredients:
+        'Fresh slices of salmon',
+      image:
+        '/sushi/sake-sashimi.png'
     },
-
-    // Signature Rolls
     {
       name: 'Cheezy Tempura',
       category: 'signature',
       price: '',
       pieces: '8 pcs',
       ingredients: '',
-      image: '/sushi/cheezy-tempura.png'
+      image:
+        '/sushi/cheezy-tempura.png'
     },
     {
       name: 'Passion Rainbow Roll',
@@ -843,7 +1015,8 @@ function Home({ profile, rewards, onGoRewards }) {
       price: '',
       pieces: '8 pcs',
       ingredients: '',
-      image: '/sushi/passion-rainbow-roll.png'
+      image:
+        '/sushi/passion-rainbow-roll.png'
     },
     {
       name: 'Kani Aburi Roll',
@@ -851,7 +1024,8 @@ function Home({ profile, rewards, onGoRewards }) {
       price: '',
       pieces: '8 pcs',
       ingredients: '',
-      image: '/sushi/kani-aburi-roll.png'
+      image:
+        '/sushi/kani-aburi-roll.png'
     },
     {
       name: 'Sphinx Roll',
@@ -859,7 +1033,8 @@ function Home({ profile, rewards, onGoRewards }) {
       price: '',
       pieces: '8 pcs',
       ingredients: '',
-      image: '/sushi/sphinx-roll.png'
+      image:
+        '/sushi/sphinx-roll.png'
     },
     {
       name: 'Imperial Salmon Roll',
@@ -867,7 +1042,8 @@ function Home({ profile, rewards, onGoRewards }) {
       price: '',
       pieces: '8 pcs',
       ingredients: '',
-      image: '/sushi/imperial-salmon-roll.png'
+      image:
+        '/sushi/imperial-salmon-roll.png'
     },
     {
       name: 'Crunchy Potato Roll',
@@ -875,33 +1051,38 @@ function Home({ profile, rewards, onGoRewards }) {
       price: '',
       pieces: '8 pcs',
       ingredients: '',
-      image: '/sushi/crunchy-potato-roll.png'
+      image:
+        '/sushi/crunchy-potato-roll.png'
     },
-
-    // Platters
     {
       name: 'Create Your Own Platter',
       category: 'platters',
       price: '₱859',
       pieces: '32 pcs',
-      ingredients: 'Mix & match any 4 rolls from Classic or Specialty Rolls',
-      image: '/sushi/create-your-own-platter.png'
+      ingredients:
+        'Mix & match any 4 rolls from Classic or Specialty Rolls',
+      image:
+        '/sushi/create-your-own-platter.png'
     },
     {
       name: 'Tempura Platter',
       category: 'platters',
       price: '₱759',
       pieces: '32 pcs',
-      ingredients: 'Mix of tempura rolls from Classic selection',
-      image: '/sushi/tempura-platter.png'
+      ingredients:
+        'Mix of tempura rolls from Classic selection',
+      image:
+        '/sushi/tempura-platter.png'
     },
     {
       name: 'California Party Platter',
       category: 'platters',
       price: '₱689',
       pieces: '32 pcs',
-      ingredients: 'Mixed California rolls',
-      image: '/sushi/california-party-platter.png'
+      ingredients:
+        'Mixed California rolls',
+      image:
+        '/sushi/california-party-platter.png'
     },
     {
       name: 'Mini Harvest Platter',
@@ -910,15 +1091,18 @@ function Home({ profile, rewards, onGoRewards }) {
       pieces: '32 pcs',
       ingredients:
         'Fresh salmon nigiri and crabstick nigiri with Tropical Garden Roll and seafood rolls',
-      image: '/sushi/mini-harvest-platter.png'
+      image:
+        '/sushi/mini-harvest-platter.png'
     },
     {
       name: 'At Home Supreme Platter',
       category: 'platters',
       price: '₱1,699',
       pieces: '80 pcs',
-      ingredients: 'Mixed sushi rolls and makis',
-      image: '/sushi/at-home-supreme-platter.png'
+      ingredients:
+        'Mixed sushi rolls and makis',
+      image:
+        '/sushi/at-home-supreme-platter.png'
     },
     {
       name: 'Harvest Platter',
@@ -927,7 +1111,8 @@ function Home({ profile, rewards, onGoRewards }) {
       pieces: '68 pcs',
       ingredients:
         'Fresh salmon nigiri and crabstick nigiri with veggie rolls and seafood rolls',
-      image: '/sushi/harvest-platter.png'
+      image:
+        '/sushi/harvest-platter.png'
     }
   ];
 
@@ -943,14 +1128,22 @@ function Home({ profile, rewards, onGoRewards }) {
     { id: 'platters', label: 'Platters' }
   ];
 
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [orderOpen, setOrderOpen] = useState(false);
-  const [selectedMenuItem, setSelectedMenuItem] = useState(null);
+  const [activeCategory, setActiveCategory] =
+    useState('all');
+
+  const [orderOpen, setOrderOpen] =
+    useState(false);
+
+  const [selectedMenuItem, setSelectedMenuItem] =
+    useState(null);
 
   const filteredMenu =
     activeCategory === 'all'
       ? menu
-      : menu.filter((item) => item.category === activeCategory);
+      : menu.filter(
+          (item) =>
+            item.category === activeCategory
+        );
 
   function openOrder(item) {
     setSelectedMenuItem(item);
@@ -959,6 +1152,8 @@ function Home({ profile, rewards, onGoRewards }) {
 
   return (
     <div className="home-page">
+
+      {/* HERO */}
 
       <section className="home-hero">
 
@@ -985,8 +1180,12 @@ function Home({ profile, rewards, onGoRewards }) {
               className="hero-button primary"
               onClick={() =>
                 document
-                  .getElementById('menu-section')
-                  ?.scrollIntoView({ behavior: 'smooth' })
+                  .getElementById(
+                    'menu-section'
+                  )
+                  ?.scrollIntoView({
+                    behavior: 'smooth'
+                  })
               }
             >
               Explore sushi
@@ -997,8 +1196,12 @@ function Home({ profile, rewards, onGoRewards }) {
               className="hero-button secondary"
               onClick={() =>
                 document
-                  .getElementById('points-section')
-                  ?.scrollIntoView({ behavior: 'smooth' })
+                  .getElementById(
+                    'points-section'
+                  )
+                  ?.scrollIntoView({
+                    behavior: 'smooth'
+                  })
               }
             >
               My Sushi Points
@@ -1008,7 +1211,9 @@ function Home({ profile, rewards, onGoRewards }) {
 
         </div>
 
-          </section>
+      </section>
+
+      {/* POINTS */}
 
       <section
         id="points-section"
@@ -1028,12 +1233,21 @@ function Home({ profile, rewards, onGoRewards }) {
         <div className="points-card">
 
           <div>
+
             <span>POINT BALANCE</span>
-            <strong>{points.toFixed(0)}</strong>
+
+            <strong>
+              {points.toFixed(0)}
+            </strong>
+
             <small>SUSHI POINTS</small>
+
           </div>
 
-          <button onClick={onGoRewards}>
+          <button
+            onClick={onGoRewards}
+            aria-label="View rewards"
+          >
             <ChevronRight size={20} />
           </button>
 
@@ -1043,6 +1257,7 @@ function Home({ profile, rewards, onGoRewards }) {
 
           <div>
             <b>01</b>
+
             <span>
               <strong>ORDER</strong>
               Enjoy your favorite sushi.
@@ -1051,6 +1266,7 @@ function Home({ profile, rewards, onGoRewards }) {
 
           <div>
             <b>02</b>
+
             <span>
               <strong>EARN</strong>
               ₱100 spent = 1 Sushi Point.
@@ -1059,15 +1275,18 @@ function Home({ profile, rewards, onGoRewards }) {
 
           <div>
             <b>03</b>
+
             <span>
               <strong>REDEEM</strong>
               Turn points into rewards.
             </span>
           </div>
 
-                </div>
+        </div>
 
       </section>
+
+      {/* MENU */}
 
       <section
         id="menu-section"
@@ -1085,24 +1304,35 @@ function Home({ profile, rewards, onGoRewards }) {
         </p>
 
         <div className="menu-categories">
+
           {categories.map((category) => (
             <button
               key={category.id}
               type="button"
               className={
-                activeCategory === category.id ? 'active' : ''
+                activeCategory === category.id
+                  ? 'active'
+                  : ''
               }
-              onClick={() => setActiveCategory(category.id)}
+              onClick={() =>
+                setActiveCategory(
+                  category.id
+                )
+              }
             >
               {category.label}
             </button>
           ))}
+
         </div>
 
         <div className="menu-grid">
 
           {filteredMenu.map((item) => (
-            <article className="menu-item-card" key={item.name}>
+            <article
+              className="menu-item-card"
+              key={item.name}
+            >
 
               <div className="menu-item-image">
 
@@ -1110,8 +1340,12 @@ function Home({ profile, rewards, onGoRewards }) {
                   src={item.image}
                   alt={item.name}
                   onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.parentElement.classList.add('missing');
+                    e.currentTarget.style.display =
+                      'none';
+
+                    e.currentTarget.parentElement.classList.add(
+                      'missing'
+                    );
                   }}
                 />
 
@@ -1129,7 +1363,9 @@ function Home({ profile, rewards, onGoRewards }) {
                   <h3>{item.name}</h3>
 
                   {item.price && (
-                    <strong>{item.price}</strong>
+                    <strong>
+                      {item.price}
+                    </strong>
                   )}
 
                 </div>
@@ -1141,13 +1377,17 @@ function Home({ profile, rewards, onGoRewards }) {
                 )}
 
                 {item.ingredients && (
-                  <p>{item.ingredients}</p>
+                  <p>
+                    {item.ingredients}
+                  </p>
                 )}
 
                 <button
                   type="button"
                   className="order-button"
-                  onClick={() => openOrder(item)}
+                  onClick={() =>
+                    openOrder(item)
+                  }
                 >
                   Order this
                   <ChevronRight size={17} />
@@ -1162,218 +1402,7 @@ function Home({ profile, rewards, onGoRewards }) {
 
       </section>
 
-      {orderOpen && selectedMenuItem && (
-        <div
-          className="modal-overlay"
-          onClick={() => setOrderOpen(false)}
-        >
-
-          <div
-            className="order-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-
-            <button
-              className="modal-close"
-              onClick={() => setOrderOpen(false)}
-              aria-label="Close"
-            >
-              <X size={19} />
-            </button>
-
-            <div className="section-label">
-              {selectedMenuItem.name}
-            </div>
-
-            <h2>How would you like to order?</h2>
-
-            <p>
-              Choose your preferred way to order.
-            </p>
-
-            <a
-              className="order-choice"
-              href="https://www.ordermo.ph/restaurants/at-home-sushi/M8y6MG8S?n=QXQgSG9tZSBTdXNoaQ==&p=cG5n&c=anBn"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="choice-icon">
-                <ShoppingBag size={19} />
-              </span>
-
-              <span>
-                <strong>Order Online</strong>
-                <small>OrderMo</small>
-              </span>
-
-              <ChevronRight size={18} />
-            </a>
-
-            <a
-              className="order-choice"
-              href="https://www.facebook.com/athomesushibustos"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="choice-icon">
-                <MessageCircle size={19} />
-              </span>
-
-              <span>
-                <strong>Order via Facebook</strong>
-                <small>Message At Home Sushi</small>
-              </span>
-
-              <ChevronRight size={18} />
-            </a>
-
-          </div>
-
-        </div>
-      )}
-
-      <section
-        id="points-section"
-        className="home-section points-home"
-      >
-
-        <div className="section-label">
-          YOUR LOYALTY
-        </div>
-
-        <h2>Your Sushi Points</h2>
-
-        <p className="section-description">
-          Every order brings you closer to something delicious.
-        </p>
-
-        <div className="points-card">
-
-          <div>
-            <span>POINT BALANCE</span>
-
-            <strong>{points.toFixed(0)}</strong>
-
-            <small>SUSHI POINTS</small>
-          </div>
-
-          <button onClick={onGoRewards}>
-            <ChevronRight size={20} />
-          </button>
-
-        </div>
-
-        <div className="earn-steps">
-
-          <div>
-            <b>01</b>
-            <span>
-              <strong>ORDER</strong>
-              Enjoy your favorite sushi.
-            </span>
-          </div>
-
-          <div>
-            <b>02</b>
-            <span>
-              <strong>EARN</strong>
-              ₱100 spent = 1 Sushi Point.
-            </span>
-          </div>
-
-          <div>
-            <b>03</b>
-            <span>
-              <strong>REDEEM</strong>
-              Turn points into rewards.
-            </span>
-          </div>
-
-        </div>
-
-      </section>
-
-      <section
-        id="menu-section"
-        className="home-section menu-home"
-      >
-
-        <div className="section-label">
-          FROM OUR KITCHEN
-        </div>
-
-        <h2>Explore Our Sushi</h2>
-
-        <p className="section-description">
-          A few favorites from At Home Sushi.
-        </p>
-
-        <div className="menu-card">
-
-          <button
-            className="menu-arrow"
-            onClick={previous}
-            aria-label="Previous"
-          >
-            ‹
-          </button>
-
-          <div className="menu-photo">
-
-            <img
-              src={current.image}
-              alt={current.name}
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.parentElement.classList.add('missing');
-              }}
-            />
-
-            <div className="photo-fallback">
-              <span>🍣</span>
-              <small>SUSHI</small>
-            </div>
-
-          </div>
-
-          <button
-            className="menu-arrow"
-            onClick={next}
-            aria-label="Next"
-          >
-            ›
-          </button>
-
-        </div>
-
-        <div className="menu-info">
-
-          <div className="menu-count">
-            {String(index + 1).padStart(2, '0')}
-            <span>/ {String(menu.length).padStart(2, '0')}</span>
-          </div>
-
-          <h3>{current.name}</h3>
-
-          <div className="menu-price">
-            {current.pieces}
-            <span>•</span>
-            {current.price}
-          </div>
-
-          <p>{current.ingredients}</p>
-
-          <button
-            className="order-button"
-            onClick={() => setOrderOpen(true)}
-          >
-            Order this
-            <ChevronRight size={17} />
-          </button>
-
-        </div>
-
-      </section>
+      {/* REWARDS PREVIEW */}
 
       <section className="home-section rewards-home">
 
@@ -1389,25 +1418,37 @@ function Home({ profile, rewards, onGoRewards }) {
 
         <div className="home-rewards">
 
-          {rewards.slice(0, 3).map((reward, i) => (
-            <div className="home-reward" key={reward.id}>
+          {rewards
+            .slice(0, 3)
+            .map((reward, i) => (
+              <div
+                className="home-reward"
+                key={reward.id}
+              >
 
-              <span>0{i + 1}</span>
+                <span>
+                  0{i + 1}
+                </span>
 
-              <div>
-                <strong>{reward.name}</strong>
-                <p>
-                  {reward.description ||
-                    'Use your Sushi Points for this reward.'}
-                </p>
+                <div>
+
+                  <strong>
+                    {reward.name}
+                  </strong>
+
+                  <p>
+                    {reward.description ||
+                      'Use your Sushi Points for this reward.'}
+                  </p>
+
+                </div>
+
+                <b>
+                  {reward.points_required}
+                </b>
+
               </div>
-
-              <b>
-                {reward.points_required}
-              </b>
-
-            </div>
-          ))}
+            ))}
 
           {rewards.length === 0 && (
             <div className="empty-card">
@@ -1417,76 +1458,110 @@ function Home({ profile, rewards, onGoRewards }) {
 
         </div>
 
+        <button
+          className="primary-button"
+          onClick={onGoRewards}
+        >
+          View all rewards
+          <ChevronRight size={17} />
+        </button>
+
       </section>
 
-      {orderOpen && (
-        <div
-          className="modal-overlay"
-          onClick={() => setOrderOpen(false)}
-        >
+      {/* ORDER MODAL */}
 
+      {orderOpen &&
+        selectedMenuItem && (
           <div
-            className="order-modal"
-            onClick={(e) => e.stopPropagation()}
+            className="modal-overlay"
+            onClick={() =>
+              setOrderOpen(false)
+            }
           >
 
-            <button
-              className="modal-close"
-              onClick={() => setOrderOpen(false)}
+            <div
+              className="order-modal"
+              onClick={(e) =>
+                e.stopPropagation()
+              }
             >
-              <X size={19} />
-            </button>
 
-            <div className="section-label">
-              {current.name}
+              <button
+                className="modal-close"
+                onClick={() =>
+                  setOrderOpen(false)
+                }
+                aria-label="Close"
+              >
+                <X size={19} />
+              </button>
+
+              <div className="section-label">
+                {selectedMenuItem.name}
+              </div>
+
+              <h2>
+                How would you like to order?
+              </h2>
+
+              <p>
+                Choose your preferred way to order.
+              </p>
+
+              <a
+                className="order-choice"
+                href="https://www.ordermo.ph/restaurants/at-home-sushi/M8y6MG8S?n=QXQgSG9tZSBTdXNoaQ==&p=cG5n&c=anBn"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+
+                <span className="choice-icon">
+                  <ShoppingBag size={19} />
+                </span>
+
+                <span>
+                  <strong>
+                    Order Online
+                  </strong>
+
+                  <small>
+                    OrderMo
+                  </small>
+                </span>
+
+                <ChevronRight size={18} />
+
+              </a>
+
+              <a
+                className="order-choice"
+                href="https://www.facebook.com/athomesushibustos"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+
+                <span className="choice-icon">
+                  <MessageCircle size={19} />
+                </span>
+
+                <span>
+                  <strong>
+                    Order via Facebook
+                  </strong>
+
+                  <small>
+                    Message At Home Sushi
+                  </small>
+                </span>
+
+                <ChevronRight size={18} />
+
+              </a>
+
             </div>
 
-            <h2>How would you like to order?</h2>
-
-            <p>
-              Choose your preferred way to order.
-            </p>
-
-            <a
-              className="order-choice"
-              href="https://www.ordermo.ph/restaurants/at-home-sushi/M8y6MG8S?n=QXQgSG9tZSBTdXNoaQ==&p=cG5n&c=anBn"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="choice-icon">
-                <ShoppingBag size={19} />
-              </span>
-
-              <span>
-                <strong>Order Online</strong>
-                <small>OrderMo</small>
-              </span>
-
-              <ChevronRight size={18} />
-            </a>
-
-            <a
-              className="order-choice"
-              href="https://www.facebook.com/athomesushibustos"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="choice-icon">
-                <MessageCircle size={19} />
-              </span>
-
-              <span>
-                <strong>Order via Facebook</strong>
-                <small>Message At Home Sushi</small>
-              </span>
-
-              <ChevronRight size={18} />
-            </a>
-
           </div>
-
-        </div>
-      )}
+        )}
 
     </div>
   );
@@ -1501,47 +1576,75 @@ function DigitalCard({ profile }) {
     <div className="page-container">
 
       <div className="page-heading">
-        <span className="section-label">YOUR MEMBERSHIP</span>
+        <span className="section-label">
+          YOUR MEMBERSHIP
+        </span>
+
         <h1>My Card</h1>
       </div>
 
       <div className="digital-card">
 
         <div className="digital-top">
+
           <div>
-            <strong>AT HOME SUSHI</strong>
-            <span>LOYALTY CLUB</span>
+            <strong>
+              AT HOME SUSHI
+            </strong>
+
+            <span>
+              LOYALTY CLUB
+            </span>
           </div>
 
           <QrCode size={20} />
+
         </div>
 
         <div className="qr-box">
+
           <QRCodeSVG
-            value={profile.customer_code || ''}
+            value={
+              profile.customer_code || ''
+            }
             size={190}
             includeMargin
           />
+
         </div>
 
         <div className="digital-member">
+
           <span>MEMBER</span>
-          <strong>{profile.full_name}</strong>
-          <small>{profile.customer_code}</small>
+
+          <strong>
+            {profile.full_name}
+          </strong>
+
+          <small>
+            {profile.customer_code}
+          </small>
+
         </div>
 
         <div className="digital-balances">
 
           <div>
             <span>POINTS</span>
+
             <strong>
-              {Number(profile.points || 0).toFixed(0)}
+              {Number(
+                profile.points || 0
+              ).toFixed(0)}
             </strong>
           </div>
 
           <div>
             <span>STAMPS</span>
-            <strong>{profile.stamps || 0}</strong>
+
+            <strong>
+              {profile.stamps || 0}
+            </strong>
           </div>
 
         </div>
@@ -1560,21 +1663,38 @@ function DigitalCard({ profile }) {
    REWARDS
 ===================================================== */
 
-function Rewards({ profile, rewards, onRefresh }) {
-  const [selected, setSelected] = useState(null);
-  const [code, setCode] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState('');
+function Rewards({
+  profile,
+  rewards,
+  onRefresh
+}) {
+  const [selected, setSelected] =
+    useState(null);
 
-  const points = Number(profile.points || 0);
+  const [code, setCode] =
+    useState('');
+
+  const [busy, setBusy] =
+    useState(false);
+
+  const [msg, setMsg] =
+    useState('');
+
+  const points = Number(
+    profile.points || 0
+  );
 
   async function redeem() {
     if (!selected) return;
 
-    const required = Number(selected.points_required);
+    const required = Number(
+      selected.points_required
+    );
 
     if (points < required) {
-      setMsg('You do not have enough Sushi Points.');
+      setMsg(
+        'You do not have enough Sushi Points.'
+      );
       return;
     }
 
@@ -1588,7 +1708,10 @@ function Rewards({ profile, rewards, onRefresh }) {
         .substring(2, 7)
         .toUpperCase();
 
-    const { data, error } = await supabase
+    const {
+      data,
+      error
+    } = await supabase
       .from('point_redemptions')
       .insert({
         customer_id: profile.id,
@@ -1607,16 +1730,24 @@ function Rewards({ profile, rewards, onRefresh }) {
       return;
     }
 
-    setCode(data.redemption_code);
+    setCode(
+      data.redemption_code
+    );
+
     setBusy(false);
   }
 
   async function copyCode() {
     try {
-      await navigator.clipboard.writeText(code);
+      await navigator.clipboard.writeText(
+        code
+      );
+
       setMsg('Code copied!');
     } catch {
-      setMsg('Please copy the code manually.');
+      setMsg(
+        'Please copy the code manually.'
+      );
     }
   }
 
@@ -1632,11 +1763,12 @@ function Rewards({ profile, rewards, onRefresh }) {
             REDEMPTION CODE
           </span>
 
-          <h1>Show this to staff</h1>
+          <h1>
+            Show this to staff
+          </h1>
 
           <p>
-            Staff will confirm your redemption before
-            your points are deducted.
+            Staff will confirm your redemption before your points are deducted.
           </p>
 
           <div className="redemption-code">
@@ -1651,7 +1783,11 @@ function Rewards({ profile, rewards, onRefresh }) {
             Copy code
           </button>
 
-          {msg && <div className="notice">{msg}</div>}
+          {msg && (
+            <div className="notice">
+              {msg}
+            </div>
+          )}
 
           <button
             className="text-button"
@@ -1674,29 +1810,54 @@ function Rewards({ profile, rewards, onRefresh }) {
     <div className="page-container">
 
       <div className="page-heading">
-        <span className="section-label">YOUR BENEFITS</span>
+
+        <span className="section-label">
+          YOUR BENEFITS
+        </span>
+
         <h1>Rewards</h1>
+
         <p>
-          You have <strong>{points.toFixed(0)} Sushi Points</strong>.
+          You have{' '}
+          <strong>
+            {points.toFixed(0)} Sushi Points
+          </strong>.
         </p>
+
       </div>
 
       <div className="reward-list">
 
         {rewards.map((reward) => {
-          const required = Number(reward.points_required);
-          const available = points >= required;
-          const isSelected = selected?.id === reward.id;
+
+          const required =
+            Number(
+              reward.points_required
+            );
+
+          const available =
+            points >= required;
+
+          const isSelected =
+            selected?.id === reward.id;
 
           return (
             <button
               type="button"
               key={reward.id}
               className={`reward-card ${
-                isSelected ? 'selected' : ''
-              } ${!available ? 'locked' : ''}`}
+                isSelected
+                  ? 'selected'
+                  : ''
+              } ${
+                !available
+                  ? 'locked'
+                  : ''
+              }`}
               disabled={!available}
-              onClick={() => setSelected(reward)}
+              onClick={() =>
+                setSelected(reward)
+              }
             >
 
               <span className="reward-number">
@@ -1704,14 +1865,20 @@ function Rewards({ profile, rewards, onRefresh }) {
               </span>
 
               <span className="reward-content">
-                <strong>{reward.name}</strong>
+
+                <strong>
+                  {reward.name}
+                </strong>
 
                 <small>
                   {reward.description ||
                     'Use your Sushi Points for this reward.'}
                 </small>
 
-                <b>{required} points</b>
+                <b>
+                  {required} points
+                </b>
+
               </span>
 
               <ChevronRight size={18} />
@@ -1720,28 +1887,52 @@ function Rewards({ profile, rewards, onRefresh }) {
           );
         })}
 
+        {rewards.length === 0 && (
+          <div className="empty-card large">
+            <Gift size={25} />
+            <strong>
+              No rewards available yet
+            </strong>
+            <p>
+              Check back soon for rewards.
+            </p>
+          </div>
+        )}
+
       </div>
 
       {selected && (
         <div className="redeem-box">
 
-          <span className="section-label">CONFIRM REWARD</span>
+          <span className="section-label">
+            CONFIRM REWARD
+          </span>
 
-          <h2>Redeem {selected.name}?</h2>
+          <h2>
+            Redeem {selected.name}?
+          </h2>
 
           <p>
             This will create a redemption code for{' '}
-            <strong>{selected.points_required} points.</strong>
+            <strong>
+              {selected.points_required} points.
+            </strong>
           </p>
 
-          {msg && <div className="notice">{msg}</div>}
+          {msg && (
+            <div className="notice">
+              {msg}
+            </div>
+          )}
 
           <button
             className="primary-button"
             onClick={redeem}
             disabled={busy}
           >
-            {busy ? 'Creating code...' : 'Generate redemption code'}
+            {busy
+              ? 'Creating code...'
+              : 'Generate redemption code'}
           </button>
 
         </div>
@@ -1755,39 +1946,63 @@ function Rewards({ profile, rewards, onRefresh }) {
    HISTORY
 ===================================================== */
 
-function HistoryTab({ transactions }) {
+function HistoryTab({
+  transactions
+}) {
   return (
     <div className="page-container">
 
       <div className="page-heading">
-        <span className="section-label">YOUR ACTIVITY</span>
+
+        <span className="section-label">
+          YOUR ACTIVITY
+        </span>
+
         <h1>History</h1>
+
       </div>
 
       {transactions.length === 0 ? (
         <div className="empty-card large">
+
           <History size={25} />
-          <strong>No transactions yet</strong>
-          <p>Your activity will appear here.</p>
+
+          <strong>
+            No transactions yet
+          </strong>
+
+          <p>
+            Your activity will appear here.
+          </p>
+
         </div>
       ) : (
         <div className="history-list">
 
           {transactions.map((tx) => (
-            <div className="history-card" key={tx.id}>
+            <div
+              className="history-card"
+              key={tx.id}
+            >
 
               <div>
+
                 <strong>
                   {tx.transaction_type}
                 </strong>
 
                 <small>
-                  {new Date(tx.created_at).toLocaleString()}
+                  {new Date(
+                    tx.created_at
+                  ).toLocaleString()}
                 </small>
+
               </div>
 
               <b className="history-points">
-                +{Number(tx.points_earned || 0).toFixed(2)}
+                +{Number(
+                  tx.points_earned || 0
+                ).toFixed(2)}
               </b>
 
             </div>
@@ -1805,33 +2020,55 @@ function HistoryTab({ transactions }) {
 ===================================================== */
 
 function Staff() {
-  const [staffSession, setStaffSession] = useState(null);
-  const [checking, setChecking] = useState(true);
+  const [staffSession, setStaffSession] =
+    useState(null);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [checking, setChecking] =
+    useState(true);
 
-  const [remember, setRemember] = useState(
-    localStorage.getItem('staffRemember') === 'true'
-  );
+  const [email, setEmail] =
+    useState('');
 
-  const [customerCode, setCustomerCode] = useState('');
-  const [customer, setCustomer] = useState(null);
+  const [password, setPassword] =
+    useState('');
 
-  const [amount, setAmount] = useState('');
-  const [notes, setNotes] = useState('');
+  const [remember, setRemember] =
+    useState(
+      localStorage.getItem(
+        'staffRemember'
+      ) === 'true'
+    );
 
-  const [msg, setMsg] = useState('');
-  const [busy, setBusy] = useState(false);
+  const [customerCode, setCustomerCode] =
+    useState('');
+
+  const [customer, setCustomer] =
+    useState(null);
+
+  const [amount, setAmount] =
+    useState('');
+
+  const [notes, setNotes] =
+    useState('');
+
+  const [msg, setMsg] =
+    useState('');
+
+  const [busy, setBusy] =
+    useState(false);
 
   useEffect(() => {
     checkStaffSession();
   }, []);
 
   async function checkStaffSession() {
-    const { data } = await supabase.auth.getSession();
+    const { data } =
+      await supabase.auth.getSession();
 
-    setStaffSession(data.session);
+    setStaffSession(
+      data.session
+    );
+
     setChecking(false);
   }
 
@@ -1842,12 +2079,20 @@ function Staff() {
     setMsg('');
 
     if (remember) {
-      localStorage.setItem('staffRemember', 'true');
+      localStorage.setItem(
+        'staffRemember',
+        'true'
+      );
     } else {
-      localStorage.removeItem('staffRemember');
+      localStorage.removeItem(
+        'staffRemember'
+      );
     }
 
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabase.auth.signInWithPassword({
         email,
         password
@@ -1859,7 +2104,10 @@ function Staff() {
       return;
     }
 
-    setStaffSession(data.session);
+    setStaffSession(
+      data.session
+    );
+
     setBusy(false);
   }
 
@@ -1869,23 +2117,32 @@ function Staff() {
   }
 
   async function findCustomer() {
-    const code = customerCode.trim();
+    const code =
+      customerCode.trim();
 
     setMsg('');
     setCustomer(null);
 
     if (!code) {
-      setMsg('Please enter the customer QR code.');
+      setMsg(
+        'Please enter the customer QR code.'
+      );
       return;
     }
 
     setBusy(true);
 
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabase
         .from('customers')
         .select('*')
-        .eq('customer_code', code)
+        .eq(
+          'customer_code',
+          code
+        )
         .maybeSingle();
 
     setBusy(false);
@@ -1896,57 +2153,90 @@ function Staff() {
     }
 
     if (!data) {
-      setMsg('Customer not found.');
+      setMsg(
+        'Customer not found.'
+      );
       return;
     }
 
     setCustomer(data);
     setNotes(data.notes || '');
-    setMsg(`Customer found: ${data.full_name}`);
+
+    setMsg(
+      `Customer found: ${data.full_name}`
+    );
   }
 
   async function addPoints() {
     if (!customer) {
-      setMsg('Find a customer first.');
+      setMsg(
+        'Find a customer first.'
+      );
       return;
     }
 
-    const purchase = parseFloat(amount);
+    const purchase =
+      parseFloat(amount);
 
-    if (!Number.isFinite(purchase) || purchase <= 0) {
-      setMsg('Enter a valid purchase amount.');
+    if (
+      !Number.isFinite(purchase) ||
+      purchase <= 0
+    ) {
+      setMsg(
+        'Enter a valid purchase amount.'
+      );
       return;
     }
 
-    const points = purchase / 100;
-    const newPoints = Number(customer.points || 0) + points;
+    const points =
+      purchase / 100;
+
+    const newPoints =
+      Number(customer.points || 0) +
+      points;
 
     setBusy(true);
     setMsg('');
 
-    const { error: updateError } =
+    const {
+      error: updateError
+    } =
       await supabase
         .from('customers')
-        .update({ points: newPoints })
-        .eq('id', customer.id);
+        .update({
+          points: newPoints
+        })
+        .eq(
+          'id',
+          customer.id
+        );
 
     if (updateError) {
-      setMsg(updateError.message);
+      setMsg(
+        updateError.message
+      );
       setBusy(false);
       return;
     }
 
-    const { error: transactionError } =
+    const {
+      error: transactionError
+    } =
       await supabase
         .from('transactions')
         .insert({
-          customer_id: customer.id,
-          transaction_type: 'purchase',
-          points_earned: points
+          customer_id:
+            customer.id,
+          transaction_type:
+            'purchase',
+          points_earned:
+            points
         });
 
     if (transactionError) {
-      setMsg(transactionError.message);
+      setMsg(
+        transactionError.message
+      );
       setBusy(false);
       return;
     }
@@ -1957,13 +2247,21 @@ function Staff() {
     });
 
     setAmount('');
-    setMsg(`Success! ${points.toFixed(2)} Sushi Points added.`);
+
+    setMsg(
+      `Success! ${points.toFixed(
+        2
+      )} Sushi Points added.`
+    );
+
     setBusy(false);
   }
 
   async function saveNotes() {
     if (!customer) {
-      setMsg('Find a customer first.');
+      setMsg(
+        'Find a customer first.'
+      );
       return;
     }
 
@@ -1973,8 +2271,13 @@ function Staff() {
     const { error } =
       await supabase
         .from('customers')
-        .update({ notes })
-        .eq('id', customer.id);
+        .update({
+          notes
+        })
+        .eq(
+          'id',
+          customer.id
+        );
 
     if (error) {
       setMsg(error.message);
@@ -1984,7 +2287,9 @@ function Staff() {
         notes
       });
 
-      setMsg('Customer notes saved.');
+      setMsg(
+        'Customer notes saved.'
+      );
     }
 
     setBusy(false);
@@ -1992,97 +2297,153 @@ function Staff() {
 
   async function claimBirthdayReward() {
     if (!customer) {
-      setMsg('Find a customer first.');
+      setMsg(
+        'Find a customer first.'
+      );
       return;
     }
 
     if (!customer.birthday) {
-      setMsg('This customer has no birthday saved.');
+      setMsg(
+        'This customer has no birthday saved.'
+      );
       return;
     }
 
-    const today = new Date();
-    const birthday = new Date(customer.birthday);
+    const today =
+      new Date();
+
+    const birthday =
+      new Date(
+        customer.birthday
+      );
 
     const isBirthday =
-      today.getMonth() === birthday.getMonth() &&
-      today.getDate() === birthday.getDate();
+      today.getMonth() ===
+        birthday.getMonth() &&
+      today.getDate() ===
+        birthday.getDate();
 
     if (!isBirthday) {
-      setMsg('Today is not this customer’s birthday.');
+      setMsg(
+        'Today is not this customer’s birthday.'
+      );
       return;
     }
 
-    const year = today.getFullYear();
+    const year =
+      today.getFullYear();
 
     setBusy(true);
     setMsg('');
 
-    const { data: claimed, error: checkError } =
+    const {
+      data: claimed,
+      error: checkError
+    } =
       await supabase
         .from('birthday_claims')
         .select('id')
-        .eq('customer_id', customer.id)
-        .eq('birthday_year', year)
+        .eq(
+          'customer_id',
+          customer.id
+        )
+        .eq(
+          'birthday_year',
+          year
+        )
         .maybeSingle();
 
     if (checkError) {
-      setMsg(checkError.message);
+      setMsg(
+        checkError.message
+      );
       setBusy(false);
       return;
     }
 
     if (claimed) {
-      setMsg('Birthday reward already claimed this year.');
+      setMsg(
+        'Birthday reward already claimed this year.'
+      );
       setBusy(false);
       return;
     }
 
-    const { data: reward, error: rewardError } =
+    const {
+      data: reward,
+      error: rewardError
+    } =
       await supabase
         .from('birthday_rewards')
         .select('*')
-        .eq('active', true)
-        .order('id', { ascending: true })
+        .eq(
+          'active',
+          true
+        )
+        .order('id', {
+          ascending: true
+        })
         .limit(1)
         .maybeSingle();
 
     if (rewardError) {
-      setMsg(rewardError.message);
+      setMsg(
+        rewardError.message
+      );
       setBusy(false);
       return;
     }
 
     if (!reward) {
-      setMsg('No active birthday reward found.');
+      setMsg(
+        'No active birthday reward found.'
+      );
       setBusy(false);
       return;
     }
 
-    const { error: claimError } =
+    const {
+      error: claimError
+    } =
       await supabase
         .from('birthday_claims')
         .insert({
-          customer_id: customer.id,
-          birthday_year: year
+          customer_id:
+            customer.id,
+          birthday_year:
+            year
         });
 
     if (claimError) {
-      setMsg(claimError.message);
+      setMsg(
+        claimError.message
+      );
       setBusy(false);
       return;
     }
 
-    setMsg(`Birthday reward claimed: ${reward.reward_text}`);
+    setMsg(
+      `Birthday reward claimed: ${reward.reward_text}`
+    );
+
     setBusy(false);
   }
 
   if (checking) {
     return (
       <div className="loading-screen">
-        <div className="loading-mark">🍣</div>
-        <div className="loading-brand">AT HOME SUSHI</div>
-        <div className="loading-text">Checking staff access</div>
+        <div className="loading-mark">
+          🍣
+        </div>
+
+        <div className="loading-brand">
+          AT HOME SUSHI
+        </div>
+
+        <div className="loading-text">
+          Checking staff access
+        </div>
       </div>
     );
   }
@@ -2094,49 +2455,91 @@ function Staff() {
         <div className="auth-shell">
 
           <div className="auth-brand">
-            <img src={logo} alt="At Home Sushi" />
 
-            <h1>AT HOME SUSHI</h1>
+            <img
+              src={logo}
+              alt="At Home Sushi"
+            />
 
-            <span>STAFF ACCESS</span>
+            <h1>
+              AT HOME SUSHI
+            </h1>
+
+            <span>
+              STAFF ACCESS
+            </span>
+
           </div>
 
           <div className="auth-card">
 
             <div className="auth-heading">
-              <h2>Staff Login</h2>
-              <p>Manage customer points and rewards.</p>
+
+              <h2>
+                Staff Login
+              </h2>
+
+              <p>
+                Manage customer points and rewards.
+              </p>
+
             </div>
 
             <form onSubmit={staffLogin}>
 
               <div className="field">
-                <label>Email</label>
+
+                <label>
+                  Email
+                </label>
+
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) =>
+                    setEmail(
+                      e.target.value
+                    )
+                  }
                   placeholder="Staff email"
                   required
                 />
+
               </div>
 
               <PasswordField
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) =>
+                  setPassword(
+                    e.target.value
+                  )
+                }
                 placeholder="Staff password"
               />
 
               <label className="remember-row">
+
                 <input
                   type="checkbox"
                   checked={remember}
-                  onChange={(e) => setRemember(e.target.checked)}
+                  onChange={(e) =>
+                    setRemember(
+                      e.target.checked
+                    )
+                  }
                 />
-                <span>Remember me</span>
+
+                <span>
+                  Remember me
+                </span>
+
               </label>
 
-              {msg && <div className="notice">{msg}</div>}
+              {msg && (
+                <div className="notice">
+                  {msg}
+                </div>
+              )}
 
               <button
                 className="primary-button"
@@ -2144,7 +2547,10 @@ function Staff() {
                 disabled={busy}
               >
                 <LogIn size={17} />
-                {busy ? 'Logging in...' : 'Log in'}
+
+                {busy
+                  ? 'Logging in...'
+                  : 'Log in'}
               </button>
 
             </form>
@@ -2163,12 +2569,22 @@ function Staff() {
       <header className="app-header">
 
         <div className="header-brand">
-          <img src={logo} alt="At Home Sushi" />
+
+          <img
+            src={logo}
+            alt="At Home Sushi"
+          />
 
           <div>
-            <strong>AT HOME SUSHI</strong>
-            <span>STAFF PANEL</span>
+            <strong>
+              AT HOME SUSHI
+            </strong>
+
+            <span>
+              STAFF PANEL
+            </span>
           </div>
+
         </div>
 
         <button
@@ -2183,9 +2599,17 @@ function Staff() {
       <main className="staff-main">
 
         <div className="staff-heading">
+
           <span>STAFF</span>
-          <h1>Customer Points</h1>
-          <p>Scan or enter a customer's loyalty code.</p>
+
+          <h1>
+            Customer Points
+          </h1>
+
+          <p>
+            Scan or enter a customer's loyalty code.
+          </p>
+
         </div>
 
         <div className="staff-card">
@@ -2195,13 +2619,21 @@ function Staff() {
           </div>
 
           <div className="field">
-            <label>Customer QR / Code</label>
+
+            <label>
+              Customer QR / Code
+            </label>
 
             <input
               value={customerCode}
-              onChange={(e) => setCustomerCode(e.target.value)}
+              onChange={(e) =>
+                setCustomerCode(
+                  e.target.value
+                )
+              }
               placeholder="Enter customer code"
             />
+
           </div>
 
           <button
@@ -2210,7 +2642,10 @@ function Staff() {
             disabled={busy}
           >
             <ScanLine size={18} />
-            {busy ? 'Finding...' : 'Find Customer'}
+
+            {busy
+              ? 'Finding...'
+              : 'Find Customer'}
           </button>
 
         </div>
@@ -2222,39 +2657,67 @@ function Staff() {
               CUSTOMER
             </div>
 
-            <h2>{customer.full_name}</h2>
+            <h2>
+              {customer.full_name}
+            </h2>
 
             {customer.email && (
-              <p className="staff-muted">{customer.email}</p>
+              <p className="staff-muted">
+                {customer.email}
+              </p>
             )}
 
             {customer.phone && (
-              <p className="staff-muted">{customer.phone}</p>
+              <p className="staff-muted">
+                {customer.phone}
+              </p>
             )}
 
             <div className="staff-balances">
 
               <div>
+
                 <Star size={18} />
-                <span>POINTS</span>
+
+                <span>
+                  POINTS
+                </span>
+
                 <strong>
-                  {Number(customer.points || 0).toFixed(2)}
+                  {Number(
+                    customer.points || 0
+                  ).toFixed(2)}
                 </strong>
+
               </div>
 
               <div>
+
                 <Ticket size={18} />
-                <span>STAMPS</span>
-                <strong>{customer.stamps || 0}</strong>
+
+                <span>
+                  STAMPS
+                </span>
+
+                <strong>
+                  {customer.stamps || 0}
+                </strong>
+
               </div>
 
             </div>
 
             {customer.birthday && (
               <p className="staff-muted birthday-line">
+
                 <Cake size={15} />
+
                 Birthday:{' '}
-                {new Date(customer.birthday).toLocaleDateString()}
+
+                {new Date(
+                  customer.birthday
+                ).toLocaleDateString()}
+
               </p>
             )}
 
@@ -2265,26 +2728,38 @@ function Staff() {
             </div>
 
             <div className="field">
-              <label>Purchase amount</label>
+
+              <label>
+                Purchase amount
+              </label>
 
               <input
                 type="number"
                 min="0"
                 step="0.01"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) =>
+                  setAmount(
+                    e.target.value
+                  )
+                }
                 placeholder="₱0.00"
               />
+
             </div>
 
-            {amount && Number(amount) > 0 && (
-              <p className="points-preview">
-                Points to add:{' '}
-                <strong>
-                  {(Number(amount) / 100).toFixed(2)}
-                </strong>
-              </p>
-            )}
+            {amount &&
+              Number(amount) > 0 && (
+                <p className="points-preview">
+                  Points to add:{' '}
+                  <strong>
+                    {(
+                      Number(amount) /
+                      100
+                    ).toFixed(2)}
+                  </strong>
+                </p>
+              )}
 
             <button
               className="primary-button"
@@ -2292,12 +2767,17 @@ function Staff() {
               disabled={busy}
             >
               <PlusCircle size={18} />
-              {busy ? 'Updating...' : 'Add Points'}
+
+              {busy
+                ? 'Updating...'
+                : 'Add Points'}
             </button>
 
             <button
               className="secondary-staff-button"
-              onClick={claimBirthdayReward}
+              onClick={
+                claimBirthdayReward
+              }
               disabled={busy}
             >
               <Cake size={17} />
@@ -2311,6 +2791,7 @@ function Staff() {
             </div>
 
             <div className="field">
+
               <label>
                 <FileText size={14} />
                 Notes
@@ -2318,9 +2799,14 @@ function Staff() {
 
               <textarea
                 value={notes}
-                onChange={(e) => setNotes(e.target.value)}
+                onChange={(e) =>
+                  setNotes(
+                    e.target.value
+                  )
+                }
                 placeholder="Add notes about this customer..."
               />
+
             </div>
 
             <button
@@ -2328,7 +2814,9 @@ function Staff() {
               onClick={saveNotes}
               disabled={busy}
             >
-              {busy ? 'Saving...' : 'Save Notes'}
+              {busy
+                ? 'Saving...'
+                : 'Save Notes'}
             </button>
 
           </div>
@@ -2350,8 +2838,13 @@ function Staff() {
    ROUTING
 ===================================================== */
 
-const path = window.location.pathname;
+const path =
+  window.location.pathname;
 
-createRoot(document.getElementById('root')).render(
-  path === '/staff' ? <Staff /> : <App />
+createRoot(
+  document.getElementById('root')
+).render(
+  path === '/staff'
+    ? <Staff />
+    : <App />
 );
