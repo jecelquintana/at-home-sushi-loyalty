@@ -2149,7 +2149,7 @@ a {
   height: 65px;
 
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
 
   padding: 5px;
 
@@ -2354,4 +2354,134 @@ a {
     animation: none !important;
   }
 
+}
+
+/* SETTINGS */
+
+.settings-page {
+  scroll-behavior: smooth;
+}
+
+.settings-card {
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px solid #2b2b2b;
+  border-radius: 18px;
+  background: #111;
+}
+
+.settings-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.settings-icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #303030;
+  border-radius: 50%;
+  color: #d8d4cc;
+}
+
+.settings-card-heading h2,
+.settings-legal h2 {
+  margin: 0;
+  color: #eee;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.settings-card-heading p,
+.settings-legal p {
+  margin: 4px 0 0;
+  color: #777;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.secondary-button,
+.logout-button {
+  min-height: 43px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid #3a3a3a;
+  border-radius: 10px;
+  background: #151515;
+  color: #eee;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secondary-button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.settings-links {
+  padding: 0;
+  overflow: hidden;
+}
+
+.settings-links a {
+  min-height: 66px;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  border-bottom: 1px solid #292929;
+  color: #aaa;
+}
+
+.settings-links a:last-child {
+  border-bottom: 0;
+}
+
+.settings-links a > span {
+  min-width: 0;
+}
+
+.settings-links strong,
+.settings-links small {
+  display: block;
+}
+
+.settings-links strong {
+  color: #ddd;
+  font-size: 12px;
+}
+
+.settings-links small {
+  margin-top: 3px;
+  color: #6d6d6d;
+  font-size: 10px;
+}
+
+.settings-legal > div {
+  padding: 4px 0 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #292929;
+}
+
+.settings-legal > div:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: 0;
+}
+
+.logout-button {
+  width: 100%;
+  margin-top: 16px;
+  border-color: #4a3030;
+  color: #e2b5b5;
 }
