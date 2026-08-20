@@ -2322,7 +2322,6 @@ function Settings({
       </button>
     </div>
   );
-}
 
 function Staff() 
   const [staffSession, setStaffSession] =
