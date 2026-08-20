@@ -22,8 +22,15 @@ import {
   CheckCircle,
   Copy,
   X,
-  ShoppingBag,
-  MessageCircle
+    ShoppingBag,
+  MessageCircle,
+  Settings as SettingsIcon,
+  User,
+  Lock,
+  Shield,
+  Scale,
+  Info,
+  Save
 } from 'lucide-react';
 
 import './styles.css';
@@ -804,6 +811,14 @@ function Dashboard({
             transactions={transactions}
           />
         )}
+        {tab === 'settings' && (
+  <Settings
+    session={session}
+    profile={profile}
+    reloadProfile={reloadProfile}
+    onLogout={logout}
+  />
+)}
 
       </main>
 
@@ -864,12 +879,26 @@ function Dashboard({
           <History size={20} />
           <span>History</span>
         </button>
-
+<button
+  className={tab === 'settings' ? 'selected' : ''}
+  onClick={() => setTab('settings')}
+>
+  <SettingsIcon size={20} />
+  <span>Settings</span>
+</button>
       </nav>
 
     </div>
   );
 }
+{tab === 'settings' && (
+  <Settings
+    session={session}
+    profile={profile}
+    reloadProfile={reloadProfile}
+    onLogout={logout}
+  />
+)}
 
 /* =====================================================
    HOME
@@ -1842,6 +1871,547 @@ function HistoryTab({
 /* =====================================================
    STAFF
 ===================================================== */
+
+function Settings({
+  session,
+  profile,
+  reloadProfile,
+  onLogout
+}) {
+  const [name, setName] = useState(profile.full_name || '');
+  const [phone, setPhone] = useState(profile.phone || '');
+  const [birthday, setBirthday] = useState(profile.birthday || '');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [profileBusy, setProfileBusy] = useState(false);
+  const [passwordBusy, setPasswordBusy] = useState(false);
+  const [profileMessage, setProfileMessage] = useState('');
+  const [passwordMessage, setPasswordMessage] = useState('');
+
+  useEffect(() => {
+    setName(profile.full_name || '');
+    setPhone(profile.phone || '');
+    setBirthday(profile.birthday || '');
+  }, [profile]);
+
+  async function saveProfile(e) {
+    e.preventDefault();
+
+    if (!name.trim()) {
+      setProfileMessage('Please enter your full name.');
+      return;
+    }
+
+    setProfileBusy(true);
+    setProfileMessage('');
+
+    const updates = {
+      full_name: name.trim(),
+      phone: phone.trim() || null,
+      birthday: birthday || null
+    };
+
+    const { error } = await supabase
+      .from('customers')
+      .update(updates)
+      .eq('id', session.user.id);
+
+    if (error) {
+      setProfileMessage(error.message);
+      setProfileBusy(false);
+      return;
+    }
+
+    await supabase.auth.updateUser({ data: updates });
+    await reloadProfile();
+
+    setProfileMessage('Your profile has been updated.');
+    setProfileBusy(false);
+  }
+
+  async function changePassword(e) {
+    e.preventDefault();
+
+    if (newPassword.length < 8) {
+      setPasswordMessage(
+        'Your new password must be at least 8 characters.'
+      );
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage('Your new passwords do not match.');
+      return;
+    }
+
+    setPasswordBusy(true);
+    setPasswordMessage('');
+
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+
+    if (error) {
+      setPasswordMessage(error.message);
+    } else {
+      setNewPassword('');
+      setConfirmPassword('');
+      setPasswordMessage('Your password has been changed.');
+    }
+
+    setPasswordBusy(false);
+  }
+
+  return (
+    <div className="page-container settings-page">
+      <div className="page-heading">
+        <span className="section-label">YOUR ACCOUNT</span>
+        <h1>Settings</h1>
+        <p>Manage your loyalty club account.</p>
+      </div>
+
+      <section className="settings-card">
+        <div className="settings-card-heading">
+          <span className="settings-icon">
+            <User size={18} />
+          </span>
+
+          <div>
+            <h2>Profile information</h2>
+            <p>Keep your details up to date.</p>
+          </div>
+        </div>
+
+        <form onSubmit={saveProfile}>
+          <div className="field">
+            <label>Full name</label>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="field">
+            <label>Phone number</label>
+            <input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="09xxxxxxxxx"
+            />
+          </div>
+
+          <div className="field">
+            <label>Birthday</label>
+            <input
+              type="date"
+              value={birthday}
+              onChange={(e) => setBirthday(e.target.value)}
+            />
+          </div>
+
+          {profileMessage && (
+            <div className="notice">{profileMessage}</div>
+          )}
+
+          <button
+            className="primary-button"
+            type="submit"
+            disabled={profileBusy}
+          >
+            <Save size={16} />
+            {profileBusy ? 'Saving...' : 'Save changes'}
+          </button>
+        </form>
+      </section>
+
+      <section className="settings-card">
+        <div className="settings-card-heading">
+          <span className="settings-icon">
+            <Lock size={18} />
+          </span>
+
+          <div>
+            <h2>Change password</h2>
+            <p>Use at least 8 characters.</p>
+          </div>
+        </div>
+
+        <form onSubmit={changePassword}>
+          <div className="field">
+            <label>New password</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="New password"
+              required
+              minLength={8}
+            />
+          </div>
+
+          <div className="field">
+            <label>Confirm new password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Repeat new password"
+              required
+              minLength={8}
+            />
+          </div>
+
+          {passwordMessage && (
+            <div className="notice">{passwordMessage}</div>
+          )}
+
+          <button
+            className="secondary-button"
+            type="submit"
+            disabled={passwordBusy}
+          >
+            {passwordBusy ? 'Updating...' : 'Update password'}
+          </button>
+        </form>
+      </section>
+
+      <section className="settings-card settings-links">
+        <a href="#privacy-policy">
+          <Shield size={18} />
+          <span>
+            <strong>Privacy Policy</strong>
+            <small>How we handle your information</small>
+          </span>
+          <ChevronRight size={18} />
+        </a>
+
+        <a href="#terms-and-conditions">
+          <Scale size={18} />
+          <span>
+            <strong>Terms &amp; Conditions</strong>
+            <small>The terms for using the loyalty club</small>
+          </span>
+          <ChevronRight size={18} />
+        </a>
+
+        <a href="#about-at-home-sushi">
+          <Info size={18} />
+          <span>
+            <strong>About At Home Sushi</strong>
+            <small>Quick rolls. Bold flavors. Great rewards.</small>
+          </span>
+          <ChevronRight size={18} />
+        </a>
+      </section>
+
+      <section className="settings-card settings-legal">
+        <div id="privacy-policy">
+          <h2>Privacy Policy</h2>
+          <p>
+            We use your account details to operate your loyalty membership,
+            including points, rewards, and birthday offers.
+          </p>
+        </div>
+
+        <div id="terms-and-conditions">
+          <h2>Terms &amp; Conditions</h2>
+          <p>
+            Points and rewards are subject to availability and may not be
+            exchanged for cash.
+          </p>
+        </div>
+
+        <div id="about-at-home-sushi">
+          <h2>About At Home Sushi</h2>
+          <p>
+            At Home Sushi brings quick rolls, bold flavors, and a little
+            extra value to every order.
+          </p>
+        </div>
+      </section>
+
+      <button
+        className="logout-button"
+        type="button"
+        onClick={onLogout}
+      >
+        <LogOut size={17} />
+        Log out
+      </button>
+    </div>
+  );
+}
+function Settings({
+  session,
+  profile,
+  reloadProfile,
+  onLogout
+}) {
+  const [name, setName] = useState(profile.full_name || '');
+  const [phone, setPhone] = useState(profile.phone || '');
+  const [birthday, setBirthday] = useState(profile.birthday || '');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [profileBusy, setProfileBusy] = useState(false);
+  const [passwordBusy, setPasswordBusy] = useState(false);
+  const [profileMessage, setProfileMessage] = useState('');
+  const [passwordMessage, setPasswordMessage] = useState('');
+
+  useEffect(() => {
+    setName(profile.full_name || '');
+    setPhone(profile.phone || '');
+    setBirthday(profile.birthday || '');
+  }, [profile]);
+
+  async function saveProfile(e) {
+    e.preventDefault();
+
+    if (!name.trim()) {
+      setProfileMessage('Please enter your full name.');
+      return;
+    }
+
+    setProfileBusy(true);
+    setProfileMessage('');
+
+    const updates = {
+      full_name: name.trim(),
+      phone: phone.trim() || null,
+      birthday: birthday || null
+    };
+
+    const { error } = await supabase
+      .from('customers')
+      .update(updates)
+      .eq('id', session.user.id);
+
+    if (error) {
+      setProfileMessage(error.message);
+      setProfileBusy(false);
+      return;
+    }
+
+    await supabase.auth.updateUser({ data: updates });
+    await reloadProfile();
+
+    setProfileMessage('Your profile has been updated.');
+    setProfileBusy(false);
+  }
+
+  async function changePassword(e) {
+    e.preventDefault();
+
+    if (newPassword.length < 8) {
+      setPasswordMessage(
+        'Your new password must be at least 8 characters.'
+      );
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage('Your new passwords do not match.');
+      return;
+    }
+
+    setPasswordBusy(true);
+    setPasswordMessage('');
+
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+
+    if (error) {
+      setPasswordMessage(error.message);
+    } else {
+      setNewPassword('');
+      setConfirmPassword('');
+      setPasswordMessage('Your password has been changed.');
+    }
+
+    setPasswordBusy(false);
+  }
+
+  return (
+    <div className="page-container settings-page">
+      <div className="page-heading">
+        <span className="section-label">YOUR ACCOUNT</span>
+        <h1>Settings</h1>
+        <p>Manage your loyalty club account.</p>
+      </div>
+
+      <section className="settings-card">
+        <div className="settings-card-heading">
+          <span className="settings-icon">
+            <User size={18} />
+          </span>
+
+          <div>
+            <h2>Profile information</h2>
+            <p>Keep your details up to date.</p>
+          </div>
+        </div>
+
+        <form onSubmit={saveProfile}>
+          <div className="field">
+            <label>Full name</label>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="field">
+            <label>Phone number</label>
+            <input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="09xxxxxxxxx"
+            />
+          </div>
+
+          <div className="field">
+            <label>Birthday</label>
+            <input
+              type="date"
+              value={birthday}
+              onChange={(e) => setBirthday(e.target.value)}
+            />
+          </div>
+
+          {profileMessage && (
+            <div className="notice">{profileMessage}</div>
+          )}
+
+          <button
+            className="primary-button"
+            type="submit"
+            disabled={profileBusy}
+          >
+            <Save size={16} />
+            {profileBusy ? 'Saving...' : 'Save changes'}
+          </button>
+        </form>
+      </section>
+
+      <section className="settings-card">
+        <div className="settings-card-heading">
+          <span className="settings-icon">
+            <Lock size={18} />
+          </span>
+
+          <div>
+            <h2>Change password</h2>
+            <p>Use at least 8 characters.</p>
+          </div>
+        </div>
+
+        <form onSubmit={changePassword}>
+          <div className="field">
+            <label>New password</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="New password"
+              required
+              minLength={8}
+            />
+          </div>
+
+          <div className="field">
+            <label>Confirm new password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Repeat new password"
+              required
+              minLength={8}
+            />
+          </div>
+
+          {passwordMessage && (
+            <div className="notice">{passwordMessage}</div>
+          )}
+
+          <button
+            className="secondary-button"
+            type="submit"
+            disabled={passwordBusy}
+          >
+            {passwordBusy ? 'Updating...' : 'Update password'}
+          </button>
+        </form>
+      </section>
+
+      <section className="settings-card settings-links">
+        <a href="#privacy-policy">
+          <Shield size={18} />
+          <span>
+            <strong>Privacy Policy</strong>
+            <small>How we handle your information</small>
+          </span>
+          <ChevronRight size={18} />
+        </a>
+
+        <a href="#terms-and-conditions">
+          <Scale size={18} />
+          <span>
+            <strong>Terms &amp; Conditions</strong>
+            <small>The terms for using the loyalty club</small>
+          </span>
+          <ChevronRight size={18} />
+        </a>
+
+        <a href="#about-at-home-sushi">
+          <Info size={18} />
+          <span>
+            <strong>About At Home Sushi</strong>
+            <small>Quick rolls. Bold flavors. Great rewards.</small>
+          </span>
+          <ChevronRight size={18} />
+        </a>
+      </section>
+
+      <section className="settings-card settings-legal">
+        <div id="privacy-policy">
+          <h2>Privacy Policy</h2>
+          <p>
+            We use your account details to operate your loyalty membership,
+            including points, rewards, and birthday offers.
+          </p>
+        </div>
+
+        <div id="terms-and-conditions">
+          <h2>Terms &amp; Conditions</h2>
+          <p>
+            Points and rewards are subject to availability and may not be
+            exchanged for cash.
+          </p>
+        </div>
+
+        <div id="about-at-home-sushi">
+          <h2>About At Home Sushi</h2>
+          <p>
+            At Home Sushi brings quick rolls, bold flavors, and a little
+            extra value to every order.
+          </p>
+        </div>
+      </section>
+
+      <button
+        className="logout-button"
+        type="button"
+        onClick={onLogout}
+      >
+        <LogOut size={17} />
+        Log out
+      </button>
+    </div>
+  );
+}
 
 function Staff() {
   const [staffSession, setStaffSession] =
