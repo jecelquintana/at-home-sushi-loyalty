@@ -255,46 +255,7 @@ function Auth({ mode, setMode }) {
       return;
     }
 
-    /* =========================
-       CREATE CUSTOMER PROFILE
-    ========================= */
-
-    if (data.user) {
-      const customerCode =
-        Math.random()
-          .toString(36)
-          .substring(2, 12)
-          .toUpperCase();
-
-      const { error: profileError } =
-        await supabase
-          .from('customers')
-          .insert({
-            id: data.user.id,
-            full_name: name,
-            phone: phone || null,
-            email,
-            birthday: birthday || null,
-            points: 0,
-            stamps: 0,
-            customer_code: customerCode
-          });
-
-      if (profileError) {
-        console.error(
-          'Profile creation error:',
-          profileError
-        );
-
-        setMsg(
-          'Your account was created, but your loyalty profile could not be created. Please contact staff.'
-        );
-
-        setBusy(false);
-        return;
-      }
-    }
-
+   
     /* =========================
        SUCCESS
     ========================= */
