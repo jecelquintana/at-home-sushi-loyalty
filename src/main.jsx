@@ -247,26 +247,15 @@ function Auth({ mode, setMode }) {
       return;
     }
 
-    if (data.user) {
-      const customerCode =
-        Math.random()
-          .toString(36)
-          .substring(2, 12)
-          .toUpperCase();
+if (data.user) {
+  setMsg(
+    'Account created! Please check your email to confirm your account, then log in.'
+  );
 
-      const { error: profileError } =
-        await supabase
-          .from('customers')
-          .insert({
-            id: data.user.id,
-            full_name: name,
-            phone: phone || null,
-            email,
-            birthday: birthday || null,
-            points: 0,
-            stamps: 0,
-            customer_code: customerCode
-          });
+  setMode('login');
+  setBusy(false);
+  return;
+}
 
       if (profileError) {
         console.error(
