@@ -778,6 +778,7 @@ function Dashboard({
 
 /* =====================================================
    HOME
+   MENU IS NOW LOADED FROM SUPABASE
 ===================================================== */
 
 function Home({
@@ -785,336 +786,59 @@ function Home({
   rewards,
   onGoRewards
 }) {
-  const points = Number(
-    profile.points || 0
-  );
+  const points = Number(profile.points || 0);
 
-  const menu = [
-    {
-      name: 'California Roll',
-      category: 'classic',
-      price: '₱189',
-      pieces: '8 pcs',
-      ingredients:
-        'Avocado • Mango • Cucumber • Crabstick • Japanese Mayo',
-      image:
-        '/sushi/california-roll.png'
-    },
-    {
-      name: 'Spicy Salmon Roll',
-      category: 'specialty',
-      price: '₱219',
-      pieces: '8 pcs',
-      ingredients:
-        'Fresh Salmon • Cucumber • Sesame • Spicy Salmon Mix',
-      image:
-        '/sushi/spicy-salmon-roll.png'
-    },
-    {
-      name: 'Green Dragon',
-      category: 'specialty',
-      price: '₱219',
-      pieces: '8 pcs',
-      ingredients:
-        'Prawn Tempura • Fresh Avocado • Teriyaki • Spicy Mayo',
-      image:
-        '/sushi/green-dragon-roll.png'
-    },
-    {
-      name: 'Crispy Cream',
-      category: 'specialty',
-      price: '₱209',
-      pieces: '8 pcs',
-      ingredients:
-        'Prawn Tempura • Avocado • Cucumber • Tamago • Cream Cheese',
-      image:
-        '/sushi/crispy-cream.png'
-    },
-    {
-      name: 'Hurricane Roll',
-      category: 'specialty',
-      price: '₱219',
-      pieces: '8 pcs',
-      ingredients:
-        'Avocado • Crabstick • Cucumber • Crabstick Salad • Caviar',
-      image:
-        '/sushi/hurricane-roll.png'
-    },
-    {
-      name: 'Super California',
-      category: 'specialty',
-      price: '₱209',
-      pieces: '8 pcs',
-      ingredients:
-        'Avocado • Mango • Cucumber • Crabstick • Japanese Mayo • Caviar',
-      image:
-        '/sushi/super-california.png'
-    },
-    {
-      name: 'Volcano Roll',
-      category: 'signature',
-      price: '₱229',
-      pieces: '8 pcs',
-      ingredients:
-        'Prawn Tempura • Avocado • Cucumber • Spicy Prawn Mix • Crispy Chips',
-      image:
-        '/sushi/volcano-roll.png'
-    },
-    {
-      name: 'At Home Supreme Roll',
-      category: 'signature',
-      price: '₱239',
-      pieces: '8 pcs',
-      ingredients:
-        'Prawn Tempura • Avocado • Tamago • Cream Cheese • Seared Salmon',
-      image:
-        '/sushi/at-home-supreme-roll.png'
-    },
-    {
-      name: 'Dynamite Shrimp',
-      category: 'appetizers',
-      price: '₱189',
-      pieces: '',
-      ingredients:
-        'Prawn tempura covered with dynamite sauce',
-      image:
-        '/sushi/dynamite-shrimp.png'
-    },
-    {
-      name: 'Cucumber Crab Salad',
-      category: 'appetizers',
-      price: '₱179',
-      pieces: '',
-      ingredients:
-        'Mango • Cucumber • Crabstick • Japanese Mayo • Caviar',
-      image:
-        '/sushi/cucumber-crab-salad.png'
-    },
-    {
-      name: 'Tropical Garden Roll',
-      category: 'appetizers',
-      price: '₱199',
-      pieces: '',
-      ingredients:
-        'Mango • Cucumber • Crabstick • Avocado • Carrots • Lettuce • Rice Paper • Sweet Chili Sauce',
-      image:
-        '/sushi/tropical-garden-roll.png'
-    },
-    {
-      name: 'Ebi Fry',
-      category: 'appetizers',
-      price: '₱189',
-      pieces: '4 pcs',
-      ingredients:
-        'Prawn tempura',
-      image:
-        '/sushi/ebi-fry.png'
-    },
-    {
-      name: 'Creamy Avo',
-      category: 'veggie',
-      price: '₱99',
-      pieces: '8 pcs',
-      ingredients:
-        'Avocado • Cream Cheese',
-      image:
-        '/sushi/creamy-avo.png'
-    },
-    {
-      name: 'Avo Lover',
-      category: 'veggie',
-      price: '₱119',
-      pieces: '8 pcs',
-      ingredients:
-        'Avocado inside • Covered with avocado',
-      image:
-        '/sushi/avo-lover.png'
-    },
-    {
-      name: 'Veggie Roll',
-      category: 'veggie',
-      price: '₱109',
-      pieces: '8 pcs',
-      ingredients:
-        'Avocado • Cucumber • Carrots • Lettuce • White Sesame',
-      image:
-        '/sushi/veggie-roll.png'
-    },
-    {
-      name: 'Tropical Garden Roll — Veggie',
-      category: 'veggie',
-      price: '₱159',
-      pieces: '',
-      ingredients:
-        'Mango • Cucumber • Avocado • Carrots • Lettuce • Rice Paper • Sweet Chili Sauce',
-      image:
-        '/sushi/tropical-garden-veggie.png'
-    },
-    {
-      name: 'Tamago Nigiri',
-      category: 'nigiri',
-      price: '₱89',
-      pieces: '2 pcs',
-      ingredients:
-        'Tamago',
-      image:
-        '/sushi/tamago-nigiri.png'
-    },
-    {
-      name: 'Salmon Nigiri',
-      category: 'nigiri',
-      price: '₱129',
-      pieces: '2 pcs',
-      ingredients:
-        'Fresh Salmon',
-      image:
-        '/sushi/salmon-nigiri.png'
-    },
-    {
-      name: 'Kani Nigiri',
-      category: 'nigiri',
-      price: '₱95',
-      pieces: '2 pcs',
-      ingredients:
-        'Kani',
-      image:
-        '/sushi/kani-nigiri.png'
-    },
-    {
-      name: 'Seared Salmon',
-      category: 'nigiri',
-      price: '₱135',
-      pieces: '2 pcs',
-      ingredients:
-        'Seared Salmon',
-      image:
-        '/sushi/seared-salmon.png'
-    },
-    {
-      name: 'Sake Sashimi',
-      category: 'sashimi',
-      price: '₱219',
-      pieces: '4 pcs',
-      ingredients:
-        'Fresh slices of salmon',
-      image:
-        '/sushi/sake-sashimi.png'
-    },
-    {
-      name: 'Cheezy Tempura',
-      category: 'signature',
-      price: '',
-      pieces: '8 pcs',
-      ingredients: '',
-      image:
-        '/sushi/cheezy-tempura.png'
-    },
-    {
-      name: 'Passion Rainbow Roll',
-      category: 'signature',
-      price: '',
-      pieces: '8 pcs',
-      ingredients: '',
-      image:
-        '/sushi/passion-rainbow-roll.png'
-    },
-    {
-      name: 'Kani Aburi Roll',
-      category: 'signature',
-      price: '',
-      pieces: '8 pcs',
-      ingredients: '',
-      image:
-        '/sushi/kani-aburi-roll.png'
-    },
-    {
-      name: 'Sphinx Roll',
-      category: 'signature',
-      price: '',
-      pieces: '8 pcs',
-      ingredients: '',
-      image:
-        '/sushi/sphinx-roll.png'
-    },
-    {
-      name: 'Imperial Salmon Roll',
-      category: 'signature',
-      price: '',
-      pieces: '8 pcs',
-      ingredients: '',
-      image:
-        '/sushi/imperial-salmon-roll.png'
-    },
-    {
-      name: 'Crunchy Potato Roll',
-      category: 'signature',
-      price: '',
-      pieces: '8 pcs',
-      ingredients: '',
-      image:
-        '/sushi/crunchy-potato-roll.png'
-    },
-    {
-      name: 'Create Your Own Platter',
-      category: 'platters',
-      price: '₱859',
-      pieces: '32 pcs',
-      ingredients:
-        'Mix & match any 4 rolls from Classic or Specialty Rolls',
-      image:
-        '/sushi/create-your-own-platter.png'
-    },
-    {
-      name: 'Tempura Platter',
-      category: 'platters',
-      price: '₱759',
-      pieces: '32 pcs',
-      ingredients:
-        'Mix of tempura rolls from Classic selection',
-      image:
-        '/sushi/tempura-platter.png'
-    },
-    {
-      name: 'California Party Platter',
-      category: 'platters',
-      price: '₱689',
-      pieces: '32 pcs',
-      ingredients:
-        'Mixed California rolls',
-      image:
-        '/sushi/california-party-platter.png'
-    },
-    {
-      name: 'Mini Harvest Platter',
-      category: 'platters',
-      price: '₱959',
-      pieces: '32 pcs',
-      ingredients:
-        'Fresh salmon nigiri and crabstick nigiri with Tropical Garden Roll and seafood rolls',
-      image:
-        '/sushi/mini-harvest-platter.png'
-    },
-    {
-      name: 'At Home Supreme Platter',
-      category: 'platters',
-      price: '₱1,699',
-      pieces: '80 pcs',
-      ingredients:
-        'Mixed sushi rolls and makis',
-      image:
-        '/sushi/at-home-supreme-platter.png'
-    },
-    {
-      name: 'Harvest Platter',
-      category: 'platters',
-      price: '₱1,899',
-      pieces: '68 pcs',
-      ingredients:
-        'Fresh salmon nigiri and crabstick nigiri with veggie rolls and seafood rolls',
-      image:
-        '/sushi/harvest-platter.png'
+  const [menu, setMenu] = useState([]);
+  const [menuLoading, setMenuLoading] = useState(true);
+
+  const [activeCategory, setActiveCategory] =
+    useState('all');
+
+  const [orderOpen, setOrderOpen] =
+    useState(false);
+
+  const [selectedMenuItem, setSelectedMenuItem] =
+    useState(null);
+
+  /* =====================================================
+     LOAD MENU FROM SUPABASE
+  ===================================================== */
+
+  useEffect(() => {
+    loadMenu();
+  }, []);
+
+  async function loadMenu() {
+    setMenuLoading(true);
+
+    const {
+      data,
+      error
+    } = await supabase
+      .from('menu_items')
+      .select('*')
+      .eq('active', true)
+      .order('sort_order', {
+        ascending: true
+      });
+
+    if (error) {
+      console.error(
+        'Menu loading error:',
+        error
+      );
+
+      setMenu([]);
+    } else {
+      setMenu(data || []);
     }
-  ];
+
+    setMenuLoading(false);
+  }
+
+  /* =====================================================
+     CATEGORIES
+  ===================================================== */
 
   const categories = [
     { id: 'all', label: 'All' },
@@ -1128,21 +852,13 @@ function Home({
     { id: 'platters', label: 'Platters' }
   ];
 
-  const [activeCategory, setActiveCategory] =
-    useState('all');
-
-  const [orderOpen, setOrderOpen] =
-    useState(false);
-
-  const [selectedMenuItem, setSelectedMenuItem] =
-    useState(null);
-
   const filteredMenu =
     activeCategory === 'all'
       ? menu
       : menu.filter(
           (item) =>
-            item.category === activeCategory
+            String(item.category || '').toLowerCase() ===
+            activeCategory
         );
 
   function openOrder(item) {
@@ -1153,7 +869,9 @@ function Home({
   return (
     <div className="home-page">
 
-      {/* HERO */}
+      {/* =================================================
+          HERO
+      ================================================= */}
 
       <section className="home-hero">
 
@@ -1180,9 +898,7 @@ function Home({
               className="hero-button primary"
               onClick={() =>
                 document
-                  .getElementById(
-                    'menu-section'
-                  )
+                  .getElementById('menu-section')
                   ?.scrollIntoView({
                     behavior: 'smooth'
                   })
@@ -1196,9 +912,7 @@ function Home({
               className="hero-button secondary"
               onClick={() =>
                 document
-                  .getElementById(
-                    'points-section'
-                  )
+                  .getElementById('points-section')
                   ?.scrollIntoView({
                     behavior: 'smooth'
                   })
@@ -1213,7 +927,9 @@ function Home({
 
       </section>
 
-      {/* POINTS */}
+      {/* =================================================
+          POINTS
+      ================================================= */}
 
       <section
         id="points-section"
@@ -1286,7 +1002,9 @@ function Home({
 
       </section>
 
-      {/* MENU */}
+      {/* =================================================
+          MENU
+      ================================================= */}
 
       <section
         id="menu-section"
@@ -1315,9 +1033,7 @@ function Home({
                   : ''
               }
               onClick={() =>
-                setActiveCategory(
-                  category.id
-                )
+                setActiveCategory(category.id)
               }
             >
               {category.label}
@@ -1326,83 +1042,130 @@ function Home({
 
         </div>
 
-        <div className="menu-grid">
+        {/* MENU LOADING */}
 
-          {filteredMenu.map((item) => (
-            <article
-              className="menu-item-card"
-              key={item.name}
-            >
+        {menuLoading && (
+          <div className="empty-card large">
+            <div className="loading-mark">
+              🍣
+            </div>
 
-              <div className="menu-item-image">
+            <strong>
+              Loading our menu...
+            </strong>
 
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  onError={(e) => {
-                    e.currentTarget.style.display =
-                      'none';
+            <p>
+              Please wait a moment.
+            </p>
+          </div>
+        )}
 
-                    e.currentTarget.parentElement.classList.add(
-                      'missing'
-                    );
-                  }}
-                />
+        {/* EMPTY MENU */}
 
-                <div className="photo-fallback">
-                  <span>🍣</span>
-                  <small>AT HOME SUSHI</small>
-                </div>
+        {!menuLoading &&
+          filteredMenu.length === 0 && (
+            <div className="empty-card large">
 
+              <div className="loading-mark">
+                🍣
               </div>
 
-              <div className="menu-item-content">
+              <strong>
+                No menu items available.
+              </strong>
 
-                <div className="menu-item-top">
+              <p>
+                Check back soon for our latest menu.
+              </p>
 
-                  <h3>{item.name}</h3>
+            </div>
+          )}
 
-                  {item.price && (
-                    <strong>
-                      {item.price}
-                    </strong>
-                  )}
+        {/* MENU GRID */}
 
-                </div>
+        {!menuLoading &&
+          filteredMenu.length > 0 && (
+            <div className="menu-grid">
 
-                {item.pieces && (
-                  <div className="menu-item-pieces">
-                    {item.pieces}
-                  </div>
-                )}
-
-                {item.ingredients && (
-                  <p>
-                    {item.ingredients}
-                  </p>
-                )}
-
-                <button
-                  type="button"
-                  className="order-button"
-                  onClick={() =>
-                    openOrder(item)
-                  }
+              {filteredMenu.map((item) => (
+                <article
+                  className="menu-item-card"
+                  key={item.id}
                 >
-                  Order this
-                  <ChevronRight size={17} />
-                </button>
 
-              </div>
+                  <div className="menu-item-image">
 
-            </article>
-          ))}
+                    {item.image_url ? (
+                      <img
+                        src={item.image_url}
+                        alt={item.name}
+                        onError={(e) => {
+                          e.currentTarget.style.display =
+                            'none';
 
-        </div>
+                          e.currentTarget.parentElement.classList.add(
+                            'missing'
+                          );
+                        }}
+                      />
+                    ) : (
+                      <div className="photo-fallback">
+                        <span>🍣</span>
+                        <small>
+                          AT HOME SUSHI
+                        </small>
+                      </div>
+                    )}
+
+                    <div className="photo-fallback">
+                      <span>🍣</span>
+                      <small>
+                        AT HOME SUSHI
+                      </small>
+                    </div>
+
+                  </div>
+
+                  <div className="menu-item-content">
+
+                    <div className="menu-item-top">
+
+                      <h3>
+                        {item.name}
+                      </h3>
+
+                    </div>
+
+                    {item.description && (
+                      <p>
+                        {item.description}
+                      </p>
+                    )}
+
+                    <button
+                      type="button"
+                      className="order-button"
+                      onClick={() =>
+                        openOrder(item)
+                      }
+                    >
+                      Order this
+                      <ChevronRight size={17} />
+                    </button>
+
+                  </div>
+
+                </article>
+              ))}
+
+            </div>
+          )}
 
       </section>
 
-      {/* REWARDS PREVIEW */}
+      {/* =================================================
+          REWARDS PREVIEW
+      ================================================= */}
 
       <section className="home-section rewards-home">
 
@@ -1468,7 +1231,9 @@ function Home({
 
       </section>
 
-      {/* ORDER MODAL */}
+      {/* =================================================
+          ORDER MODAL
+      ================================================= */}
 
       {orderOpen &&
         selectedMenuItem && (
@@ -1576,11 +1341,13 @@ function DigitalCard({ profile }) {
     <div className="page-container">
 
       <div className="page-heading">
+
         <span className="section-label">
           YOUR MEMBERSHIP
         </span>
 
         <h1>My Card</h1>
+
       </div>
 
       <div className="digital-card">
@@ -1889,13 +1656,17 @@ function Rewards({
 
         {rewards.length === 0 && (
           <div className="empty-card large">
+
             <Gift size={25} />
+
             <strong>
               No rewards available yet
             </strong>
+
             <p>
               Check back soon for rewards.
             </p>
+
           </div>
         )}
 
