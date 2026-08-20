@@ -1008,7 +1008,12 @@ function Home({ profile, rewards, onGoRewards }) {
 
         </div>
 
-      </section>
+          </section>
+
+      <section
+        id="points-section"
+        className="home-section points-home"
+      >
 
         <div className="section-label">
           YOUR LOYALTY
@@ -1060,9 +1065,14 @@ function Home({ profile, rewards, onGoRewards }) {
             </span>
           </div>
 
-        </div>
+                </div>
 
       </section>
+
+      <section
+        id="menu-section"
+        className="home-section menu-home"
+      >
 
         <div className="section-label">
           FROM OUR KITCHEN
