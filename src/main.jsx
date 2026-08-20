@@ -250,6 +250,12 @@ function App() {
 ===================================================== */
 
 function Auth({ mode, setMode }) {
+  function Settings({
+  session,
+  profile,
+  reloadProfile,
+  onLogout
+}) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -2322,6 +2328,8 @@ function Settings({
       </button>
     </div>
   );
+}
+
 function Staff() {
   const [staffSession, setStaffSession] =
     useState(null);
