@@ -1,6 +1,6 @@
 /* =========================================================
-   AT HOME SUSHI — COMPLETE APP STYLES
-   Clean / Premium / Restaurant Loyalty UI
+   AT HOME SUSHI — GLOBAL STYLES
+   Premium black / cream restaurant loyalty UI
 ========================================================= */
 
 * {
@@ -10,7 +10,7 @@
 html {
   margin: 0;
   padding: 0;
-  background: #0b0b0b;
+  background: #0a0a0a;
   scroll-behavior: smooth;
 }
 
@@ -20,8 +20,8 @@ body {
   min-width: 320px;
   min-height: 100vh;
 
-  background: #0b0b0b;
-  color: #f4f1eb;
+  background: #0a0a0a;
+  color: #f3f0e9;
 
   font-family:
     Inter,
@@ -49,7 +49,7 @@ button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid #d8d4cc;
+  outline: 2px solid #d9d5cc;
   outline-offset: 2px;
 }
 
@@ -62,12 +62,31 @@ img {
   max-width: 100%;
 }
 
+
+/* =========================================================
+   SHARED
+========================================================= */
+
+.loading-screen,
+.auth-page,
+.app-shell,
+.staff-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at 50% -10%,
+      rgba(255,255,255,.055),
+      transparent 34%
+    ),
+    #0a0a0a;
+}
+
+
 /* =========================================================
    LOADING
 ========================================================= */
 
 .loading-screen {
-  min-height: 100vh;
   width: 100%;
 
   display: flex;
@@ -77,38 +96,30 @@ img {
 
   padding: 24px;
 
-  background:
-    radial-gradient(
-      circle at 50% 15%,
-      rgba(255, 255, 255, 0.06),
-      transparent 35%
-    ),
-    #0b0b0b;
-
   text-align: center;
 }
 
 .loading-mark {
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
 
   display: grid;
   place-items: center;
 
-  margin-bottom: 18px;
+  margin-bottom: 17px;
 
-  font-size: 25px;
+  font-size: 24px;
 
-  opacity: 0.9;
+  opacity: .9;
 }
 
 .loading-brand {
+  color: #f1eee7;
+
   font-family:
     Georgia,
     "Times New Roman",
     serif;
-
-  color: #f5f1e9;
 
   font-size: 14px;
   font-weight: 600;
@@ -122,42 +133,35 @@ img {
   color: #707070;
 
   font-size: 11px;
-  letter-spacing: 0.4px;
+  letter-spacing: .5px;
 }
 
+
 /* =========================================================
-   AUTH PAGE
+   AUTH — CUSTOMER + ADMIN
 ========================================================= */
 
 .auth-page {
   width: 100%;
-  min-height: 100vh;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 40px 18px;
-
-  background:
-    radial-gradient(
-      circle at 50% 0%,
-      rgba(255, 255, 255, 0.065),
-      transparent 38%
-    ),
-    #0b0b0b;
+  padding: 35px 18px;
 
   overflow-x: hidden;
 }
 
 .auth-shell {
   width: 100%;
-  max-width: 420px;
+  max-width: 430px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 
 /* =========================================================
    AUTH BRAND
@@ -172,12 +176,12 @@ img {
 
   text-align: center;
 
-  margin-bottom: 27px;
+  margin-bottom: 25px;
 }
 
 .auth-brand img {
-  width: 58px;
-  height: 58px;
+  width: 56px;
+  height: 56px;
 
   object-fit: contain;
 
@@ -185,10 +189,10 @@ img {
 
   border-radius: 50%;
 
-  margin-bottom: 14px;
+  margin-bottom: 13px;
 
   box-shadow:
-    0 12px 35px rgba(0, 0, 0, 0.4);
+    0 12px 35px rgba(0,0,0,.38);
 }
 
 .auth-brand h1 {
@@ -202,7 +206,7 @@ img {
     serif;
 
   font-size: 22px;
-  font-weight: 500;
+  font-weight: 600;
 
   letter-spacing: 3.5px;
 
@@ -210,15 +214,16 @@ img {
 }
 
 .auth-brand span {
-  margin-top: 7px;
+  margin-top: 6px;
 
-  color: #74716b;
+  color: #85827b;
 
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 700;
 
   letter-spacing: 3px;
 }
+
 
 /* =========================================================
    AUTH CARD
@@ -229,15 +234,16 @@ img {
 
   padding: 27px;
 
-  background: #151515;
+  background: #111111;
 
   border: 1px solid #292929;
 
-  border-radius: 20px;
+  border-radius: 22px;
 
   box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.42);
+    0 25px 75px rgba(0,0,0,.44);
 }
+
 
 /* =========================================================
    AUTH TABS
@@ -253,11 +259,11 @@ img {
 
   padding: 4px;
 
-  margin-bottom: 27px;
+  margin-bottom: 25px;
 
-  background: #0e0e0e;
+  background: #0c0c0c;
 
-  border: 1px solid #292929;
+  border: 1px solid #262626;
 
   border-radius: 12px;
 }
@@ -265,54 +271,54 @@ img {
 .auth-tabs button {
   min-height: 40px;
 
-  border: 0;
-  border-radius: 9px;
-
   display: flex;
   align-items: center;
   justify-content: center;
 
   gap: 7px;
 
+  border: 0;
+  border-radius: 9px;
+
   background: transparent;
 
   color: #707070;
 
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 
   cursor: pointer;
 
   transition:
-    background 0.2s ease,
-    color 0.2s ease;
+    background .2s ease,
+    color .2s ease;
 }
 
 .auth-tabs button.active {
   background: #eeeae2;
-
-  color: #111;
+  color: #101010;
 }
+
 
 /* =========================================================
    AUTH HEADING
 ========================================================= */
 
 .auth-heading {
-  margin-bottom: 24px;
+  margin-bottom: 23px;
 }
 
 .auth-heading h2 {
   margin: 0;
 
-  color: #f2efe8;
+  color: #f1eee8;
 
   font-family:
     Georgia,
     "Times New Roman",
     serif;
 
-  font-size: 26px;
+  font-size: 25px;
   font-weight: 400;
 
   line-height: 1.2;
@@ -321,12 +327,12 @@ img {
 .auth-heading p {
   margin: 8px 0 0;
 
-  color: #777;
+  color: #7b7b7b;
 
-  font-size: 12px;
-
+  font-size: 13px;
   line-height: 1.6;
 }
+
 
 /* =========================================================
    FORM
@@ -334,21 +340,19 @@ img {
 
 .field {
   width: 100%;
-
   margin-bottom: 16px;
 }
 
 .field label {
   display: flex;
   align-items: center;
-
   gap: 5px;
 
   margin-bottom: 7px;
 
-  color: #aaa69e;
+  color: #aaa79f;
 
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -361,19 +365,19 @@ img {
 
   border-radius: 11px;
 
-  background: #101010;
+  background: #0d0d0d;
 
-  color: #f4f1eb;
+  color: #f3f0e9;
 
   padding: 12px 13px;
 
-  font-size: 13px;
+  font-size: 14px;
 
   outline: none;
 
   transition:
-    border-color 0.2s ease,
-    background 0.2s ease;
+    border-color .2s ease,
+    background .2s ease;
 }
 
 .field input {
@@ -382,22 +386,21 @@ img {
 
 .field textarea {
   min-height: 105px;
-
   resize: vertical;
 }
 
 .field input::placeholder,
 .field textarea::placeholder {
-  color: #555;
+  color: #505050;
 }
 
 .field input:focus,
 .field textarea:focus,
 .field select:focus {
-  border-color: #666;
-
-  background: #141414;
+  border-color: #626262;
+  background: #121212;
 }
+
 
 /* =========================================================
    PASSWORD
@@ -405,7 +408,6 @@ img {
 
 .password-wrap {
   position: relative;
-
   width: 100%;
 }
 
@@ -444,8 +446,9 @@ img {
   color: #ddd;
 }
 
+
 /* =========================================================
-   REMEMBER ME
+   REMEMBER
 ========================================================= */
 
 .remember-row {
@@ -460,7 +463,7 @@ img {
 
   color: #858585;
 
-  font-size: 11px;
+  font-size: 12px;
 
   cursor: pointer;
 
@@ -473,13 +476,14 @@ img {
 
   margin: 0;
 
-  accent-color: #eae7e0;
+  accent-color: #e9e5dc;
 
   cursor: pointer;
 }
 
+
 /* =========================================================
-   BUTTONS
+   PRIMARY BUTTON
 ========================================================= */
 
 .primary-button {
@@ -497,89 +501,41 @@ img {
 
   background: #eeeae2;
 
-  color: #101010;
+  color: #111;
 
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 
   cursor: pointer;
 
   transition:
-    transform 0.15s ease,
-    opacity 0.15s ease,
-    background 0.15s ease;
+    transform .15s ease,
+    opacity .15s ease;
 }
 
 .primary-button:hover {
-  background: #f5f2eb;
-
   transform: translateY(-1px);
 }
 
 .primary-button:disabled {
-  opacity: 0.5;
-
+  opacity: .5;
   cursor: not-allowed;
-
   transform: none;
 }
 
-.secondary-button,
-.secondary-staff-button,
-.logout-button {
-  min-height: 44px;
 
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  gap: 7px;
-
-  padding: 0 16px;
-
-  border: 1px solid #303030;
-
-  border-radius: 11px;
-
-  background: #151515;
-
-  color: #ccc;
-
-  font-size: 11px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease;
-}
-
-.secondary-button:hover,
-.secondary-staff-button:hover {
-  background: #1b1b1b;
-
-  border-color: #444;
-
-  color: #eee;
-}
-
-.secondary-button:disabled,
-.secondary-staff-button:disabled {
-  opacity: 0.5;
-
-  cursor: wait;
-}
+/* =========================================================
+   AUTH SWITCH / FOOTER
+========================================================= */
 
 .auth-switch {
   margin-top: 20px;
 
   text-align: center;
 
-  color: #777;
+  color: #707070;
 
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .auth-switch button {
@@ -603,12 +559,13 @@ img {
 
   color: #505050;
 
-  font-size: 9px;
+  font-size: 10px;
 
-  letter-spacing: 0.7px;
+  letter-spacing: .7px;
 
   text-align: center;
 }
+
 
 /* =========================================================
    NOTICE
@@ -621,41 +578,22 @@ img {
 
   padding: 11px 12px;
 
-  border: 1px solid #333;
-
   border-radius: 10px;
+
+  border: 1px solid #333;
 
   background: #151515;
 
   color: #aaa;
 
-  font-size: 11px;
+  font-size: 12px;
 
   line-height: 1.5;
 }
 
-/* =========================================================
-   APP SHELL
-========================================================= */
-
-.app-shell,
-.staff-shell {
-  width: 100%;
-  min-height: 100vh;
-
-  background:
-    radial-gradient(
-      circle at 50% -10%,
-      rgba(255, 255, 255, 0.045),
-      transparent 30%
-    ),
-    #0b0b0b;
-
-  overflow-x: hidden;
-}
 
 /* =========================================================
-   HEADER
+   APP HEADER
 ========================================================= */
 
 .app-header {
@@ -668,7 +606,7 @@ img {
 
   padding: 0 20px;
 
-  background: rgba(11, 11, 11, 0.94);
+  background: rgba(10,10,10,.93);
 
   border-bottom: 1px solid #202020;
 
@@ -726,7 +664,7 @@ img {
 .header-brand span {
   margin-top: 2px;
 
-  color: #626262;
+  color: #686868;
 
   font-size: 7px;
 
@@ -743,7 +681,6 @@ img {
   place-items: center;
 
   border: 1px solid #2b2b2b;
-
   border-radius: 50%;
 
   background: #111;
@@ -751,20 +688,11 @@ img {
   color: #999;
 
   cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
 }
 
-.header-action:hover {
-  background: #181818;
-
-  color: #eee;
-}
 
 /* =========================================================
-   MAIN
+   CUSTOMER MAIN
 ========================================================= */
 
 .app-main {
@@ -773,83 +701,9 @@ img {
 
   margin: 0 auto;
 
-  padding-bottom: 105px;
+  padding-bottom: 100px;
 }
 
-/* =========================================================
-   BIRTHDAY
-========================================================= */
-
-.birthday-card {
-  margin: 18px 18px 0;
-
-  display: flex;
-  align-items: center;
-
-  gap: 12px;
-
-  padding: 14px;
-
-  border: 1px solid #2b2b2b;
-
-  border-radius: 14px;
-
-  background: #111;
-}
-
-.birthday-icon {
-  width: 38px;
-  height: 38px;
-
-  flex: 0 0 38px;
-
-  display: grid;
-  place-items: center;
-
-  border: 1px solid #303030;
-
-  border-radius: 50%;
-
-  color: #ddd;
-}
-
-.birthday-card > div:last-child {
-  min-width: 0;
-}
-
-.birthday-card span {
-  display: block;
-
-  color: #777;
-
-  font-size: 8px;
-  font-weight: 700;
-
-  letter-spacing: 1.7px;
-}
-
-.birthday-card strong {
-  display: block;
-
-  margin-top: 3px;
-
-  color: #eee;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size: 15px;
-}
-
-.birthday-card p {
-  margin: 3px 0 0;
-
-  color: #777;
-
-  font-size: 11px;
-}
 
 /* =========================================================
    HOME
@@ -870,7 +724,7 @@ img {
   background:
     radial-gradient(
       circle at 50% 20%,
-      rgba(255, 255, 255, 0.065),
+      rgba(255,255,255,.065),
       transparent 38%
     );
 }
@@ -907,7 +761,7 @@ img {
 
   font-weight: 400;
 
-  line-height: 0.98;
+  line-height: .98;
 
   letter-spacing: -2px;
 }
@@ -972,6 +826,7 @@ img {
   color: #ccc;
 }
 
+
 /* =========================================================
    HOME SECTIONS
 ========================================================= */
@@ -1015,7 +870,7 @@ img {
 
   font-weight: 400;
 
-  letter-spacing: -0.7px;
+  letter-spacing: -.7px;
 }
 
 .section-description {
@@ -1027,6 +882,7 @@ img {
 
   line-height: 1.6;
 }
+
 
 /* =========================================================
    POINTS
@@ -1042,13 +898,9 @@ img {
   justify-content: space-between;
 
   border: 1px solid #292929;
-
   border-radius: 18px;
 
   background: #111;
-
-  box-shadow:
-    0 15px 45px rgba(0, 0, 0, 0.16);
 }
 
 .points-card span {
@@ -1101,7 +953,6 @@ img {
   place-items: center;
 
   border: 1px solid #333;
-
   border-radius: 50%;
 
   background: #181818;
@@ -1115,7 +966,6 @@ img {
   margin-top: 28px;
 
   display: grid;
-
   grid-template-columns: repeat(3, 1fr);
 
   gap: 18px;
@@ -1123,7 +973,6 @@ img {
 
 .earn-steps > div {
   display: flex;
-
   gap: 9px;
 }
 
@@ -1150,9 +999,9 @@ img {
   color: #aaa;
 
   font-size: 9px;
-
   letter-spacing: 1.2px;
 }
+
 
 /* =========================================================
    MENU
@@ -1162,7 +1011,6 @@ img {
   margin-top: 28px;
 
   display: grid;
-
   grid-template-columns: 40px minmax(0, 1fr) 40px;
 
   align-items: center;
@@ -1178,18 +1026,13 @@ img {
   place-items: center;
 
   border: 1px solid #2b2b2b;
-
   border-radius: 50%;
 
   background: #111;
 
   color: #ccc;
 
-  font-family: Arial, sans-serif;
-
   font-size: 25px;
-
-  line-height: 1;
 
   cursor: pointer;
 }
@@ -1235,24 +1078,12 @@ img {
   display: none;
 
   flex-direction: column;
-
   align-items: center;
-
   justify-content: center;
 
   gap: 8px;
 
   color: #666;
-}
-
-.photo-fallback span {
-  font-size: 35px;
-}
-
-.photo-fallback small {
-  font-size: 8px;
-
-  letter-spacing: 2px;
 }
 
 .menu-photo.missing .photo-fallback {
@@ -1302,12 +1133,6 @@ img {
   font-weight: 600;
 }
 
-.menu-price span {
-  margin: 0 5px;
-
-  color: #555;
-}
-
 .menu-info > p {
   max-width: 500px;
 
@@ -1328,14 +1153,12 @@ img {
   padding: 0 17px;
 
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
 
   gap: 7px;
 
   border: 1px solid #3a3a3a;
-
   border-radius: 10px;
 
   background: #151515;
@@ -1348,8 +1171,9 @@ img {
   cursor: pointer;
 }
 
+
 /* =========================================================
-   HOME REWARDS
+   REWARDS
 ========================================================= */
 
 .home-rewards {
@@ -1365,7 +1189,6 @@ img {
   min-height: 84px;
 
   display: grid;
-
   grid-template-columns: 34px 1fr auto;
 
   align-items: center;
@@ -1379,10 +1202,6 @@ img {
   color: #555;
 
   font-size: 10px;
-}
-
-.home-reward > div {
-  min-width: 0;
 }
 
 .home-reward strong {
@@ -1407,8 +1226,9 @@ img {
   font-size: 11px;
 }
 
+
 /* =========================================================
-   MODAL
+   MODALS
 ========================================================= */
 
 .modal-overlay {
@@ -1419,14 +1239,12 @@ img {
   z-index: 100;
 
   display: flex;
-
   align-items: flex-end;
-
   justify-content: center;
 
   padding: 15px;
 
-  background: rgba(0, 0, 0, 0.72);
+  background: rgba(0,0,0,.72);
 
   backdrop-filter: blur(8px);
 }
@@ -1435,7 +1253,6 @@ img {
   position: relative;
 
   width: 100%;
-
   max-width: 440px;
 
   padding: 28px 22px 24px;
@@ -1447,7 +1264,7 @@ img {
   border-radius: 22px;
 
   box-shadow:
-    0 -15px 60px rgba(0, 0, 0, 0.5);
+    0 -15px 60px rgba(0,0,0,.5);
 }
 
 .modal-close {
@@ -1463,7 +1280,6 @@ img {
   place-items: center;
 
   border: 1px solid #303030;
-
   border-radius: 50%;
 
   background: #101010;
@@ -1504,7 +1320,6 @@ img {
   min-height: 66px;
 
   display: grid;
-
   grid-template-columns: 39px 1fr 18px;
 
   align-items: center;
@@ -1516,7 +1331,6 @@ img {
   margin-top: 9px;
 
   border: 1px solid #2b2b2b;
-
   border-radius: 13px;
 
   background: #111;
@@ -1530,32 +1344,14 @@ img {
   place-items: center;
 
   border: 1px solid #303030;
-
   border-radius: 50%;
 
   color: #ccc;
 }
 
-.order-choice strong {
-  display: block;
-
-  color: #ddd;
-
-  font-size: 12px;
-}
-
-.order-choice small {
-  display: block;
-
-  margin-top: 3px;
-
-  color: #666;
-
-  font-size: 10px;
-}
 
 /* =========================================================
-   PAGE CONTAINER
+   PAGE CONTAINERS
 ========================================================= */
 
 .page-container {
@@ -1594,6 +1390,7 @@ img {
   font-size: 12px;
 }
 
+
 /* =========================================================
    DIGITAL CARD
 ========================================================= */
@@ -1602,26 +1399,23 @@ img {
   padding: 22px;
 
   border: 1px solid #303030;
-
   border-radius: 20px;
 
   background:
     radial-gradient(
       circle at 100% 0%,
-      rgba(255, 255, 255, 0.055),
+      rgba(255,255,255,.055),
       transparent 35%
     ),
     #111;
 
   box-shadow:
-    0 20px 55px rgba(0, 0, 0, 0.35);
+    0 20px 55px rgba(0,0,0,.35);
 }
 
 .digital-top {
   display: flex;
-
   align-items: flex-start;
-
   justify-content: space-between;
 
   padding-bottom: 20px;
@@ -1655,10 +1449,6 @@ img {
   letter-spacing: 1.5px;
 }
 
-.digital-top > svg {
-  color: #777;
-}
-
 .qr-box {
   width: 220px;
   height: 220px;
@@ -1675,7 +1465,6 @@ img {
 
 .digital-member {
   display: flex;
-
   flex-direction: column;
 }
 
@@ -1714,7 +1503,6 @@ img {
 
 .digital-balances {
   display: grid;
-
   grid-template-columns: 1fr 1fr;
 
   gap: 1px;
@@ -1722,7 +1510,6 @@ img {
   margin-top: 22px;
 
   border: 1px solid #282828;
-
   border-radius: 12px;
 
   overflow: hidden;
@@ -1756,27 +1543,15 @@ img {
   color: #eee;
 
   font-size: 22px;
-
-  font-weight: 500;
 }
 
-.digital-note {
-  margin: 18px 0 0;
-
-  color: #666;
-
-  font-size: 10px;
-
-  text-align: center;
-}
 
 /* =========================================================
-   REWARDS
+   REWARD CARDS
 ========================================================= */
 
 .reward-list {
   display: flex;
-
   flex-direction: column;
 
   gap: 9px;
@@ -1784,11 +1559,9 @@ img {
 
 .reward-card {
   width: 100%;
-
   min-height: 78px;
 
   display: grid;
-
   grid-template-columns: 40px 1fr 18px;
 
   align-items: center;
@@ -1798,7 +1571,6 @@ img {
   padding: 12px;
 
   border: 1px solid #292929;
-
   border-radius: 14px;
 
   background: #111;
@@ -1808,27 +1580,15 @@ img {
   text-align: left;
 
   cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.reward-card:hover {
-  background: #151515;
-
-  border-color: #3a3a3a;
 }
 
 .reward-card.selected {
   border-color: #777;
-
   background: #171717;
 }
 
 .reward-card.locked {
-  opacity: 0.42;
-
+  opacity: .42;
   cursor: not-allowed;
 }
 
@@ -1840,7 +1600,6 @@ img {
   place-items: center;
 
   border: 1px solid #303030;
-
   border-radius: 50%;
 
   color: #aaa;
@@ -1850,7 +1609,6 @@ img {
   min-width: 0;
 
   display: flex;
-
   flex-direction: column;
 }
 
@@ -1870,15 +1628,10 @@ img {
   line-height: 1.4;
 }
 
-.reward-content b {
-  margin-top: 5px;
 
-  color: #aaa;
-
-  font-size: 9px;
-
-  letter-spacing: 0.5px;
-}
+/* =========================================================
+   REDEMPTION
+========================================================= */
 
 .redeem-box {
   margin-top: 15px;
@@ -1886,7 +1639,6 @@ img {
   padding: 20px;
 
   border: 1px solid #303030;
-
   border-radius: 15px;
 
   background: #121212;
@@ -1921,16 +1673,9 @@ img {
   text-align: center;
 
   border: 1px solid #303030;
-
   border-radius: 20px;
 
   background: #111;
-}
-
-.success-card > svg {
-  color: #ddd;
-
-  margin-bottom: 18px;
 }
 
 .success-card h1 {
@@ -1962,7 +1707,6 @@ img {
   padding: 19px 10px;
 
   border: 1px dashed #454545;
-
   border-radius: 12px;
 
   background: #0c0c0c;
@@ -1970,25 +1714,11 @@ img {
   color: #eee;
 
   font-size: 28px;
-
   font-weight: 700;
 
   letter-spacing: 4px;
 }
 
-.text-button {
-  margin-top: 17px;
-
-  border: 0;
-
-  background: transparent;
-
-  color: #777;
-
-  font-size: 11px;
-
-  cursor: pointer;
-}
 
 /* =========================================================
    HISTORY
@@ -1996,7 +1726,6 @@ img {
 
 .history-list {
   display: flex;
-
   flex-direction: column;
 
   border-top: 1px solid #242424;
@@ -2006,9 +1735,7 @@ img {
   min-height: 72px;
 
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
 
   gap: 15px;
@@ -2020,7 +1747,6 @@ img {
   min-width: 0;
 
   display: flex;
-
   flex-direction: column;
 }
 
@@ -2046,11 +1772,15 @@ img {
   font-size: 11px;
 }
 
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
 .empty-card {
   padding: 25px;
 
   border: 1px solid #282828;
-
   border-radius: 15px;
 
   background: #111;
@@ -2066,11 +1796,8 @@ img {
   min-height: 180px;
 
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
-
   justify-content: center;
 
   gap: 8px;
@@ -2080,14 +1807,21 @@ img {
   color: #aaa;
 }
 
-.empty-card p {
-  margin: 0;
-
-  color: #666;
-}
 
 /* =========================================================
-   STAFF / ADMIN
+   =========================================================
+   ADMIN / STAFF PORTAL
+   =========================================================
+========================================================= */
+
+.staff-shell {
+  width: 100%;
+  min-height: 100vh;
+}
+
+
+/* =========================================================
+   ADMIN MAIN
 ========================================================= */
 
 .staff-main {
@@ -2096,29 +1830,35 @@ img {
 
   margin: 0 auto;
 
-  padding: 42px 22px 70px;
+  padding: 42px 22px 90px;
 }
 
+
+/* =========================================================
+   ADMIN HEADING
+========================================================= */
+
 .staff-heading {
-  margin-bottom: 24px;
+  margin-bottom: 25px;
 }
 
 .staff-heading > span {
+  display: block;
+
   color: #666;
 
   font-size: 9px;
-
   font-weight: 700;
 
-  letter-spacing: 2px;
+  letter-spacing: 2.5px;
 
   text-transform: uppercase;
 }
 
 .staff-heading h1 {
-  margin: 7px 0 0;
+  margin: 8px 0 0;
 
-  color: #eee;
+  color: #f0ede6;
 
   font-family:
     Georgia,
@@ -2129,13 +1869,13 @@ img {
 
   font-weight: 400;
 
-  letter-spacing: -0.7px;
+  letter-spacing: -.8px;
 }
 
 .staff-heading p {
-  max-width: 500px;
+  max-width: 520px;
 
-  margin: 7px 0 0;
+  margin: 8px 0 0;
 
   color: #777;
 
@@ -2144,8 +1884,9 @@ img {
   line-height: 1.6;
 }
 
+
 /* =========================================================
-   ADMIN DASHBOARD CARDS
+   ADMIN CARDS
 ========================================================= */
 
 .staff-card {
@@ -2153,17 +1894,43 @@ img {
 
   border: 1px solid #292929;
 
-  border-radius: 17px;
+  border-radius: 18px;
 
-  background: #111;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(255,255,255,.025),
+      transparent 35%
+    ),
+    #111;
 
   box-shadow:
-    0 12px 35px rgba(0, 0, 0, 0.12);
+    0 12px 35px rgba(0,0,0,.16);
 }
 
 .staff-card + .staff-card {
   margin-top: 12px;
 }
+
+.staff-card h2 {
+  margin: 0;
+
+  color: #eee;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 21px;
+
+  font-weight: 400;
+}
+
+
+/* =========================================================
+   ADMIN CUSTOMER CARD
+========================================================= */
 
 .customer-card h2 {
   margin: 8px 0 4px;
@@ -2188,9 +1955,13 @@ img {
   font-size: 11px;
 }
 
+
+/* =========================================================
+   ADMIN BALANCES
+========================================================= */
+
 .staff-balances {
   display: grid;
-
   grid-template-columns: 1fr 1fr;
 
   gap: 8px;
@@ -2199,11 +1970,11 @@ img {
 }
 
 .staff-balances > div {
-  padding: 14px;
+  padding: 15px;
 
   border: 1px solid #292929;
 
-  border-radius: 12px;
+  border-radius: 13px;
 
   background: #0d0d0d;
 }
@@ -2222,6 +1993,8 @@ img {
   font-size: 8px;
 
   letter-spacing: 1.5px;
+
+  text-transform: uppercase;
 }
 
 .staff-balances strong {
@@ -2231,16 +2004,20 @@ img {
 
   color: #eee;
 
-  font-size: 22px;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 25px;
+
+  font-weight: 400;
 }
 
-.birthday-line {
-  display: flex;
 
-  align-items: center;
-
-  gap: 5px;
-}
+/* =========================================================
+   ADMIN DIVIDER
+========================================================= */
 
 .staff-divider {
   height: 1px;
@@ -2249,6 +2026,11 @@ img {
 
   background: #272727;
 }
+
+
+/* =========================================================
+   ADMIN PREVIEW
+========================================================= */
 
 .points-preview {
   margin: -4px 0 14px;
@@ -2262,16 +2044,77 @@ img {
   color: #ddd;
 }
 
-.secondary-staff-button {
+
+/* =========================================================
+   ADMIN BUTTONS
+========================================================= */
+
+.secondary-staff-button,
+.secondary-button {
   width: 100%;
+
+  min-height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  margin-top: 9px;
+
+  border: 1px solid #303030;
+
+  border-radius: 11px;
+
+  background: #151515;
+
+  color: #c5c2bb;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background .18s ease,
+    border-color .18s ease,
+    color .18s ease,
+    transform .18s ease;
 }
+
+.secondary-staff-button:hover,
+.secondary-button:hover {
+  background: #1a1a1a;
+
+  border-color: #444;
+
+  color: #eee;
+
+  transform: translateY(-1px);
+}
+
+.secondary-staff-button:disabled,
+.secondary-button:disabled {
+  opacity: .5;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+
+/* =========================================================
+   ADMIN NOTICES
+========================================================= */
 
 .staff-notice {
   margin-top: 12px;
 }
 
+
 /* =========================================================
-   ADMIN CATEGORY FILTER
+   ADMIN CATEGORY NAV
 ========================================================= */
 
 .admin-category-pills {
@@ -2280,13 +2123,13 @@ img {
   display: flex;
   align-items: center;
 
-  gap: 8px;
+  gap: 7px;
 
   overflow-x: auto;
 
-  padding: 4px 2px 10px;
+  padding: 5px 1px 11px;
 
-  margin-top: 4px;
+  margin-top: 6px;
 
   scrollbar-width: none;
 
@@ -2302,11 +2145,15 @@ img {
 
   flex: 0 0 auto;
 
-  min-height: 37px;
+  min-height: 38px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
   padding: 0 15px;
 
-  border: 1px solid #2d2d2d;
+  border: 1px solid #2b2b2b;
 
   border-radius: 999px;
 
@@ -2318,15 +2165,23 @@ img {
 
   font-weight: 600;
 
+  letter-spacing: .15px;
+
   white-space: nowrap;
 
   cursor: pointer;
 
+  box-shadow: none;
+
+  backdrop-filter: none;
+
+  -webkit-backdrop-filter: none;
+
   transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.15s ease;
+    background .2s ease,
+    color .2s ease,
+    border-color .2s ease,
+    transform .2s ease;
 }
 
 .admin-category-pill:hover {
@@ -2334,7 +2189,7 @@ img {
 
   color: #ddd;
 
-  border-color: #444;
+  border-color: #414141;
 
   transform: translateY(-1px);
 }
@@ -2347,16 +2202,256 @@ img {
   border-color: #eeeae2;
 
   box-shadow:
-    0 5px 16px rgba(0, 0, 0, 0.18);
+    0 5px 15px rgba(0,0,0,.18);
 }
 
 .admin-category-pill.active:hover {
-  background: #f5f2eb;
+  background: #f3f0e9;
 
   color: #111;
 
-  border-color: #f5f2eb;
+  border-color: #f3f0e9;
+
+  transform: translateY(-1px);
 }
+
+
+/* =========================================================
+   ADMIN SEARCH / INPUT AREAS
+========================================================= */
+
+.staff-main input,
+.staff-main textarea,
+.staff-main select {
+  border-color: #303030;
+
+  background: #0d0d0d;
+
+  color: #eee;
+
+  border-radius: 11px;
+}
+
+.staff-main input::placeholder,
+.staff-main textarea::placeholder {
+  color: #555;
+}
+
+.staff-main input:focus,
+.staff-main textarea:focus,
+.staff-main select:focus {
+  border-color: #626262;
+
+  background: #121212;
+}
+
+
+/* =========================================================
+   ADMIN CUSTOMER LIST
+========================================================= */
+
+.customer-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.customer-list > * {
+  border: 1px solid #292929;
+
+  border-radius: 14px;
+
+  background: #111;
+}
+
+
+/* =========================================================
+   ADMIN SMALL LABELS
+========================================================= */
+
+.staff-main label {
+  color: #aaa79f;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+.staff-main small {
+  color: #666;
+}
+
+
+/* =========================================================
+   ADMIN TABLE-LIKE ROWS
+========================================================= */
+
+.admin-row {
+  min-height: 66px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 12px 14px;
+
+  border-bottom: 1px solid #242424;
+}
+
+.admin-row:last-child {
+  border-bottom: 0;
+}
+
+.admin-row strong {
+  color: #ddd;
+
+  font-size: 12px;
+}
+
+.admin-row span {
+  color: #777;
+
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   ADMIN STATUS
+========================================================= */
+
+.admin-status {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 27px;
+
+  padding: 0 9px;
+
+  border: 1px solid #303030;
+
+  border-radius: 999px;
+
+  background: #151515;
+
+  color: #aaa;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: .5px;
+}
+
+
+/* =========================================================
+   ADMIN FORM GRID
+========================================================= */
+
+.admin-form-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+}
+
+.admin-form-grid > .full {
+  grid-column: 1 / -1;
+}
+
+
+/* =========================================================
+   ADMIN ACTION ROW
+========================================================= */
+
+.admin-action-row {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 15px;
+}
+
+.admin-action-row button {
+  min-height: 40px;
+
+  padding: 0 14px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  border: 1px solid #303030;
+
+  border-radius: 10px;
+
+  background: #151515;
+
+  color: #ccc;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.admin-action-row button:hover {
+  background: #1b1b1b;
+
+  color: #eee;
+
+  border-color: #444;
+}
+
+
+/* =========================================================
+   ADMIN LOGOUT
+========================================================= */
+
+.logout-button {
+  width: 100%;
+
+  min-height: 44px;
+
+  margin-top: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  border: 1px solid #3d2c2c;
+
+  border-radius: 11px;
+
+  background: #151111;
+
+  color: #d3aaaa;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background: #1c1414;
+
+  border-color: #553737;
+
+  color: #e4bebe;
+}
+
 
 /* =========================================================
    SETTINGS
@@ -2380,7 +2475,6 @@ img {
 
 .settings-card-heading {
   display: flex;
-
   align-items: center;
 
   gap: 12px;
@@ -2455,14 +2549,11 @@ img {
   color: #aaa;
 
   transition:
-    background 0.2s ease,
-    color 0.2s ease;
+    background .18s ease;
 }
 
 .settings-links a:hover {
-  background: #161616;
-
-  color: #eee;
+  background: #151515;
 }
 
 .settings-links a:last-child {
@@ -2508,21 +2599,6 @@ img {
   border-bottom: 0;
 }
 
-.logout-button {
-  width: 100%;
-
-  margin-top: 16px;
-
-  border-color: #4a3030;
-
-  color: #e2b5b5;
-}
-
-.logout-button:hover {
-  background: #211515;
-
-  border-color: #634040;
-}
 
 /* =========================================================
    BOTTOM NAV
@@ -2532,7 +2608,6 @@ img {
   position: fixed;
 
   left: 50%;
-
   bottom: 12px;
 
   transform: translateX(-50%);
@@ -2556,13 +2631,12 @@ img {
 
   border-radius: 18px;
 
-  background: rgba(16, 16, 16, 0.95);
+  background: rgba(16,16,16,.94);
 
   box-shadow:
-    0 15px 45px rgba(0, 0, 0, 0.45);
+    0 15px 45px rgba(0,0,0,.45);
 
   backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
 }
 
 .bottom-nav button {
@@ -2571,11 +2645,8 @@ img {
   border-radius: 13px;
 
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
-
   justify-content: center;
 
   gap: 3px;
@@ -2587,14 +2658,6 @@ img {
   font-size: 9px;
 
   cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
-}
-
-.bottom-nav button:hover {
-  color: #aaa;
 }
 
 .bottom-nav button.selected {
@@ -2606,6 +2669,7 @@ img {
 .bottom-nav button svg {
   stroke-width: 1.7;
 }
+
 
 /* =========================================================
    MOBILE
@@ -2624,8 +2688,8 @@ img {
   }
 
   .auth-brand img {
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
   }
 
   .auth-brand h1 {
@@ -2650,7 +2714,6 @@ img {
 
   .hero-buttons {
     flex-direction: column;
-
     align-items: stretch;
   }
 
@@ -2694,15 +2757,7 @@ img {
   }
 
   .page-container {
-    padding: 35px 18px 35px;
-  }
-
-  .staff-main {
-    padding: 35px 18px 70px;
-  }
-
-  .staff-heading h1 {
-    font-size: 33px;
+    padding: 35px 18px;
   }
 
   .digital-card {
@@ -2718,13 +2773,41 @@ img {
     padding: 0 15px;
   }
 
+  .staff-main {
+    padding: 35px 18px 85px;
+  }
+
+  .staff-heading h1 {
+    font-size: 34px;
+  }
+
+  .staff-card {
+    padding: 17px;
+  }
+
+  .admin-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-form-grid > .full {
+    grid-column: auto;
+  }
+
+  .admin-category-pill {
+    min-height: 36px;
+
+    padding: 0 13px;
+
+    font-size: 10px;
+  }
+
   .bottom-nav {
     bottom: 9px;
 
     width: calc(100% - 18px);
   }
-
 }
+
 
 /* =========================================================
    SMALL PHONES
@@ -2746,7 +2829,6 @@ img {
 
   .home-section {
     padding-left: 16px;
-
     padding-right: 16px;
   }
 
@@ -2760,19 +2842,14 @@ img {
 
   .staff-main {
     padding-left: 15px;
-
     padding-right: 15px;
   }
 
-  .admin-category-pill {
-    min-height: 35px;
-
-    padding: 0 13px;
-
-    font-size: 10px;
+  .staff-heading h1 {
+    font-size: 31px;
   }
-
 }
+
 
 /* =========================================================
    REDUCED MOTION
@@ -2788,8 +2865,6 @@ img {
   *::before,
   *::after {
     transition: none !important;
-
     animation: none !important;
   }
-
 }
