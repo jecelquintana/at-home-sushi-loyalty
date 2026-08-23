@@ -2661,60 +2661,59 @@ function AdminOverview() {
 
         </section>
 
-        <section className="admin-panel">
+       <section className="admin-panel">
 
-          <div className="admin-panel-heading">
-            <div>
-              <span>QUICK ACTIONS</span>
-              <h3>Manage your store</h3>
-            </div>
+  <div className="admin-panel-heading">
+    <div>
+      <span>QUICK ACTIONS</span>
+      <h3>Manage your store</h3>
+    </div>
 
-            <Sparkles size={19} />
-          </div>
+    <Sparkles size={19} />
+  </div>
 
-          <div className="quick-action-grid">
+  <div className="quick-action-grid">
 
-            <button
-              onClick={() =>
-                document
-                  .querySelector('[data-admin-page="menu"]')
-              }
-            >
-              <UtensilsCrossed size={20} />
-              <span>
-                <strong>Menu</strong>
-                Update sushi items
-              </span>
-            </button>
+    <button
+      onClick={() =>
+        document
+          .querySelector('[data-admin-page="menu"]')
+      }
+    >
+      <UtensilsCrossed size={20} />
+      <span>
+        <strong>Menu</strong>
+        Update sushi items
+      </span>
+    </button>
 
-            <button>
-              <Gift size={20} />
-              <span>
-                <strong>Rewards</strong>
-                Manage rewards
-              </span>
-            </button>
+    <button>
+      <Gift size={20} />
+      <span>
+        <strong>Rewards</strong>
+        Manage rewards
+      </span>
+    </button>
 
-            <button>
-              <Users size={20} />
-              <span>
-                <strong>Customers</strong>
-                View members
-              </span>
-            </button>
+    <button>
+      <Users size={20} />
+      <span>
+        <strong>Customers</strong>
+        View members
+      </span>
+    </button>
 
-            <button>
-              <Store size={20} />
-              <span>
-                <strong>Business</strong>
-                Store information
-              </span>
-            </button>
+    <button>
+      <Store size={20} />
+      <span>
+        <strong>Business</strong>
+        Store information
+      </span>
+    </button>
 
-          </div>
+  </div>
 
-        </section>
-
+</section>
       </div>
 
     </div>
