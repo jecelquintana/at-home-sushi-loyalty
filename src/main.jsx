@@ -591,7 +591,6 @@ function Dashboard({
     if (!profile?.birthday) return;
 
     const today = new Date();
-    const birthday = new Date(profile.birthday);
 
     const birthdayToday =
       today.getMonth() === birthday.getMonth() &&
@@ -1206,7 +1205,7 @@ function Rewards({
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
 
-  const points = Number(profile.points || 0);
+  const points = Number(profile?points || 0);
 
   async function redeem() {
     if (!selected) return;
@@ -2279,7 +2278,7 @@ function AdminDashboard({
       title: 'Customize',
       items: [
         ['loyalty', 'Loyalty', Star],
-        ['homepage', 'Homepage', Home],
+       ['homepage', 'Homepage', HomeIcon],
         ['business', 'Business Info', Store],
         ['images', 'Images', ImageIcon]
       ]
