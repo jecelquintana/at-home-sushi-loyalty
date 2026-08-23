@@ -4269,3 +4269,119 @@ img {
   }
 
 }
+/* =====================================================
+   CUSTOMER MENU CATEGORIES — BUBBLE STYLE
+===================================================== */
+
+.admin-category-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  width: 100%;
+
+  overflow-x: auto;
+
+  padding: 5px 2px 9px;
+  margin-top: 12px;
+
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-category-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-category-pill {
+  appearance: none;
+  flex: 0 0 auto;
+
+  min-height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 16px;
+
+  border: 1px solid #2d2d2d !important;
+  border-radius: 999px !important;
+
+  background: #151515 !important;
+  color: #888 !important;
+
+  box-shadow: none !important;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: .2px;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+
+  transition:
+    background .2s ease,
+    border-color .2s ease,
+    color .2s ease,
+    transform .2s ease;
+}
+
+/* Hover */
+
+.admin-category-pill:hover {
+  background: #202020 !important;
+
+  border-color: #444 !important;
+
+  color: #eee !important;
+
+  transform: translateY(-1px);
+}
+
+/* Selected category */
+
+.admin-category-pill.active {
+  background: #eee !important;
+
+  border-color: #eee !important;
+
+  color: #111 !important;
+
+  box-shadow: none !important;
+}
+
+.admin-category-pill.active:hover {
+  background: #f5f3ee !important;
+
+  border-color: #f5f3ee !important;
+
+  color: #111 !important;
+
+  transform: translateY(-1px);
+}
+
+/* Mobile */
+
+@media (max-width: 560px) {
+
+  .admin-category-pills {
+    gap: 7px;
+
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .admin-category-pill {
+    min-height: 38px;
+
+    padding: 0 14px;
+
+    font-size: 10px;
+  }
+}
