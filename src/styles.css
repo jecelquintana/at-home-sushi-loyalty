@@ -3902,3 +3902,267 @@ img {
     animation: none !important;
   }
 }
+/* =====================================================
+   BUBBLE / PILL CONTROLS
+   Used for customer categories, store management
+   options, and similar filter labels
+===================================================== */
+
+.admin-category-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+
+  padding: 4px 2px 9px;
+  margin-top: 6px;
+
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-category-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-category-pill {
+  appearance: none;
+
+  flex: 0 0 auto;
+
+  min-height: 38px;
+
+  padding: 0 16px;
+
+  border: 1px solid #2c2c2c;
+  border-radius: 999px;
+
+  background: #141414;
+  color: #858585;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: .15px;
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  box-shadow: none;
+
+  transition:
+    background .18s ease,
+    border-color .18s ease,
+    color .18s ease,
+    transform .18s ease;
+}
+
+.admin-category-pill:hover {
+  background: #1c1c1c;
+  border-color: #414141;
+  color: #e5e2dc;
+
+  transform: translateY(-1px);
+}
+
+.admin-category-pill.active {
+  background: #eeeae3;
+  border-color: #eeeae3;
+
+  color: #111;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+}
+
+.admin-category-pill.active:hover {
+  background: #f5f2ec;
+  border-color: #f5f2ec;
+  color: #111;
+}
+
+
+/* =====================================================
+   CUSTOMER CATEGORY BUBBLES
+===================================================== */
+
+.category-pills,
+.customer-category-pills,
+.menu-categories,
+.category-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  overflow-x: auto;
+
+  padding: 4px 2px 9px;
+
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.category-pills::-webkit-scrollbar,
+.customer-category-pills::-webkit-scrollbar,
+.menu-categories::-webkit-scrollbar,
+.category-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* Catch the common button styles used inside them */
+
+.category-pills button,
+.customer-category-pills button,
+.menu-categories button,
+.category-tabs button {
+  flex: 0 0 auto;
+
+  min-height: 38px;
+
+  padding: 0 16px;
+
+  border: 1px solid #2c2c2c;
+  border-radius: 999px;
+
+  background: #141414;
+  color: #858585;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  box-shadow: none;
+
+  cursor: pointer;
+
+  transition:
+    background .18s ease,
+    border-color .18s ease,
+    color .18s ease,
+    transform .18s ease;
+}
+
+.category-pills button:hover,
+.customer-category-pills button:hover,
+.menu-categories button:hover,
+.category-tabs button:hover {
+  background: #1c1c1c;
+  border-color: #414141;
+  color: #eee;
+
+  transform: translateY(-1px);
+}
+
+
+/* Active category */
+
+.category-pills button.active,
+.customer-category-pills button.active,
+.menu-categories button.active,
+.category-tabs button.active,
+.category-pills button.selected,
+.customer-category-pills button.selected,
+.menu-categories button.selected,
+.category-tabs button.selected {
+  background: #eeeae3;
+  border-color: #eeeae3;
+
+  color: #111;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+}
+
+
+/* =====================================================
+   MANAGE YOUR STORE — BUBBLE OPTIONS
+===================================================== */
+
+.manage-store-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+
+  margin-top: 16px;
+}
+
+.manage-store-options button,
+.manage-store-options a {
+  min-height: 40px;
+
+  padding: 0 15px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  border: 1px solid #2d2d2d;
+  border-radius: 999px;
+
+  background: #141414;
+  color: #aaa;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background .18s ease,
+    border-color .18s ease,
+    color .18s ease,
+    transform .18s ease;
+}
+
+.manage-store-options button:hover,
+.manage-store-options a:hover {
+  background: #1c1c1c;
+  border-color: #414141;
+  color: #eee;
+
+  transform: translateY(-1px);
+}
+
+
+/* =====================================================
+   GENERAL "TAB" LOOK → BUBBLE LOOK
+===================================================== */
+
+.pill,
+.filter-pill,
+.tab-pill,
+.store-option,
+.manage-option {
+  border-radius: 999px !important;
+}
+
+
+/* Mobile */
+
+@media (max-width: 560px) {
+
+  .admin-category-pill,
+  .category-pills button,
+  .customer-category-pills button,
+  .menu-categories button,
+  .category-tabs button {
+    min-height: 35px;
+    padding: 0 14px;
+    font-size: 10px;
+  }
+
+  .manage-store-options {
+    gap: 7px;
+  }
+
+  .manage-store-options button,
+  .manage-store-options a {
+    min-height: 37px;
+    padding: 0 13px;
+    font-size: 10px;
+  }
+}
