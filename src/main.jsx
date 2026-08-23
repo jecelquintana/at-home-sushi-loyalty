@@ -53,7 +53,7 @@ import {
   Award,
   Sparkles,
   CakeSlice,
-  Home,
+  Home as HomeIcon,
   PanelLeftClose,
   PanelLeftOpen,
   RefreshCw
@@ -2373,14 +2373,14 @@ function AdminDashboard({
 
         <div className="admin-sidebar-bottom">
 
-          <button
-            onClick={() =>
-              window.open('/', '_blank')
-            }
-          >
-            <Home size={18} />
-            {sidebarOpen && <span>View website</span>}
-          </button>
+         <button
+  onClick={() =>
+    window.open('/', '_blank')
+  }
+>
+  <HomeIcon size={18} />
+  {sidebarOpen && <span>View website</span>}
+</button>
 
           <button onClick={onLogout}>
             <LogOut size={18} />
