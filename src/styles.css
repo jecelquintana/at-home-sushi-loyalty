@@ -4166,3 +4166,106 @@ img {
     font-size: 10px;
   }
 }
+/* =====================================================
+   QUICK ACTIONS — BUBBLE STYLE
+===================================================== */
+
+.quick-action-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* Each quick action becomes a pill/bubble */
+.quick-action-grid button {
+  appearance: none;
+  width: auto;
+  min-height: 48px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 8px 16px;
+
+  border: 1px solid #2d2d2d;
+  border-radius: 999px;
+
+  background: #151515;
+  color: #999;
+
+  box-shadow: none;
+
+  font-size: 11px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.quick-action-grid button svg {
+  flex: 0 0 auto;
+
+  color: #aaa;
+
+  stroke-width: 1.7;
+}
+
+.quick-action-grid button span {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  gap: 2px;
+
+  white-space: nowrap;
+
+  line-height: 1.2;
+}
+
+.quick-action-grid button strong {
+  color: #eee;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.quick-action-grid button:hover {
+  background: #202020;
+  border-color: #444;
+
+  color: #ccc;
+
+  transform: translateY(-1px);
+}
+
+.quick-action-grid button:hover svg {
+  color: #eee;
+}
+
+.quick-action-grid button:active {
+  transform: translateY(0);
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 560px) {
+
+  .quick-action-grid {
+    gap: 8px;
+  }
+
+  .quick-action-grid button {
+    min-height: 45px;
+    padding: 7px 13px;
+  }
+
+}
