@@ -1,3 +1,8 @@
+/* =========================================================
+   AT HOME SUSHI — COMPLETE APP STYLES
+   Clean / Premium / Restaurant Loyalty UI
+========================================================= */
+
 * {
   box-sizing: border-box;
 }
@@ -5,7 +10,7 @@
 html {
   margin: 0;
   padding: 0;
-  background: #0a0a0a;
+  background: #0b0b0b;
   scroll-behavior: smooth;
 }
 
@@ -15,8 +20,8 @@ body {
   min-width: 320px;
   min-height: 100vh;
 
-  background: #0a0a0a;
-  color: #f5f3ef;
+  background: #0b0b0b;
+  color: #f4f1eb;
 
   font-family:
     Inter,
@@ -26,11 +31,13 @@ body {
     sans-serif;
 
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -40,7 +47,8 @@ button {
 
 button:focus-visible,
 input:focus-visible,
-textarea:focus-visible {
+textarea:focus-visible,
+select:focus-visible {
   outline: 2px solid #d8d4cc;
   outline-offset: 2px;
 }
@@ -50,9 +58,13 @@ a {
   text-decoration: none;
 }
 
-/* =====================================================
+img {
+  max-width: 100%;
+}
+
+/* =========================================================
    LOADING
-===================================================== */
+========================================================= */
 
 .loading-screen {
   min-height: 100vh;
@@ -67,27 +79,27 @@ a {
 
   background:
     radial-gradient(
-      circle at 50% 20%,
-      rgba(255,255,255,.055),
-      transparent 34%
+      circle at 50% 15%,
+      rgba(255, 255, 255, 0.06),
+      transparent 35%
     ),
-    #0a0a0a;
+    #0b0b0b;
 
   text-align: center;
 }
 
 .loading-mark {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
 
   display: grid;
   place-items: center;
 
-  font-size: 25px;
-
   margin-bottom: 18px;
 
-  opacity: .9;
+  font-size: 25px;
+
+  opacity: 0.9;
 }
 
 .loading-brand {
@@ -96,23 +108,26 @@ a {
     "Times New Roman",
     serif;
 
+  color: #f5f1e9;
+
   font-size: 14px;
-  letter-spacing: 3px;
   font-weight: 600;
+
+  letter-spacing: 3px;
 }
 
 .loading-text {
   margin-top: 8px;
 
-  color: #777;
+  color: #707070;
 
-  font-size: 12px;
-  letter-spacing: .4px;
+  font-size: 11px;
+  letter-spacing: 0.4px;
 }
 
-/* =====================================================
+/* =========================================================
    AUTH PAGE
-===================================================== */
+========================================================= */
 
 .auth-page {
   width: 100%;
@@ -122,31 +137,31 @@ a {
   align-items: center;
   justify-content: center;
 
-  padding: 32px 18px;
+  padding: 40px 18px;
 
   background:
     radial-gradient(
       circle at 50% 0%,
-      rgba(255,255,255,.06),
+      rgba(255, 255, 255, 0.065),
       transparent 38%
     ),
-    #0a0a0a;
+    #0b0b0b;
 
   overflow-x: hidden;
 }
 
 .auth-shell {
   width: 100%;
-  max-width: 430px;
+  max-width: 420px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* =====================================================
-   BRAND
-===================================================== */
+/* =========================================================
+   AUTH BRAND
+========================================================= */
 
 .auth-brand {
   width: 100%;
@@ -157,15 +172,12 @@ a {
 
   text-align: center;
 
-  margin-bottom: 25px;
+  margin-bottom: 27px;
 }
 
 .auth-brand img {
-  width: 54px;
-  height: 54px;
-
-  max-width: 54px;
-  max-height: 54px;
+  width: 58px;
+  height: 58px;
 
   object-fit: contain;
 
@@ -173,15 +185,16 @@ a {
 
   border-radius: 50%;
 
-  margin: 0 0 13px;
+  margin-bottom: 14px;
 
-  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.4);
 }
 
 .auth-brand h1 {
   margin: 0;
 
-  color: #f8f6f1;
+  color: #f5f2eb;
 
   font-family:
     Georgia,
@@ -189,7 +202,7 @@ a {
     serif;
 
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 500;
 
   letter-spacing: 3.5px;
 
@@ -197,38 +210,38 @@ a {
 }
 
 .auth-brand span {
-  margin-top: 6px;
+  margin-top: 7px;
 
-  color: #8e8b84;
+  color: #74716b;
 
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
 
   letter-spacing: 3px;
 }
 
-/* =====================================================
+/* =========================================================
    AUTH CARD
-===================================================== */
+========================================================= */
 
 .auth-card {
   width: 100%;
 
-  padding: 26px;
+  padding: 27px;
 
-  background: rgba(18,18,18,.94);
+  background: #151515;
 
   border: 1px solid #292929;
 
-  border-radius: 22px;
+  border-radius: 20px;
 
   box-shadow:
-    0 24px 70px rgba(0,0,0,.42);
+    0 30px 80px rgba(0, 0, 0, 0.42);
 }
 
-/* =====================================================
+/* =========================================================
    AUTH TABS
-===================================================== */
+========================================================= */
 
 .auth-tabs {
   width: 100%;
@@ -240,11 +253,11 @@ a {
 
   padding: 4px;
 
-  margin-bottom: 25px;
+  margin-bottom: 27px;
 
-  background: #101010;
+  background: #0e0e0e;
 
-  border: 1px solid #272727;
+  border: 1px solid #292929;
 
   border-radius: 12px;
 }
@@ -263,43 +276,44 @@ a {
 
   background: transparent;
 
-  color: #777;
+  color: #707070;
 
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
 
   cursor: pointer;
 
   transition:
-    background .2s ease,
-    color .2s ease;
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .auth-tabs button.active {
-  background: #f1eee8;
-  color: #101010;
+  background: #eeeae2;
+
+  color: #111;
 }
 
-/* =====================================================
+/* =========================================================
    AUTH HEADING
-===================================================== */
+========================================================= */
 
 .auth-heading {
-  margin-bottom: 23px;
+  margin-bottom: 24px;
 }
 
 .auth-heading h2 {
   margin: 0;
 
-  color: #f6f4ef;
+  color: #f2efe8;
 
   font-family:
     Georgia,
     "Times New Roman",
     serif;
 
-  font-size: 25px;
-  font-weight: 500;
+  font-size: 26px;
+  font-weight: 400;
 
   line-height: 1.2;
 }
@@ -307,55 +321,59 @@ a {
 .auth-heading p {
   margin: 8px 0 0;
 
-  color: #818181;
+  color: #777;
 
-  font-size: 13px;
+  font-size: 12px;
+
   line-height: 1.6;
 }
 
-/* =====================================================
+/* =========================================================
    FORM
-===================================================== */
+========================================================= */
 
 .field {
   width: 100%;
+
   margin-bottom: 16px;
 }
 
 .field label {
   display: flex;
   align-items: center;
+
   gap: 5px;
 
   margin-bottom: 7px;
 
-  color: #b8b5ae;
+  color: #aaa69e;
 
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 
 .field input,
-.field textarea {
+.field textarea,
+.field select {
   width: 100%;
 
   border: 1px solid #303030;
 
   border-radius: 11px;
 
-  background: #111;
+  background: #101010;
 
-  color: #f5f3ef;
+  color: #f4f1eb;
 
   padding: 12px 13px;
 
-  font-size: 14px;
+  font-size: 13px;
 
   outline: none;
 
   transition:
-    border-color .2s ease,
-    background .2s ease;
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
 .field input {
@@ -364,6 +382,7 @@ a {
 
 .field textarea {
   min-height: 105px;
+
   resize: vertical;
 }
 
@@ -373,17 +392,20 @@ a {
 }
 
 .field input:focus,
-.field textarea:focus {
+.field textarea:focus,
+.field select:focus {
   border-color: #666;
+
   background: #141414;
 }
 
-/* =====================================================
+/* =========================================================
    PASSWORD
-===================================================== */
+========================================================= */
 
 .password-wrap {
   position: relative;
+
   width: 100%;
 }
 
@@ -422,9 +444,9 @@ a {
   color: #ddd;
 }
 
-/* =====================================================
-   REMEMBER
-===================================================== */
+/* =========================================================
+   REMEMBER ME
+========================================================= */
 
 .remember-row {
   width: 100%;
@@ -436,9 +458,9 @@ a {
 
   margin: 2px 0 18px;
 
-  color: #8a8a8a;
+  color: #858585;
 
-  font-size: 12px;
+  font-size: 11px;
 
   cursor: pointer;
 
@@ -451,14 +473,14 @@ a {
 
   margin: 0;
 
-  accent-color: #e9e6df;
+  accent-color: #eae7e0;
 
   cursor: pointer;
 }
 
-/* =====================================================
+/* =========================================================
    BUTTONS
-===================================================== */
+========================================================= */
 
 .primary-button {
   width: 100%;
@@ -473,28 +495,81 @@ a {
   border: 0;
   border-radius: 11px;
 
-  background: #f1eee8;
+  background: #eeeae2;
 
   color: #101010;
 
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 
   cursor: pointer;
 
   transition:
-    transform .15s ease,
-    opacity .15s ease;
+    transform 0.15s ease,
+    opacity 0.15s ease,
+    background 0.15s ease;
 }
 
 .primary-button:hover {
+  background: #f5f2eb;
+
   transform: translateY(-1px);
 }
 
 .primary-button:disabled {
-  opacity: .5;
+  opacity: 0.5;
+
   cursor: not-allowed;
+
   transform: none;
+}
+
+.secondary-button,
+.secondary-staff-button,
+.logout-button {
+  min-height: 44px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding: 0 16px;
+
+  border: 1px solid #303030;
+
+  border-radius: 11px;
+
+  background: #151515;
+
+  color: #ccc;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.secondary-button:hover,
+.secondary-staff-button:hover {
+  background: #1b1b1b;
+
+  border-color: #444;
+
+  color: #eee;
+}
+
+.secondary-button:disabled,
+.secondary-staff-button:disabled {
+  opacity: 0.5;
+
+  cursor: wait;
 }
 
 .auth-switch {
@@ -504,7 +579,7 @@ a {
 
   color: #777;
 
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .auth-switch button {
@@ -526,18 +601,18 @@ a {
 .auth-footer {
   margin-top: 22px;
 
-  color: #555;
+  color: #505050;
 
-  font-size: 10px;
+  font-size: 9px;
 
-  letter-spacing: .7px;
+  letter-spacing: 0.7px;
 
   text-align: center;
 }
 
-/* =====================================================
+/* =========================================================
    NOTICE
-===================================================== */
+========================================================= */
 
 .notice {
   width: 100%;
@@ -546,22 +621,22 @@ a {
 
   padding: 11px 12px;
 
-  border-radius: 10px;
-
   border: 1px solid #333;
+
+  border-radius: 10px;
 
   background: #151515;
 
-  color: #bbb;
+  color: #aaa;
 
-  font-size: 12px;
+  font-size: 11px;
 
   line-height: 1.5;
 }
 
-/* =====================================================
-   APP
-===================================================== */
+/* =========================================================
+   APP SHELL
+========================================================= */
 
 .app-shell,
 .staff-shell {
@@ -571,21 +646,20 @@ a {
   background:
     radial-gradient(
       circle at 50% -10%,
-      rgba(255,255,255,.045),
+      rgba(255, 255, 255, 0.045),
       transparent 30%
     ),
-    #0a0a0a;
+    #0b0b0b;
 
   overflow-x: hidden;
 }
 
-/* =====================================================
+/* =========================================================
    HEADER
-===================================================== */
+========================================================= */
 
 .app-header {
   width: 100%;
-
   height: 68px;
 
   display: flex;
@@ -594,7 +668,7 @@ a {
 
   padding: 0 20px;
 
-  background: rgba(10,10,10,.92);
+  background: rgba(11, 11, 11, 0.94);
 
   border-bottom: 1px solid #202020;
 
@@ -603,7 +677,8 @@ a {
 
   z-index: 50;
 
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .header-brand {
@@ -618,9 +693,6 @@ a {
 .header-brand img {
   width: 31px;
   height: 31px;
-
-  max-width: 31px;
-  max-height: 31px;
 
   object-fit: contain;
 
@@ -654,7 +726,7 @@ a {
 .header-brand span {
   margin-top: 2px;
 
-  color: #686868;
+  color: #626262;
 
   font-size: 7px;
 
@@ -671,6 +743,7 @@ a {
   place-items: center;
 
   border: 1px solid #2b2b2b;
+
   border-radius: 50%;
 
   background: #111;
@@ -678,11 +751,21 @@ a {
   color: #999;
 
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
-/* =====================================================
+.header-action:hover {
+  background: #181818;
+
+  color: #eee;
+}
+
+/* =========================================================
    MAIN
-===================================================== */
+========================================================= */
 
 .app-main {
   width: 100%;
@@ -690,12 +773,12 @@ a {
 
   margin: 0 auto;
 
-  padding-bottom: 100px;
+  padding-bottom: 105px;
 }
 
-/* =====================================================
+/* =========================================================
    BIRTHDAY
-===================================================== */
+========================================================= */
 
 .birthday-card {
   margin: 18px 18px 0;
@@ -708,6 +791,7 @@ a {
   padding: 14px;
 
   border: 1px solid #2b2b2b;
+
   border-radius: 14px;
 
   background: #111;
@@ -723,6 +807,7 @@ a {
   place-items: center;
 
   border: 1px solid #303030;
+
   border-radius: 50%;
 
   color: #ddd;
@@ -766,9 +851,9 @@ a {
   font-size: 11px;
 }
 
-/* =====================================================
+/* =========================================================
    HOME
-===================================================== */
+========================================================= */
 
 .home-page {
   width: 100%;
@@ -785,7 +870,7 @@ a {
   background:
     radial-gradient(
       circle at 50% 20%,
-      rgba(255,255,255,.065),
+      rgba(255, 255, 255, 0.065),
       transparent 38%
     );
 }
@@ -822,7 +907,7 @@ a {
 
   font-weight: 400;
 
-  line-height: .98;
+  line-height: 0.98;
 
   letter-spacing: -2px;
 }
@@ -887,9 +972,9 @@ a {
   color: #ccc;
 }
 
-/* =====================================================
+/* =========================================================
    HOME SECTIONS
-===================================================== */
+========================================================= */
 
 .home-section {
   padding: 70px 24px;
@@ -899,6 +984,7 @@ a {
 
 .home-section > * {
   max-width: 650px;
+
   margin-left: auto;
   margin-right: auto;
 }
@@ -929,7 +1015,7 @@ a {
 
   font-weight: 400;
 
-  letter-spacing: -.7px;
+  letter-spacing: -0.7px;
 }
 
 .section-description {
@@ -942,9 +1028,9 @@ a {
   line-height: 1.6;
 }
 
-/* =====================================================
+/* =========================================================
    POINTS
-===================================================== */
+========================================================= */
 
 .points-card {
   margin-top: 28px;
@@ -956,9 +1042,13 @@ a {
   justify-content: space-between;
 
   border: 1px solid #292929;
+
   border-radius: 18px;
 
   background: #111;
+
+  box-shadow:
+    0 15px 45px rgba(0, 0, 0, 0.16);
 }
 
 .points-card span {
@@ -985,6 +1075,7 @@ a {
     serif;
 
   font-size: 46px;
+
   font-weight: 400;
 
   line-height: 1;
@@ -1010,6 +1101,7 @@ a {
   place-items: center;
 
   border: 1px solid #333;
+
   border-radius: 50%;
 
   background: #181818;
@@ -1023,6 +1115,7 @@ a {
   margin-top: 28px;
 
   display: grid;
+
   grid-template-columns: repeat(3, 1fr);
 
   gap: 18px;
@@ -1030,6 +1123,7 @@ a {
 
 .earn-steps > div {
   display: flex;
+
   gap: 9px;
 }
 
@@ -1056,17 +1150,19 @@ a {
   color: #aaa;
 
   font-size: 9px;
+
   letter-spacing: 1.2px;
 }
 
-/* =====================================================
+/* =========================================================
    MENU
-===================================================== */
+========================================================= */
 
 .menu-card {
   margin-top: 28px;
 
   display: grid;
+
   grid-template-columns: 40px minmax(0, 1fr) 40px;
 
   align-items: center;
@@ -1082,6 +1178,7 @@ a {
   place-items: center;
 
   border: 1px solid #2b2b2b;
+
   border-radius: 50%;
 
   background: #111;
@@ -1089,7 +1186,9 @@ a {
   color: #ccc;
 
   font-family: Arial, sans-serif;
+
   font-size: 25px;
+
   line-height: 1;
 
   cursor: pointer;
@@ -1136,7 +1235,9 @@ a {
   display: none;
 
   flex-direction: column;
+
   align-items: center;
+
   justify-content: center;
 
   gap: 8px;
@@ -1150,6 +1251,7 @@ a {
 
 .photo-fallback small {
   font-size: 8px;
+
   letter-spacing: 2px;
 }
 
@@ -1226,12 +1328,14 @@ a {
   padding: 0 17px;
 
   display: inline-flex;
+
   align-items: center;
   justify-content: center;
 
   gap: 7px;
 
   border: 1px solid #3a3a3a;
+
   border-radius: 10px;
 
   background: #151515;
@@ -1244,9 +1348,9 @@ a {
   cursor: pointer;
 }
 
-/* =====================================================
-   REWARDS HOME
-===================================================== */
+/* =========================================================
+   HOME REWARDS
+========================================================= */
 
 .home-rewards {
   margin-top: 28px;
@@ -1261,6 +1365,7 @@ a {
   min-height: 84px;
 
   display: grid;
+
   grid-template-columns: 34px 1fr auto;
 
   align-items: center;
@@ -1302,9 +1407,9 @@ a {
   font-size: 11px;
 }
 
-/* =====================================================
-   ORDER MODAL
-===================================================== */
+/* =========================================================
+   MODAL
+========================================================= */
 
 .modal-overlay {
   position: fixed;
@@ -1314,12 +1419,14 @@ a {
   z-index: 100;
 
   display: flex;
+
   align-items: flex-end;
+
   justify-content: center;
 
   padding: 15px;
 
-  background: rgba(0,0,0,.72);
+  background: rgba(0, 0, 0, 0.72);
 
   backdrop-filter: blur(8px);
 }
@@ -1328,6 +1435,7 @@ a {
   position: relative;
 
   width: 100%;
+
   max-width: 440px;
 
   padding: 28px 22px 24px;
@@ -1338,7 +1446,8 @@ a {
 
   border-radius: 22px;
 
-  box-shadow: 0 -15px 60px rgba(0,0,0,.5);
+  box-shadow:
+    0 -15px 60px rgba(0, 0, 0, 0.5);
 }
 
 .modal-close {
@@ -1354,6 +1463,7 @@ a {
   place-items: center;
 
   border: 1px solid #303030;
+
   border-radius: 50%;
 
   background: #101010;
@@ -1394,6 +1504,7 @@ a {
   min-height: 66px;
 
   display: grid;
+
   grid-template-columns: 39px 1fr 18px;
 
   align-items: center;
@@ -1405,6 +1516,7 @@ a {
   margin-top: 9px;
 
   border: 1px solid #2b2b2b;
+
   border-radius: 13px;
 
   background: #111;
@@ -1418,6 +1530,7 @@ a {
   place-items: center;
 
   border: 1px solid #303030;
+
   border-radius: 50%;
 
   color: #ccc;
@@ -1441,9 +1554,9 @@ a {
   font-size: 10px;
 }
 
-/* =====================================================
+/* =========================================================
    PAGE CONTAINER
-===================================================== */
+========================================================= */
 
 .page-container {
   width: 100%;
@@ -1481,30 +1594,34 @@ a {
   font-size: 12px;
 }
 
-/* =====================================================
+/* =========================================================
    DIGITAL CARD
-===================================================== */
+========================================================= */
 
 .digital-card {
   padding: 22px;
 
   border: 1px solid #303030;
+
   border-radius: 20px;
 
   background:
     radial-gradient(
       circle at 100% 0%,
-      rgba(255,255,255,.055),
+      rgba(255, 255, 255, 0.055),
       transparent 35%
     ),
     #111;
 
-  box-shadow: 0 20px 55px rgba(0,0,0,.35);
+  box-shadow:
+    0 20px 55px rgba(0, 0, 0, 0.35);
 }
 
 .digital-top {
   display: flex;
+
   align-items: flex-start;
+
   justify-content: space-between;
 
   padding-bottom: 20px;
@@ -1558,6 +1675,7 @@ a {
 
 .digital-member {
   display: flex;
+
   flex-direction: column;
 }
 
@@ -1596,6 +1714,7 @@ a {
 
 .digital-balances {
   display: grid;
+
   grid-template-columns: 1fr 1fr;
 
   gap: 1px;
@@ -1603,6 +1722,7 @@ a {
   margin-top: 22px;
 
   border: 1px solid #282828;
+
   border-radius: 12px;
 
   overflow: hidden;
@@ -1650,12 +1770,13 @@ a {
   text-align: center;
 }
 
-/* =====================================================
+/* =========================================================
    REWARDS
-===================================================== */
+========================================================= */
 
 .reward-list {
   display: flex;
+
   flex-direction: column;
 
   gap: 9px;
@@ -1667,6 +1788,7 @@ a {
   min-height: 78px;
 
   display: grid;
+
   grid-template-columns: 40px 1fr 18px;
 
   align-items: center;
@@ -1676,6 +1798,7 @@ a {
   padding: 12px;
 
   border: 1px solid #292929;
+
   border-radius: 14px;
 
   background: #111;
@@ -1685,15 +1808,27 @@ a {
   text-align: left;
 
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.reward-card:hover {
+  background: #151515;
+
+  border-color: #3a3a3a;
 }
 
 .reward-card.selected {
   border-color: #777;
+
   background: #171717;
 }
 
 .reward-card.locked {
-  opacity: .42;
+  opacity: 0.42;
+
   cursor: not-allowed;
 }
 
@@ -1705,6 +1840,7 @@ a {
   place-items: center;
 
   border: 1px solid #303030;
+
   border-radius: 50%;
 
   color: #aaa;
@@ -1714,6 +1850,7 @@ a {
   min-width: 0;
 
   display: flex;
+
   flex-direction: column;
 }
 
@@ -1740,7 +1877,7 @@ a {
 
   font-size: 9px;
 
-  letter-spacing: .5px;
+  letter-spacing: 0.5px;
 }
 
 .redeem-box {
@@ -1749,6 +1886,7 @@ a {
   padding: 20px;
 
   border: 1px solid #303030;
+
   border-radius: 15px;
 
   background: #121212;
@@ -1783,6 +1921,7 @@ a {
   text-align: center;
 
   border: 1px solid #303030;
+
   border-radius: 20px;
 
   background: #111;
@@ -1823,6 +1962,7 @@ a {
   padding: 19px 10px;
 
   border: 1px dashed #454545;
+
   border-radius: 12px;
 
   background: #0c0c0c;
@@ -1830,6 +1970,7 @@ a {
   color: #eee;
 
   font-size: 28px;
+
   font-weight: 700;
 
   letter-spacing: 4px;
@@ -1849,12 +1990,13 @@ a {
   cursor: pointer;
 }
 
-/* =====================================================
+/* =========================================================
    HISTORY
-===================================================== */
+========================================================= */
 
 .history-list {
   display: flex;
+
   flex-direction: column;
 
   border-top: 1px solid #242424;
@@ -1864,7 +2006,9 @@ a {
   min-height: 72px;
 
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
 
   gap: 15px;
@@ -1876,6 +2020,7 @@ a {
   min-width: 0;
 
   display: flex;
+
   flex-direction: column;
 }
 
@@ -1905,6 +2050,7 @@ a {
   padding: 25px;
 
   border: 1px solid #282828;
+
   border-radius: 15px;
 
   background: #111;
@@ -1920,8 +2066,11 @@ a {
   min-height: 180px;
 
   display: flex;
+
   flex-direction: column;
+
   align-items: center;
+
   justify-content: center;
 
   gap: 8px;
@@ -1937,17 +2086,17 @@ a {
   color: #666;
 }
 
-/* =====================================================
-   STAFF
-===================================================== */
+/* =========================================================
+   STAFF / ADMIN
+========================================================= */
 
 .staff-main {
   width: 100%;
-  max-width: 650px;
+  max-width: 760px;
 
   margin: 0 auto;
 
-  padding: 45px 22px 50px;
+  padding: 42px 22px 70px;
 }
 
 .staff-heading {
@@ -1958,9 +2107,12 @@ a {
   color: #666;
 
   font-size: 9px;
+
   font-weight: 700;
 
   letter-spacing: 2px;
+
+  text-transform: uppercase;
 }
 
 .staff-heading h1 {
@@ -1973,26 +2125,40 @@ a {
     "Times New Roman",
     serif;
 
-  font-size: 34px;
+  font-size: 38px;
 
   font-weight: 400;
+
+  letter-spacing: -0.7px;
 }
 
 .staff-heading p {
+  max-width: 500px;
+
   margin: 7px 0 0;
 
   color: #777;
 
   font-size: 12px;
+
+  line-height: 1.6;
 }
+
+/* =========================================================
+   ADMIN DASHBOARD CARDS
+========================================================= */
 
 .staff-card {
   padding: 20px;
 
-  border: 1px solid #2a2a2a;
+  border: 1px solid #292929;
+
   border-radius: 17px;
 
   background: #111;
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.12);
 }
 
 .staff-card + .staff-card {
@@ -2024,6 +2190,7 @@ a {
 
 .staff-balances {
   display: grid;
+
   grid-template-columns: 1fr 1fr;
 
   gap: 8px;
@@ -2035,6 +2202,7 @@ a {
   padding: 14px;
 
   border: 1px solid #292929;
+
   border-radius: 12px;
 
   background: #0d0d0d;
@@ -2068,6 +2236,7 @@ a {
 
 .birthday-line {
   display: flex;
+
   align-items: center;
 
   gap: 5px;
@@ -2095,46 +2264,275 @@ a {
 
 .secondary-staff-button {
   width: 100%;
-
-  min-height: 44px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  gap: 7px;
-
-  margin-top: 9px;
-
-  border: 1px solid #303030;
-  border-radius: 11px;
-
-  background: #151515;
-
-  color: #bbb;
-
-  font-size: 11px;
-  font-weight: 600;
-
-  cursor: pointer;
-}
-
-.secondary-staff-button:disabled {
-  opacity: .5;
 }
 
 .staff-notice {
   margin-top: 12px;
 }
 
-/* =====================================================
+/* =========================================================
+   ADMIN CATEGORY FILTER
+========================================================= */
+
+.admin-category-pills {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  overflow-x: auto;
+
+  padding: 4px 2px 10px;
+
+  margin-top: 4px;
+
+  scrollbar-width: none;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-category-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-category-pill {
+  appearance: none;
+
+  flex: 0 0 auto;
+
+  min-height: 37px;
+
+  padding: 0 15px;
+
+  border: 1px solid #2d2d2d;
+
+  border-radius: 999px;
+
+  background: #111;
+
+  color: #777;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.admin-category-pill:hover {
+  background: #181818;
+
+  color: #ddd;
+
+  border-color: #444;
+
+  transform: translateY(-1px);
+}
+
+.admin-category-pill.active {
+  background: #eeeae2;
+
+  color: #111;
+
+  border-color: #eeeae2;
+
+  box-shadow:
+    0 5px 16px rgba(0, 0, 0, 0.18);
+}
+
+.admin-category-pill.active:hover {
+  background: #f5f2eb;
+
+  color: #111;
+
+  border-color: #f5f2eb;
+}
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+.settings-page {
+  scroll-behavior: smooth;
+}
+
+.settings-card {
+  margin-top: 16px;
+
+  padding: 20px;
+
+  border: 1px solid #2b2b2b;
+
+  border-radius: 18px;
+
+  background: #111;
+}
+
+.settings-card-heading {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 20px;
+}
+
+.settings-icon {
+  width: 38px;
+  height: 38px;
+
+  flex: 0 0 38px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #303030;
+
+  border-radius: 50%;
+
+  color: #d8d4cc;
+}
+
+.settings-card-heading h2,
+.settings-legal h2 {
+  margin: 0;
+
+  color: #eee;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 20px;
+
+  font-weight: 400;
+}
+
+.settings-card-heading p,
+.settings-legal p {
+  margin: 4px 0 0;
+
+  color: #777;
+
+  font-size: 11px;
+
+  line-height: 1.6;
+}
+
+.settings-links {
+  padding: 0;
+
+  overflow: hidden;
+}
+
+.settings-links a {
+  min-height: 66px;
+
+  display: grid;
+
+  grid-template-columns: 20px minmax(0, 1fr) 18px;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 13px 16px;
+
+  border-bottom: 1px solid #292929;
+
+  color: #aaa;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.settings-links a:hover {
+  background: #161616;
+
+  color: #eee;
+}
+
+.settings-links a:last-child {
+  border-bottom: 0;
+}
+
+.settings-links a > span {
+  min-width: 0;
+}
+
+.settings-links strong,
+.settings-links small {
+  display: block;
+}
+
+.settings-links strong {
+  color: #ddd;
+
+  font-size: 12px;
+}
+
+.settings-links small {
+  margin-top: 3px;
+
+  color: #6d6d6d;
+
+  font-size: 10px;
+}
+
+.settings-legal > div {
+  padding: 4px 0 20px;
+
+  margin-bottom: 20px;
+
+  border-bottom: 1px solid #292929;
+}
+
+.settings-legal > div:last-child {
+  padding-bottom: 0;
+
+  margin-bottom: 0;
+
+  border-bottom: 0;
+}
+
+.logout-button {
+  width: 100%;
+
+  margin-top: 16px;
+
+  border-color: #4a3030;
+
+  color: #e2b5b5;
+}
+
+.logout-button:hover {
+  background: #211515;
+
+  border-color: #634040;
+}
+
+/* =========================================================
    BOTTOM NAV
-===================================================== */
+========================================================= */
 
 .bottom-nav {
   position: fixed;
 
   left: 50%;
+
   bottom: 12px;
 
   transform: translateX(-50%);
@@ -2149,18 +2547,22 @@ a {
   height: 65px;
 
   display: grid;
+
   grid-template-columns: repeat(5, 1fr);
 
   padding: 5px;
 
   border: 1px solid #292929;
+
   border-radius: 18px;
 
-  background: rgba(16,16,16,.94);
+  background: rgba(16, 16, 16, 0.95);
 
-  box-shadow: 0 15px 45px rgba(0,0,0,.45);
+  box-shadow:
+    0 15px 45px rgba(0, 0, 0, 0.45);
 
   backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .bottom-nav button {
@@ -2169,8 +2571,11 @@ a {
   border-radius: 13px;
 
   display: flex;
+
   flex-direction: column;
+
   align-items: center;
+
   justify-content: center;
 
   gap: 3px;
@@ -2182,6 +2587,14 @@ a {
   font-size: 9px;
 
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.bottom-nav button:hover {
+  color: #aaa;
 }
 
 .bottom-nav button.selected {
@@ -2194,9 +2607,9 @@ a {
   stroke-width: 1.7;
 }
 
-/* =====================================================
+/* =========================================================
    MOBILE
-===================================================== */
+========================================================= */
 
 @media (max-width: 560px) {
 
@@ -2211,15 +2624,13 @@ a {
   }
 
   .auth-brand img {
-    width: 48px;
-    height: 48px;
-
-    max-width: 48px;
-    max-height: 48px;
+    width: 50px;
+    height: 50px;
   }
 
   .auth-brand h1 {
     font-size: 20px;
+
     letter-spacing: 3px;
   }
 
@@ -2239,6 +2650,7 @@ a {
 
   .hero-buttons {
     flex-direction: column;
+
     align-items: stretch;
   }
 
@@ -2256,6 +2668,7 @@ a {
 
   .earn-steps {
     grid-template-columns: 1fr;
+
     gap: 14px;
   }
 
@@ -2284,6 +2697,14 @@ a {
     padding: 35px 18px 35px;
   }
 
+  .staff-main {
+    padding: 35px 18px 70px;
+  }
+
+  .staff-heading h1 {
+    font-size: 33px;
+  }
+
   .digital-card {
     padding: 18px;
   }
@@ -2299,14 +2720,15 @@ a {
 
   .bottom-nav {
     bottom: 9px;
+
     width: calc(100% - 18px);
   }
 
 }
 
-/* =====================================================
+/* =========================================================
    SMALL PHONES
-===================================================== */
+========================================================= */
 
 @media (max-width: 360px) {
 
@@ -2324,6 +2746,7 @@ a {
 
   .home-section {
     padding-left: 16px;
+
     padding-right: 16px;
   }
 
@@ -2335,11 +2758,25 @@ a {
     font-size: 36px;
   }
 
+  .staff-main {
+    padding-left: 15px;
+
+    padding-right: 15px;
+  }
+
+  .admin-category-pill {
+    min-height: 35px;
+
+    padding: 0 13px;
+
+    font-size: 10px;
+  }
+
 }
 
-/* =====================================================
+/* =========================================================
    REDUCED MOTION
-===================================================== */
+========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
 
@@ -2351,221 +2788,8 @@ a {
   *::before,
   *::after {
     transition: none !important;
+
     animation: none !important;
   }
 
-}
-
-/* SETTINGS */
-
-.settings-page {
-  scroll-behavior: smooth;
-}
-
-.settings-card {
-  margin-top: 16px;
-  padding: 20px;
-  border: 1px solid #2b2b2b;
-  border-radius: 18px;
-  background: #111;
-}
-
-.settings-card-heading {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.settings-icon {
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
-  display: grid;
-  place-items: center;
-  border: 1px solid #303030;
-  border-radius: 50%;
-  color: #d8d4cc;
-}
-
-.settings-card-heading h2,
-.settings-legal h2 {
-  margin: 0;
-  color: #eee;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 20px;
-  font-weight: 400;
-}
-
-.settings-card-heading p,
-.settings-legal p {
-  margin: 4px 0 0;
-  color: #777;
-  font-size: 11px;
-  line-height: 1.6;
-}
-
-.secondary-button,
-.logout-button {
-  min-height: 43px;
-  padding: 0 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  border: 1px solid #3a3a3a;
-  border-radius: 10px;
-  background: #151515;
-  color: #eee;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.secondary-button:disabled {
-  opacity: 0.55;
-  cursor: wait;
-}
-
-.settings-links {
-  padding: 0;
-  overflow: hidden;
-}
-
-.settings-links a {
-  min-height: 66px;
-  display: grid;
-  grid-template-columns: 20px minmax(0, 1fr) 18px;
-  align-items: center;
-  gap: 12px;
-  padding: 13px 16px;
-  border-bottom: 1px solid #292929;
-  color: #aaa;
-}
-
-.settings-links a:last-child {
-  border-bottom: 0;
-}
-
-.settings-links a > span {
-  min-width: 0;
-}
-
-.settings-links strong,
-.settings-links small {
-  display: block;
-}
-
-.settings-links strong {
-  color: #ddd;
-  font-size: 12px;
-}
-
-.settings-links small {
-  margin-top: 3px;
-  color: #6d6d6d;
-  font-size: 10px;
-}
-
-.settings-legal > div {
-  padding: 4px 0 20px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #292929;
-}
-
-.settings-legal > div:last-child {
-  padding-bottom: 0;
-  margin-bottom: 0;
-  border-bottom: 0;
-}
-
-.logout-button {
-  width: 100%;
-  margin-top: 16px;
-  border-color: #4a3030;
-  color: #e2b5b5;
-}
-/* =====================================================
-   ADMIN CATEGORY PILLS
-===================================================== */
-
-.admin-category-pills {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  overflow-x: auto;
-
-  padding: 4px 2px 9px;
-  margin-top: 4px;
-
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-.admin-category-pills::-webkit-scrollbar {
-  display: none;
-}
-
-.admin-category-pill {
-  appearance: none;
-
-  flex: 0 0 auto;
-
-  border: 1px solid #2d2d2d;
-
-  background: #111;
-
-  color: #777;
-
-  padding: 9px 15px;
-
-  border-radius: 999px;
-
-  font-size: 11px;
-  font-weight: 600;
-
-  letter-spacing: 0.2px;
-
-  white-space: nowrap;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.15s ease;
-}
-
-.admin-category-pill:hover {
-  background: #181818;
-
-  color: #ddd;
-
-  border-color: #3b3b3b;
-
-  transform: translateY(-1px);
-}
-
-.admin-category-pill.active {
-  background: #eae7e0;
-
-  color: #111;
-
-  border-color: #eae7e0;
-
-  box-shadow:
-    0 5px 16px rgba(0, 0, 0, 0.18);
-}
-
-.admin-category-pill.active:hover {
-  background: #f1eee8;
-
-  color: #111;
-
-  border-color: #f1eee8;
-
-  transform: translateY(-1px);
 }
