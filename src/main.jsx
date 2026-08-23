@@ -770,7 +770,7 @@ function Home({
   rewards,
   onGoRewards
 }) {
-  const points = Number(profile.points || 0);
+  const points = Number(profile?.points || 0);
 
   const [menu, setMenu] = useState([]);
   const [menuLoading, setMenuLoading] = useState(true);
