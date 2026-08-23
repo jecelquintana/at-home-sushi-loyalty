@@ -2894,21 +2894,32 @@ function AdminMenu() {
           />
         </div>
 
-        <select
-          value={category}
-          onChange={e => setCategory(e.target.value)}
-        >
-          <option value="all">All categories</option>
-          <option value="appetizers">Appetizers</option>
-          <option value="classic">Classic Rolls</option>
-          <option value="specialty">Specialty Rolls</option>
-          <option value="signature">Signature Rolls</option>
-          <option value="veggie">Veggie</option>
-          <option value="nigiri">Nigiri</option>
-          <option value="sashimi">Sashimi</option>
-          <option value="platters">Platters</option>
-        </select>
+        <div className="admin-category-pills">
 
+  {[
+    ['all', 'All'],
+    ['appetizers', 'Appetizers'],
+    ['classic', 'Classic'],
+    ['specialty', 'Specialty'],
+    ['signature', 'Signature'],
+    ['veggie', 'Veggie'],
+    ['nigiri', 'Nigiri'],
+    ['sashimi', 'Sashimi'],
+    ['platters', 'Platters']
+  ].map(([value, label]) => (
+    <button
+      key={value}
+      type="button"
+      className={`admin-category-pill ${
+        category === value ? 'active' : ''
+      }`}
+      onClick={() => setCategory(value)}
+    >
+      {label}
+    </button>
+  ))}
+
+</div>
       </div>
 
       <div className="admin-table-card">
