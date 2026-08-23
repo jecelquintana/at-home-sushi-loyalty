@@ -22,7 +22,7 @@ import {
   CheckCircle,
   Copy,
   X,
-    ShoppingBag,
+  ShoppingBag,
   MessageCircle,
   Settings as SettingsIcon,
   User,
@@ -136,10 +136,6 @@ function App() {
     };
   }, []);
 
-  /* =====================================================
-     LOAD OR CREATE CUSTOMER PROFILE
-  ===================================================== */
-
   async function loadProfile(user) {
     if (!user?.id) {
       setProfile(null);
@@ -160,20 +156,11 @@ function App() {
       return;
     }
 
-    /* ===================================================
-       PROFILE ALREADY EXISTS
-    =================================================== */
-
     if (data) {
       setProfile(data);
       setLoading(false);
       return;
     }
-
-    /* ===================================================
-       PROFILE DOES NOT EXIST
-       CREATE IT NOW
-    =================================================== */
 
     const metadata = user.user_metadata || {};
 
@@ -238,9 +225,7 @@ function App() {
     <Dashboard
       session={session}
       profile={profile}
-      reloadProfile={() =>
-        loadProfile(session.user)
-      }
+      reloadProfile={() => loadProfile(session.user)}
     />
   );
 }
@@ -250,12 +235,6 @@ function App() {
 ===================================================== */
 
 function Auth({ mode, setMode }) {
-  function Settings({
-  session,
-  profile,
-  reloadProfile,
-  onLogout
-}) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -295,11 +274,10 @@ function Auth({ mode, setMode }) {
         localStorage.removeItem('savedLoginEmail');
       }
 
-      const { error } =
-        await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password
-        });
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password
+      });
 
       if (error) {
         setMsg(error.message);
@@ -319,18 +297,17 @@ function Auth({ mode, setMode }) {
       return;
     }
 
-    const { data, error } =
-      await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: {
-          data: {
-            full_name: name.trim(),
-            phone: phone.trim() || null,
-            birthday: birthday || null
-          }
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: {
+        data: {
+          full_name: name.trim(),
+          phone: phone.trim() || null,
+          birthday: birthday || null
         }
-      });
+      }
+    });
 
     if (error) {
       console.error('Signup error:', error);
@@ -340,16 +317,13 @@ function Auth({ mode, setMode }) {
     }
 
     /* ===================================================
-       IF SUPABASE RETURNS A SESSION
-       CREATE PROFILE IMMEDIATELY
+       CREATE PROFILE IF SESSION EXISTS
     =================================================== */
 
     if (data?.session && data?.user) {
       const user = data.user;
 
-      const {
-        error: profileError
-      } = await supabase
+      const { error: profileError } = await supabase
         .from('customers')
         .insert({
           id: user.id,
@@ -369,10 +343,6 @@ function Auth({ mode, setMode }) {
       }
     }
 
-    /* ===================================================
-       SUCCESS
-    =================================================== */
-
     setName('');
     setPhone('');
     setBirthday('');
@@ -391,7 +361,6 @@ function Auth({ mode, setMode }) {
       <div className="auth-shell">
 
         <div className="auth-brand">
-
           <img
             src={logo}
             alt="At Home Sushi"
@@ -399,7 +368,6 @@ function Auth({ mode, setMode }) {
 
           <h1>AT HOME SUSHI</h1>
           <span>LOYALTY CLUB</span>
-
         </div>
 
         <div className="auth-card">
@@ -408,11 +376,7 @@ function Auth({ mode, setMode }) {
 
             <button
               type="button"
-              className={
-                mode === 'login'
-                  ? 'active'
-                  : ''
-              }
+              className={mode === 'login' ? 'active' : ''}
               onClick={() => {
                 setMode('login');
                 setMsg('');
@@ -424,11 +388,7 @@ function Auth({ mode, setMode }) {
 
             <button
               type="button"
-              className={
-                mode === 'signup'
-                  ? 'active'
-                  : ''
-              }
+              className={mode === 'signup' ? 'active' : ''}
               onClick={() => {
                 setMode('signup');
                 setMsg('');
@@ -500,7 +460,6 @@ function Auth({ mode, setMode }) {
             )}
 
             <div className="field">
-
               <label>Email</label>
 
               <input
@@ -512,7 +471,6 @@ function Auth({ mode, setMode }) {
                 placeholder="you@email.com"
                 required
               />
-
             </div>
 
             <PasswordField
@@ -534,9 +492,7 @@ function Auth({ mode, setMode }) {
                   }
                 />
 
-                <span>
-                  Remember me
-                </span>
+                <span>Remember me</span>
 
               </label>
             )}
@@ -563,7 +519,6 @@ function Auth({ mode, setMode }) {
 
           {mode === 'login' && (
             <div className="auth-switch">
-
               New here?
 
               <button
@@ -575,13 +530,11 @@ function Auth({ mode, setMode }) {
               >
                 Join the club
               </button>
-
             </div>
           )}
 
           {mode === 'signup' && (
             <div className="auth-switch">
-
               Already a member?
 
               <button
@@ -593,7 +546,6 @@ function Auth({ mode, setMode }) {
               >
                 Log in
               </button>
-
             </div>
           )}
 
@@ -687,26 +639,24 @@ function Dashboard({
 
     const year = today.getFullYear();
 
-    const { data: claimed } =
-      await supabase
-        .from('birthday_claims')
-        .select('id')
-        .eq('customer_id', profile.id)
-        .eq('birthday_year', year)
-        .maybeSingle();
+    const { data: claimed } = await supabase
+      .from('birthday_claims')
+      .select('id')
+      .eq('customer_id', profile.id)
+      .eq('birthday_year', year)
+      .maybeSingle();
 
     if (claimed) return;
 
-    const { data: reward } =
-      await supabase
-        .from('birthday_rewards')
-        .select('*')
-        .eq('active', true)
-        .order('id', {
-          ascending: true
-        })
-        .limit(1)
-        .maybeSingle();
+    const { data: reward } = await supabase
+      .from('birthday_rewards')
+      .select('*')
+      .eq('active', true)
+      .order('id', {
+        ascending: true
+      })
+      .limit(1)
+      .maybeSingle();
 
     if (reward) {
       setBirthdayReward(reward);
@@ -772,9 +722,7 @@ function Dashboard({
             </div>
 
             <div>
-              <span>
-                YOUR BIRTHDAY REWARD
-              </span>
+              <span>YOUR BIRTHDAY REWARD</span>
 
               <strong>
                 {birthdayReward.name}
@@ -817,94 +765,65 @@ function Dashboard({
             transactions={transactions}
           />
         )}
+
         {tab === 'settings' && (
-  <Settings
-    session={session}
-    profile={profile}
-    reloadProfile={reloadProfile}
-    onLogout={logout}
-  />
-)}
+          <Settings
+            session={session}
+            profile={profile}
+            reloadProfile={reloadProfile}
+            onLogout={logout}
+          />
+        )}
 
       </main>
 
       <nav className="bottom-nav">
 
         <button
-          className={
-            tab === 'home'
-              ? 'selected'
-              : ''
-          }
-          onClick={() =>
-            setTab('home')
-          }
+          className={tab === 'home' ? 'selected' : ''}
+          onClick={() => setTab('home')}
         >
           <Star size={20} />
           <span>Home</span>
         </button>
 
         <button
-          className={
-            tab === 'card'
-              ? 'selected'
-              : ''
-          }
-          onClick={() =>
-            setTab('card')
-          }
+          className={tab === 'card' ? 'selected' : ''}
+          onClick={() => setTab('card')}
         >
           <QrCode size={20} />
           <span>My Card</span>
         </button>
 
         <button
-          className={
-            tab === 'rewards'
-              ? 'selected'
-              : ''
-          }
-          onClick={() =>
-            setTab('rewards')
-          }
+          className={tab === 'rewards' ? 'selected' : ''}
+          onClick={() => setTab('rewards')}
         >
           <Gift size={20} />
           <span>Rewards</span>
         </button>
 
         <button
-          className={
-            tab === 'history'
-              ? 'selected'
-              : ''
-          }
-          onClick={() =>
-            setTab('history')
-          }
+          className={tab === 'history' ? 'selected' : ''}
+          onClick={() => setTab('history')}
         >
           <History size={20} />
           <span>History</span>
         </button>
-<button
-  className={tab === 'settings' ? 'selected' : ''}
-  onClick={() => setTab('settings')}
->
-  <SettingsIcon size={20} />
-  <span>Settings</span>
-</button>
+
+        <button
+          className={tab === 'settings' ? 'selected' : ''}
+          onClick={() => setTab('settings')}
+        >
+          <SettingsIcon size={20} />
+          <span>Settings</span>
+        </button>
+
       </nav>
 
     </div>
   );
 }
-{tab === 'settings' && (
-  <Settings
-    session={session}
-    profile={profile}
-    reloadProfile={reloadProfile}
-    onLogout={logout}
-  />
-)}
 
 /* =====================================================
    HOME
@@ -919,15 +838,9 @@ function Home({
 
   const [menu, setMenu] = useState([]);
   const [menuLoading, setMenuLoading] = useState(true);
-
-  const [activeCategory, setActiveCategory] =
-    useState('all');
-
-  const [orderOpen, setOrderOpen] =
-    useState(false);
-
-  const [selectedMenuItem, setSelectedMenuItem] =
-    useState(null);
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [orderOpen, setOrderOpen] = useState(false);
+  const [selectedMenuItem, setSelectedMenuItem] = useState(null);
 
   useEffect(() => {
     loadMenu();
@@ -1062,7 +975,6 @@ function Home({
         <div className="points-card">
 
           <div>
-
             <span>POINT BALANCE</span>
 
             <strong>
@@ -1070,7 +982,6 @@ function Home({
             </strong>
 
             <small>SUSHI POINTS</small>
-
           </div>
 
           <button
@@ -1205,8 +1116,7 @@ function Home({
                         src={item.image_url}
                         alt={item.name}
                         onError={(e) => {
-                          e.currentTarget.style.display =
-                            'none';
+                          e.currentTarget.style.display = 'none';
 
                           e.currentTarget.parentElement.classList.add(
                             'missing'
@@ -1216,6 +1126,7 @@ function Home({
                     ) : (
                       <div className="photo-fallback">
                         <span>🍣</span>
+
                         <small>
                           AT HOME SUSHI
                         </small>
@@ -1325,98 +1236,91 @@ function Home({
 
       </section>
 
-      {orderOpen &&
-        selectedMenuItem && (
+      {orderOpen && selectedMenuItem && (
+        <div
+          className="modal-overlay"
+          onClick={() => setOrderOpen(false)}
+        >
+
           <div
-            className="modal-overlay"
-            onClick={() =>
-              setOrderOpen(false)
-            }
+            className="order-modal"
+            onClick={(e) => e.stopPropagation()}
           >
 
-            <div
-              className="order-modal"
-              onClick={(e) =>
-                e.stopPropagation()
-              }
+            <button
+              className="modal-close"
+              onClick={() => setOrderOpen(false)}
+              aria-label="Close"
             >
+              <X size={19} />
+            </button>
 
-              <button
-                className="modal-close"
-                onClick={() =>
-                  setOrderOpen(false)
-                }
-                aria-label="Close"
-              >
-                <X size={19} />
-              </button>
-
-              <div className="section-label">
-                {selectedMenuItem.name}
-              </div>
-
-              <h2>
-                How would you like to order?
-              </h2>
-
-              <p>
-                Choose your preferred way to order.
-              </p>
-
-              <a
-                className="order-choice"
-                href="https://www.ordermo.ph/restaurants/at-home-sushi/M8y6MG8S?n=QXQgSG9tZSBTdXNoaQ==&p=cG5n&c=anBn"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-
-                <span className="choice-icon">
-                  <ShoppingBag size={19} />
-                </span>
-
-                <span>
-                  <strong>
-                    Order Online
-                  </strong>
-
-                  <small>
-                    OrderMo
-                  </small>
-                </span>
-
-                <ChevronRight size={18} />
-
-              </a>
-
-              <a
-                className="order-choice"
-                href="https://www.facebook.com/athomesushibustos"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-
-                <span className="choice-icon">
-                  <MessageCircle size={19} />
-                </span>
-
-                <span>
-                  <strong>
-                    Order via Facebook
-                  </strong>
-
-                  <small>
-                    Message At Home Sushi
-                  </small>
-                </span>
-
-                <ChevronRight size={18} />
-
-              </a>
-
+            <div className="section-label">
+              {selectedMenuItem.name}
             </div>
 
+            <h2>
+              How would you like to order?
+            </h2>
+
+            <p>
+              Choose your preferred way to order.
+            </p>
+
+            <a
+              className="order-choice"
+              href="https://www.ordermo.ph/restaurants/at-home-sushi/M8y6MG8S?n=QXQgSG9tZSBTdXNoaQ==&p=cG5n&c=anBn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+
+              <span className="choice-icon">
+                <ShoppingBag size={19} />
+              </span>
+
+              <span>
+                <strong>
+                  Order Online
+                </strong>
+
+                <small>
+                  OrderMo
+                </small>
+              </span>
+
+              <ChevronRight size={18} />
+
+            </a>
+
+            <a
+              className="order-choice"
+              href="https://www.facebook.com/athomesushibustos"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+
+              <span className="choice-icon">
+                <MessageCircle size={19} />
+              </span>
+
+              <span>
+                <strong>
+                  Order via Facebook
+                </strong>
+
+                <small>
+                  Message At Home Sushi
+                </small>
+              </span>
+
+              <ChevronRight size={18} />
+
+            </a>
+
           </div>
-        )}
+
+        </div>
+      )}
 
     </div>
   );
@@ -1523,21 +1427,12 @@ function Rewards({
   rewards,
   onRefresh
 }) {
-  const [selected, setSelected] =
-    useState(null);
+  const [selected, setSelected] = useState(null);
+  const [code, setCode] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState('');
 
-  const [code, setCode] =
-    useState('');
-
-  const [busy, setBusy] =
-    useState(false);
-
-  const [msg, setMsg] =
-    useState('');
-
-  const points = Number(
-    profile.points || 0
-  );
+  const points = Number(profile.points || 0);
 
   async function redeem() {
     if (!selected) return;
@@ -1585,19 +1480,13 @@ function Rewards({
       return;
     }
 
-    setCode(
-      data.redemption_code
-    );
-
+    setCode(data.redemption_code);
     setBusy(false);
   }
 
   async function copyCode() {
     try {
-      await navigator.clipboard.writeText(
-        code
-      );
-
+      await navigator.clipboard.writeText(code);
       setMsg('Code copied!');
     } catch {
       setMsg(
@@ -1685,10 +1574,9 @@ function Rewards({
 
         {rewards.map((reward) => {
 
-          const required =
-            Number(
-              reward.points_required
-            );
+          const required = Number(
+            reward.points_required
+          );
 
           const available =
             points >= required;
@@ -1701,13 +1589,9 @@ function Rewards({
               type="button"
               key={reward.id}
               className={`reward-card ${
-                isSelected
-                  ? 'selected'
-                  : ''
+                isSelected ? 'selected' : ''
               } ${
-                !available
-                  ? 'locked'
-                  : ''
+                !available ? 'locked' : ''
               }`}
               disabled={!available}
               onClick={() =>
@@ -1805,9 +1689,7 @@ function Rewards({
    HISTORY
 ===================================================== */
 
-function HistoryTab({
-  transactions
-}) {
+function HistoryTab({ transactions }) {
   return (
     <div className="page-container">
 
@@ -1875,7 +1757,7 @@ function HistoryTab({
 }
 
 /* =====================================================
-   STAFF
+   SETTINGS
 ===================================================== */
 
 function Settings({
@@ -1884,15 +1766,35 @@ function Settings({
   reloadProfile,
   onLogout
 }) {
-  const [name, setName] = useState(profile.full_name || '');
-  const [phone, setPhone] = useState(profile.phone || '');
-  const [birthday, setBirthday] = useState(profile.birthday || '');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [profileBusy, setProfileBusy] = useState(false);
-  const [passwordBusy, setPasswordBusy] = useState(false);
-  const [profileMessage, setProfileMessage] = useState('');
-  const [passwordMessage, setPasswordMessage] = useState('');
+  const [name, setName] = useState(
+    profile.full_name || ''
+  );
+
+  const [phone, setPhone] = useState(
+    profile.phone || ''
+  );
+
+  const [birthday, setBirthday] = useState(
+    profile.birthday || ''
+  );
+
+  const [newPassword, setNewPassword] =
+    useState('');
+
+  const [confirmPassword, setConfirmPassword] =
+    useState('');
+
+  const [profileBusy, setProfileBusy] =
+    useState(false);
+
+  const [passwordBusy, setPasswordBusy] =
+    useState(false);
+
+  const [profileMessage, setProfileMessage] =
+    useState('');
+
+  const [passwordMessage, setPasswordMessage] =
+    useState('');
 
   useEffect(() => {
     setName(profile.full_name || '');
@@ -1904,7 +1806,9 @@ function Settings({
     e.preventDefault();
 
     if (!name.trim()) {
-      setProfileMessage('Please enter your full name.');
+      setProfileMessage(
+        'Please enter your full name.'
+      );
       return;
     }
 
@@ -1928,10 +1832,24 @@ function Settings({
       return;
     }
 
-    await supabase.auth.updateUser({ data: updates });
+    const { error: authError } =
+      await supabase.auth.updateUser({
+        data: updates
+      });
+
+    if (authError) {
+      console.error(
+        'Auth profile update error:',
+        authError
+      );
+    }
+
     await reloadProfile();
 
-    setProfileMessage('Your profile has been updated.');
+    setProfileMessage(
+      'Your profile has been updated.'
+    );
+
     setProfileBusy(false);
   }
 
@@ -1946,23 +1864,29 @@ function Settings({
     }
 
     if (newPassword !== confirmPassword) {
-      setPasswordMessage('Your new passwords do not match.');
+      setPasswordMessage(
+        'Your new passwords do not match.'
+      );
       return;
     }
 
     setPasswordBusy(true);
     setPasswordMessage('');
 
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword
-    });
+    const { error } =
+      await supabase.auth.updateUser({
+        password: newPassword
+      });
 
     if (error) {
       setPasswordMessage(error.message);
     } else {
       setNewPassword('');
       setConfirmPassword('');
-      setPasswordMessage('Your password has been changed.');
+
+      setPasswordMessage(
+        'Your password has been changed.'
+      );
     }
 
     setPasswordBusy(false);
@@ -1970,54 +1894,95 @@ function Settings({
 
   return (
     <div className="page-container settings-page">
+
       <div className="page-heading">
-        <span className="section-label">YOUR ACCOUNT</span>
+
+        <span className="section-label">
+          YOUR ACCOUNT
+        </span>
+
         <h1>Settings</h1>
-        <p>Manage your loyalty club account.</p>
+
+        <p>
+          Manage your loyalty club account.
+        </p>
+
       </div>
 
       <section className="settings-card">
+
         <div className="settings-card-heading">
+
           <span className="settings-icon">
             <User size={18} />
           </span>
 
           <div>
-            <h2>Profile information</h2>
-            <p>Keep your details up to date.</p>
+            <h2>
+              Profile information
+            </h2>
+
+            <p>
+              Keep your details up to date.
+            </p>
           </div>
+
         </div>
 
         <form onSubmit={saveProfile}>
+
           <div className="field">
-            <label>Full name</label>
+
+            <label>
+              Full name
+            </label>
+
             <input
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) =>
+                setName(e.target.value)
+              }
               required
             />
+
           </div>
 
           <div className="field">
-            <label>Phone number</label>
+
+            <label>
+              Phone number
+            </label>
+
             <input
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) =>
+                setPhone(e.target.value)
+              }
               placeholder="09xxxxxxxxx"
             />
+
           </div>
 
           <div className="field">
-            <label>Birthday</label>
+
+            <label>
+              Birthday
+            </label>
+
             <input
               type="date"
               value={birthday}
-              onChange={(e) => setBirthday(e.target.value)}
+              onChange={(e) =>
+                setBirthday(e.target.value)
+              }
             />
+
           </div>
 
           {profileMessage && (
-            <div className="notice">{profileMessage}</div>
+            <div className="notice">
+              {profileMessage}
+            </div>
           )}
 
           <button
@@ -2026,50 +1991,80 @@ function Settings({
             disabled={profileBusy}
           >
             <Save size={16} />
-            {profileBusy ? 'Saving...' : 'Save changes'}
+
+            {profileBusy
+              ? 'Saving...'
+              : 'Save changes'}
           </button>
+
         </form>
+
       </section>
 
       <section className="settings-card">
+
         <div className="settings-card-heading">
+
           <span className="settings-icon">
             <Lock size={18} />
           </span>
 
           <div>
-            <h2>Change password</h2>
-            <p>Use at least 8 characters.</p>
+            <h2>
+              Change password
+            </h2>
+
+            <p>
+              Use at least 8 characters.
+            </p>
           </div>
+
         </div>
 
         <form onSubmit={changePassword}>
+
           <div className="field">
-            <label>New password</label>
+
+            <label>
+              New password
+            </label>
+
             <input
               type="password"
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              onChange={(e) =>
+                setNewPassword(e.target.value)
+              }
               placeholder="New password"
               required
               minLength={8}
             />
+
           </div>
 
           <div className="field">
-            <label>Confirm new password</label>
+
+            <label>
+              Confirm new password
+            </label>
+
             <input
               type="password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) =>
+                setConfirmPassword(e.target.value)
+              }
               placeholder="Repeat new password"
               required
               minLength={8}
             />
+
           </div>
 
           {passwordMessage && (
-            <div className="notice">{passwordMessage}</div>
+            <div className="notice">
+              {passwordMessage}
+            </div>
           )}
 
           <button
@@ -2077,64 +2072,114 @@ function Settings({
             type="submit"
             disabled={passwordBusy}
           >
-            {passwordBusy ? 'Updating...' : 'Update password'}
+            {passwordBusy
+              ? 'Updating...'
+              : 'Update password'}
           </button>
+
         </form>
+
       </section>
 
       <section className="settings-card settings-links">
+
         <a href="#privacy-policy">
+
           <Shield size={18} />
+
           <span>
-            <strong>Privacy Policy</strong>
-            <small>How we handle your information</small>
+            <strong>
+              Privacy Policy
+            </strong>
+
+            <small>
+              How we handle your information
+            </small>
           </span>
+
           <ChevronRight size={18} />
+
         </a>
 
         <a href="#terms-and-conditions">
+
           <Scale size={18} />
+
           <span>
-            <strong>Terms &amp; Conditions</strong>
-            <small>The terms for using the loyalty club</small>
+            <strong>
+              Terms &amp; Conditions
+            </strong>
+
+            <small>
+              The terms for using the loyalty club
+            </small>
           </span>
+
           <ChevronRight size={18} />
+
         </a>
 
         <a href="#about-at-home-sushi">
+
           <Info size={18} />
+
           <span>
-            <strong>About At Home Sushi</strong>
-            <small>Quick rolls. Bold flavors. Great rewards.</small>
+            <strong>
+              About At Home Sushi
+            </strong>
+
+            <small>
+              Quick rolls. Bold flavors. Great rewards.
+            </small>
           </span>
+
           <ChevronRight size={18} />
+
         </a>
+
       </section>
 
       <section className="settings-card settings-legal">
+
         <div id="privacy-policy">
-          <h2>Privacy Policy</h2>
+
+          <h2>
+            Privacy Policy
+          </h2>
+
           <p>
             We use your account details to operate your loyalty membership,
             including points, rewards, and birthday offers.
           </p>
+
         </div>
 
         <div id="terms-and-conditions">
-          <h2>Terms &amp; Conditions</h2>
+
+          <h2>
+            Terms &amp; Conditions
+          </h2>
+
           <p>
             Points and rewards are subject to availability and may not be
             exchanged for cash.
           </p>
+
         </div>
 
         <div id="about-at-home-sushi">
-          <h2>About At Home Sushi</h2>
+
+          <h2>
+            About At Home Sushi
+          </h2>
+
           <p>
             At Home Sushi brings quick rolls, bold flavors, and a little
             extra value to every order.
           </p>
+
         </div>
+
       </section>
 
       <button
@@ -2145,190 +2190,14 @@ function Settings({
         <LogOut size={17} />
         Log out
       </button>
+
     </div>
   );
 }
 
-  return (
-    <div className="page-container settings-page">
-      <div className="page-heading">
-        <span className="section-label">YOUR ACCOUNT</span>
-        <h1>Settings</h1>
-        <p>Manage your loyalty club account.</p>
-      </div>
-
-      <section className="settings-card">
-        <div className="settings-card-heading">
-          <span className="settings-icon">
-            <User size={18} />
-          </span>
-
-          <div>
-            <h2>Profile information</h2>
-            <p>Keep your details up to date.</p>
-          </div>
-        </div>
-
-        <form onSubmit={saveProfile}>
-          <div className="field">
-            <label>Full name</label>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="field">
-            <label>Phone number</label>
-            <input
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="09xxxxxxxxx"
-            />
-          </div>
-
-          <div className="field">
-            <label>Birthday</label>
-            <input
-              type="date"
-              value={birthday}
-              onChange={(e) => setBirthday(e.target.value)}
-            />
-          </div>
-
-          {profileMessage && (
-            <div className="notice">{profileMessage}</div>
-          )}
-
-          <button
-            className="primary-button"
-            type="submit"
-            disabled={profileBusy}
-          >
-            <Save size={16} />
-            {profileBusy ? 'Saving...' : 'Save changes'}
-          </button>
-        </form>
-      </section>
-
-      <section className="settings-card">
-        <div className="settings-card-heading">
-          <span className="settings-icon">
-            <Lock size={18} />
-          </span>
-
-          <div>
-            <h2>Change password</h2>
-            <p>Use at least 8 characters.</p>
-          </div>
-        </div>
-
-        <form onSubmit={changePassword}>
-          <div className="field">
-            <label>New password</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="New password"
-              required
-              minLength={8}
-            />
-          </div>
-
-          <div className="field">
-            <label>Confirm new password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Repeat new password"
-              required
-              minLength={8}
-            />
-          </div>
-
-          {passwordMessage && (
-            <div className="notice">{passwordMessage}</div>
-          )}
-
-          <button
-            className="secondary-button"
-            type="submit"
-            disabled={passwordBusy}
-          >
-            {passwordBusy ? 'Updating...' : 'Update password'}
-          </button>
-        </form>
-      </section>
-
-      <section className="settings-card settings-links">
-        <a href="#privacy-policy">
-          <Shield size={18} />
-          <span>
-            <strong>Privacy Policy</strong>
-            <small>How we handle your information</small>
-          </span>
-          <ChevronRight size={18} />
-        </a>
-
-        <a href="#terms-and-conditions">
-          <Scale size={18} />
-          <span>
-            <strong>Terms &amp; Conditions</strong>
-            <small>The terms for using the loyalty club</small>
-          </span>
-          <ChevronRight size={18} />
-        </a>
-
-        <a href="#about-at-home-sushi">
-          <Info size={18} />
-          <span>
-            <strong>About At Home Sushi</strong>
-            <small>Quick rolls. Bold flavors. Great rewards.</small>
-          </span>
-          <ChevronRight size={18} />
-        </a>
-      </section>
-
-      <section className="settings-card settings-legal">
-        <div id="privacy-policy">
-          <h2>Privacy Policy</h2>
-          <p>
-            We use your account details to operate your loyalty membership,
-            including points, rewards, and birthday offers.
-          </p>
-        </div>
-
-        <div id="terms-and-conditions">
-          <h2>Terms &amp; Conditions</h2>
-          <p>
-            Points and rewards are subject to availability and may not be
-            exchanged for cash.
-          </p>
-        </div>
-
-        <div id="about-at-home-sushi">
-          <h2>About At Home Sushi</h2>
-          <p>
-            At Home Sushi brings quick rolls, bold flavors, and a little
-            extra value to every order.
-          </p>
-        </div>
-      </section>
-
-      <button
-        className="logout-button"
-        type="button"
-        onClick={onLogout}
-      >
-        <LogOut size={17} />
-        Log out
-      </button>
-    </div>
-  );
-}
+/* =====================================================
+   STAFF
+===================================================== */
 
 function Staff() {
   const [staffSession, setStaffSession] =
@@ -2345,9 +2214,7 @@ function Staff() {
 
   const [remember, setRemember] =
     useState(
-      localStorage.getItem(
-        'staffRemember'
-      ) === 'true'
+      localStorage.getItem('staffRemember') === 'true'
     );
 
   const [customerCode, setCustomerCode] =
@@ -2376,10 +2243,7 @@ function Staff() {
     const { data } =
       await supabase.auth.getSession();
 
-    setStaffSession(
-      data.session
-    );
-
+    setStaffSession(data.session);
     setChecking(false);
   }
 
@@ -2403,11 +2267,10 @@ function Staff() {
     const {
       data,
       error
-    } =
-      await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+    } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
 
     if (error) {
       setMsg(error.message);
@@ -2415,10 +2278,7 @@ function Staff() {
       return;
     }
 
-    setStaffSession(
-      data.session
-    );
-
+    setStaffSession(data.session);
     setBusy(false);
   }
 
@@ -2428,8 +2288,7 @@ function Staff() {
   }
 
   async function findCustomer() {
-    const code =
-      customerCode.trim();
+    const code = customerCode.trim();
 
     setMsg('');
     setCustomer(null);
@@ -2446,15 +2305,11 @@ function Staff() {
     const {
       data,
       error
-    } =
-      await supabase
-        .from('customers')
-        .select('*')
-        .eq(
-          'customer_code',
-          code
-        )
-        .maybeSingle();
+    } = await supabase
+      .from('customers')
+      .select('*')
+      .eq('customer_code', code)
+      .maybeSingle();
 
     setBusy(false);
 
@@ -2464,9 +2319,7 @@ function Staff() {
     }
 
     if (!data) {
-      setMsg(
-        'Customer not found.'
-      );
+      setMsg('Customer not found.');
       return;
     }
 
@@ -2486,8 +2339,7 @@ function Staff() {
       return;
     }
 
-    const purchase =
-      parseFloat(amount);
+    const purchase = parseFloat(amount);
 
     if (
       !Number.isFinite(purchase) ||
@@ -2499,8 +2351,7 @@ function Staff() {
       return;
     }
 
-    const points =
-      purchase / 100;
+    const points = purchase / 100;
 
     const newPoints =
       Number(customer.points || 0) +
@@ -2511,43 +2362,31 @@ function Staff() {
 
     const {
       error: updateError
-    } =
-      await supabase
-        .from('customers')
-        .update({
-          points: newPoints
-        })
-        .eq(
-          'id',
-          customer.id
-        );
+    } = await supabase
+      .from('customers')
+      .update({
+        points: newPoints
+      })
+      .eq('id', customer.id);
 
     if (updateError) {
-      setMsg(
-        updateError.message
-      );
+      setMsg(updateError.message);
       setBusy(false);
       return;
     }
 
     const {
       error: transactionError
-    } =
-      await supabase
-        .from('transactions')
-        .insert({
-          customer_id:
-            customer.id,
-          transaction_type:
-            'purchase',
-          points_earned:
-            points
-        });
+    } = await supabase
+      .from('transactions')
+      .insert({
+        customer_id: customer.id,
+        transaction_type: 'purchase',
+        points_earned: points
+      });
 
     if (transactionError) {
-      setMsg(
-        transactionError.message
-      );
+      setMsg(transactionError.message);
       setBusy(false);
       return;
     }
@@ -2585,10 +2424,7 @@ function Staff() {
         .update({
           notes
         })
-        .eq(
-          'id',
-          customer.id
-        );
+        .eq('id', customer.id);
 
     if (error) {
       setMsg(error.message);
@@ -2621,19 +2457,12 @@ function Staff() {
       return;
     }
 
-    const today =
-      new Date();
-
-    const birthday =
-      new Date(
-        customer.birthday
-      );
+    const today = new Date();
+    const birthday = new Date(customer.birthday);
 
     const isBirthday =
-      today.getMonth() ===
-        birthday.getMonth() &&
-      today.getDate() ===
-        birthday.getDate();
+      today.getMonth() === birthday.getMonth() &&
+      today.getDate() === birthday.getDate();
 
     if (!isBirthday) {
       setMsg(
@@ -2642,8 +2471,7 @@ function Staff() {
       return;
     }
 
-    const year =
-      today.getFullYear();
+    const year = today.getFullYear();
 
     setBusy(true);
     setMsg('');
@@ -2651,24 +2479,15 @@ function Staff() {
     const {
       data: claimed,
       error: checkError
-    } =
-      await supabase
-        .from('birthday_claims')
-        .select('id')
-        .eq(
-          'customer_id',
-          customer.id
-        )
-        .eq(
-          'birthday_year',
-          year
-        )
-        .maybeSingle();
+    } = await supabase
+      .from('birthday_claims')
+      .select('id')
+      .eq('customer_id', customer.id)
+      .eq('birthday_year', year)
+      .maybeSingle();
 
     if (checkError) {
-      setMsg(
-        checkError.message
-      );
+      setMsg(checkError.message);
       setBusy(false);
       return;
     }
@@ -2684,24 +2503,18 @@ function Staff() {
     const {
       data: reward,
       error: rewardError
-    } =
-      await supabase
-        .from('birthday_rewards')
-        .select('*')
-        .eq(
-          'active',
-          true
-        )
-        .order('id', {
-          ascending: true
-        })
-        .limit(1)
-        .maybeSingle();
+    } = await supabase
+      .from('birthday_rewards')
+      .select('*')
+      .eq('active', true)
+      .order('id', {
+        ascending: true
+      })
+      .limit(1)
+      .maybeSingle();
 
     if (rewardError) {
-      setMsg(
-        rewardError.message
-      );
+      setMsg(rewardError.message);
       setBusy(false);
       return;
     }
@@ -2716,20 +2529,15 @@ function Staff() {
 
     const {
       error: claimError
-    } =
-      await supabase
-        .from('birthday_claims')
-        .insert({
-          customer_id:
-            customer.id,
-          birthday_year:
-            year
-        });
+    } = await supabase
+      .from('birthday_claims')
+      .insert({
+        customer_id: customer.id,
+        birthday_year: year
+      });
 
     if (claimError) {
-      setMsg(
-        claimError.message
-      );
+      setMsg(claimError.message);
       setBusy(false);
       return;
     }
@@ -2810,9 +2618,7 @@ function Staff() {
                   type="email"
                   value={email}
                   onChange={(e) =>
-                    setEmail(
-                      e.target.value
-                    )
+                    setEmail(e.target.value)
                   }
                   placeholder="Staff email"
                   required
@@ -2823,9 +2629,7 @@ function Staff() {
               <PasswordField
                 value={password}
                 onChange={(e) =>
-                  setPassword(
-                    e.target.value
-                  )
+                  setPassword(e.target.value)
                 }
                 placeholder="Staff password"
               />
@@ -2836,9 +2640,7 @@ function Staff() {
                   type="checkbox"
                   checked={remember}
                   onChange={(e) =>
-                    setRemember(
-                      e.target.checked
-                    )
+                    setRemember(e.target.checked)
                   }
                 />
 
@@ -2913,7 +2715,9 @@ function Staff() {
 
         <div className="staff-heading">
 
-          <span>STAFF</span>
+          <span>
+            STAFF
+          </span>
 
           <h1>
             Customer Points
@@ -2940,9 +2744,7 @@ function Staff() {
             <input
               value={customerCode}
               onChange={(e) =>
-                setCustomerCode(
-                  e.target.value
-                )
+                setCustomerCode(e.target.value)
               }
               placeholder="Enter customer code"
             />
@@ -3052,9 +2854,7 @@ function Staff() {
                 step="0.01"
                 value={amount}
                 onChange={(e) =>
-                  setAmount(
-                    e.target.value
-                  )
+                  setAmount(e.target.value)
                 }
                 placeholder="₱0.00"
               />
@@ -3064,13 +2864,15 @@ function Staff() {
             {amount &&
               Number(amount) > 0 && (
                 <p className="points-preview">
+
                   Points to add:{' '}
+
                   <strong>
                     {(
-                      Number(amount) /
-                      100
+                      Number(amount) / 100
                     ).toFixed(2)}
                   </strong>
+
                 </p>
               )}
 
@@ -3088,9 +2890,7 @@ function Staff() {
 
             <button
               className="secondary-staff-button"
-              onClick={
-                claimBirthdayReward
-              }
+              onClick={claimBirthdayReward}
               disabled={busy}
             >
               <Cake size={17} />
@@ -3113,9 +2913,7 @@ function Staff() {
               <textarea
                 value={notes}
                 onChange={(e) =>
-                  setNotes(
-                    e.target.value
-                  )
+                  setNotes(e.target.value)
                 }
                 placeholder="Add notes about this customer..."
               />
@@ -3151,12 +2949,17 @@ function Staff() {
    ROUTING
 ===================================================== */
 
-const path =
-  window.location.pathname;
+const path = window.location.pathname;
 
-createRoot(
-  document.getElementById('root')
-).render(
+const rootElement = document.getElementById('root');
+
+if (!rootElement) {
+  throw new Error(
+    'Root element #root was not found.'
+  );
+}
+
+createRoot(rootElement).render(
   path === '/staff'
     ? <Staff />
     : <App />
