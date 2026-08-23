@@ -2485,3 +2485,69 @@ a {
   border-color: #4a3030;
   color: #e2b5b5;
 }
+/* =====================================================
+   ADMIN CATEGORY PILLS
+===================================================== */
+
+.admin-category-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  margin-top: 4px;
+  scrollbar-width: none;
+}
+
+.admin-category-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-category-pill {
+  appearance: none;
+  border: 1px solid rgba(20, 20, 20, 0.08);
+  background: rgba(255, 255, 255, 0.62);
+  color: #666;
+  padding: 10px 17px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+
+  box-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.04);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.admin-category-pill:hover {
+  background: rgba(255, 255, 255, 0.9);
+  color: #222;
+  border-color: rgba(20, 20, 20, 0.14);
+  transform: translateY(-1px);
+}
+
+.admin-category-pill.active {
+  background: rgba(25, 25, 25, 0.94);
+  color: #fff;
+  border-color: rgba(25, 25, 25, 0.94);
+
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.admin-category-pill.active:hover {
+  background: #111;
+  color: #fff;
+  transform: translateY(-1px);
+}
