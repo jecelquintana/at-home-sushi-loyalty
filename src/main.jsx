@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createClient } from '@supabase/supabase-js';
 import { QRCodeSVG } from 'qrcode.react';
@@ -31,20 +31,31 @@ import {
   Scale,
   Info,
   Save,
-  Store,
-  Utensils,
-  Award,
+  LayoutDashboard,
+  UtensilsCrossed,
   Users,
-  BarChart3,
+  Receipt,
   Image as ImageIcon,
-  Home as HomeIcon,
+  Store,
   SlidersHorizontal,
-  Plus,
-  Pencil,
+  Menu as MenuIcon,
+  Search,
+  Edit3,
   Trash2,
-  ToggleLeft,
-  ToggleRight,
-  ArrowLeft,
+  Plus,
+  MoreHorizontal,
+  ChevronDown,
+  Upload,
+  Clock,
+  Phone,
+  Facebook,
+  Instagram,
+  Award,
+  Sparkles,
+  CakeSlice,
+  Home,
+  PanelLeftClose,
+  PanelLeftOpen,
   RefreshCw
 } from 'lucide-react';
 
@@ -63,14 +74,10 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
 });
 
 /* =====================================================
-   PASSWORD FIELD
+   SMALL HELPERS
 ===================================================== */
 
-function PasswordField({
-  value,
-  onChange,
-  placeholder
-}) {
+function PasswordField({ value, onChange, placeholder }) {
   const [show, setShow] = useState(false);
 
   return (
@@ -90,14 +97,42 @@ function PasswordField({
         <button
           type="button"
           className="password-toggle"
-          onClick={() => setShow((v) => !v)}
-          aria-label={show ? 'Hide password' : 'Show password'}
+          onClick={() => setShow(v => !v)}
         >
           {show ? <EyeOff size={17} /> : <Eye size={17} />}
         </button>
       </div>
     </div>
   );
+}
+
+function formatDate(date) {
+  if (!date) return '—';
+
+  return new Date(date).toLocaleDateString('en-PH', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+}
+
+function formatDateTime(date) {
+  if (!date) return '—';
+
+  return new Date(date).toLocaleString('en-PH', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+  });
+}
+
+function money(value) {
+  return `₱${Number(value || 0).toLocaleString('en-PH', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })}`;
 }
 
 /* =====================================================
@@ -114,13 +149,12 @@ function App() {
     let mounted = true;
 
     async function start() {
-      const { data, error } =
-        await supabase.auth.getSession();
+      const { data, error } = await supabase.auth.getSession();
 
       if (!mounted) return;
 
       if (error) {
-        console.error('Session error:', error);
+        console.error(error);
         setLoading(false);
         return;
       }
@@ -137,20 +171,18 @@ function App() {
 
     const {
       data: { subscription }
-    } = supabase.auth.onAuthStateChange(
-      async (_event, currentSession) => {
-        if (!mounted) return;
+    } = supabase.auth.onAuthStateChange(async (_event, currentSession) => {
+      if (!mounted) return;
 
-        setSession(currentSession);
+      setSession(currentSession);
 
-        if (currentSession) {
-          await loadProfile(currentSession.user);
-        } else {
-          setProfile(null);
-          setLoading(false);
-        }
+      if (currentSession) {
+        await loadProfile(currentSession.user);
+      } else {
+        setProfile(null);
+        setLoading(false);
       }
-    );
+    });
 
     return () => {
       mounted = false;
@@ -172,7 +204,7 @@ function App() {
       .maybeSingle();
 
     if (error) {
-      console.error('Customer profile error:', error);
+      console.error(error);
       setProfile(null);
       setLoading(false);
       return;
@@ -206,11 +238,7 @@ function App() {
       .single();
 
     if (createError) {
-      console.error(
-        'Could not create customer profile:',
-        createError
-      );
-
+      console.error(createError);
       setProfile(null);
       setLoading(false);
       return;
@@ -221,7 +249,15 @@ function App() {
   }
 
   if (loading) {
-    return <LoadingScreen text="Loading your loyalty club" />;
+    return (
+      <div className="loading-screen">
+        <div className="loading-mark">🍣</div>
+        <div className="loading-brand">AT HOME SUSHI</div>
+        <div className="loading-text">
+          Loading your loyalty club
+        </div>
+      </div>
+    );
   }
 
   if (!session) {
@@ -243,26 +279,6 @@ function App() {
 }
 
 /* =====================================================
-   LOADING
-===================================================== */
-
-function LoadingScreen({ text }) {
-  return (
-    <div className="loading-screen">
-      <div className="loading-mark">🍣</div>
-
-      <div className="loading-brand">
-        AT HOME SUSHI
-      </div>
-
-      <div className="loading-text">
-        {text}
-      </div>
-    </div>
-  );
-}
-
-/* =====================================================
    AUTH
 ===================================================== */
 
@@ -280,8 +296,7 @@ function Auth({ mode, setMode }) {
   );
 
   useEffect(() => {
-    const saved =
-      localStorage.getItem('savedLoginEmail');
+    const saved = localStorage.getItem('savedLoginEmail');
 
     if (saved) {
       setEmail(saved);
@@ -296,30 +311,17 @@ function Auth({ mode, setMode }) {
 
     if (mode === 'login') {
       if (remember) {
-        localStorage.setItem(
-          'rememberLogin',
-          'true'
-        );
-
-        localStorage.setItem(
-          'savedLoginEmail',
-          email
-        );
+        localStorage.setItem('rememberLogin', 'true');
+        localStorage.setItem('savedLoginEmail', email);
       } else {
-        localStorage.removeItem(
-          'rememberLogin'
-        );
-
-        localStorage.removeItem(
-          'savedLoginEmail'
-        );
+        localStorage.removeItem('rememberLogin');
+        localStorage.removeItem('savedLoginEmail');
       }
 
-      const { error } =
-        await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password
-        });
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password
+      });
 
       if (error) {
         setMsg(error.message);
@@ -335,49 +337,36 @@ function Auth({ mode, setMode }) {
       return;
     }
 
-    const { data, error } =
-      await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: {
-          data: {
-            full_name: name.trim(),
-            phone: phone.trim() || null,
-            birthday: birthday || null
-          }
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: {
+        data: {
+          full_name: name.trim(),
+          phone: phone.trim() || null,
+          birthday: birthday || null
         }
-      });
+      }
+    });
 
     if (error) {
-      console.error('Signup error:', error);
       setMsg(error.message);
       setBusy(false);
       return;
     }
 
     if (data?.session && data?.user) {
-      const user = data.user;
-
-      const { error: profileError } =
-        await supabase
-          .from('customers')
-          .insert({
-            id: user.id,
-            full_name: name.trim(),
-            phone: phone.trim() || null,
-            email:
-              user.email || email.trim(),
-            birthday: birthday || null,
-            points: 0,
-            stamps: 0
-          });
-
-      if (profileError) {
-        console.error(
-          'Profile creation error:',
-          profileError
-        );
-      }
+      await supabase
+        .from('customers')
+        .insert({
+          id: data.user.id,
+          full_name: name.trim(),
+          phone: phone.trim() || null,
+          email: data.user.email || email.trim(),
+          birthday: birthday || null,
+          points: 0,
+          stamps: 0
+        });
     }
 
     setName('');
@@ -398,11 +387,7 @@ function Auth({ mode, setMode }) {
       <div className="auth-shell">
 
         <div className="auth-brand">
-          <img
-            src={logo}
-            alt="At Home Sushi"
-          />
-
+          <img src={logo} alt="At Home Sushi" />
           <h1>AT HOME SUSHI</h1>
           <span>LOYALTY CLUB</span>
         </div>
@@ -410,14 +395,9 @@ function Auth({ mode, setMode }) {
         <div className="auth-card">
 
           <div className="auth-tabs">
-
             <button
               type="button"
-              className={
-                mode === 'login'
-                  ? 'active'
-                  : ''
-              }
+              className={mode === 'login' ? 'active' : ''}
               onClick={() => {
                 setMode('login');
                 setMsg('');
@@ -429,11 +409,7 @@ function Auth({ mode, setMode }) {
 
             <button
               type="button"
-              className={
-                mode === 'signup'
-                  ? 'active'
-                  : ''
-              }
+              className={mode === 'signup' ? 'active' : ''}
               onClick={() => {
                 setMode('signup');
                 setMsg('');
@@ -442,11 +418,9 @@ function Auth({ mode, setMode }) {
               <UserPlus size={16} />
               Join
             </button>
-
           </div>
 
           <div className="auth-heading">
-
             <h2>
               {mode === 'login'
                 ? 'Welcome back'
@@ -458,7 +432,6 @@ function Auth({ mode, setMode }) {
                 ? 'Your sushi rewards are waiting.'
                 : 'Earn Sushi Points with every order.'}
             </p>
-
           </div>
 
           <form onSubmit={submit}>
@@ -467,12 +440,9 @@ function Auth({ mode, setMode }) {
               <>
                 <div className="field">
                   <label>Full name</label>
-
                   <input
                     value={name}
-                    onChange={(e) =>
-                      setName(e.target.value)
-                    }
+                    onChange={e => setName(e.target.value)}
                     placeholder="Your name"
                     required
                   />
@@ -480,25 +450,19 @@ function Auth({ mode, setMode }) {
 
                 <div className="field">
                   <label>Phone number</label>
-
                   <input
                     value={phone}
-                    onChange={(e) =>
-                      setPhone(e.target.value)
-                    }
+                    onChange={e => setPhone(e.target.value)}
                     placeholder="09xxxxxxxxx"
                   />
                 </div>
 
                 <div className="field">
                   <label>Birthday</label>
-
                   <input
                     type="date"
                     value={birthday}
-                    onChange={(e) =>
-                      setBirthday(e.target.value)
-                    }
+                    onChange={e => setBirthday(e.target.value)}
                   />
                 </div>
               </>
@@ -506,13 +470,10 @@ function Auth({ mode, setMode }) {
 
             <div className="field">
               <label>Email</label>
-
               <input
                 type="email"
                 value={email}
-                onChange={(e) =>
-                  setEmail(e.target.value)
-                }
+                onChange={e => setEmail(e.target.value)}
                 placeholder="you@email.com"
                 required
               />
@@ -520,10 +481,7 @@ function Auth({ mode, setMode }) {
 
             <PasswordField
               value={password}
-              onChange={(e) =>
-                setPassword(e.target.value)
-              }
-              placeholder="Your password"
+              onChange={e => setPassword(e.target.value)}
             />
 
             {mode === 'login' && (
@@ -531,22 +489,13 @@ function Auth({ mode, setMode }) {
                 <input
                   type="checkbox"
                   checked={remember}
-                  onChange={(e) =>
-                    setRemember(
-                      e.target.checked
-                    )
-                  }
+                  onChange={e => setRemember(e.target.checked)}
                 />
-
                 <span>Remember me</span>
               </label>
             )}
 
-            {msg && (
-              <div className="notice">
-                {msg}
-              </div>
-            )}
+            {msg && <div className="notice">{msg}</div>}
 
             <button
               className="primary-button"
@@ -562,37 +511,27 @@ function Auth({ mode, setMode }) {
 
           </form>
 
-          {mode === 'login' && (
-            <div className="auth-switch">
-              New here?
+          <div className="auth-switch">
+            {mode === 'login'
+              ? 'New here?'
+              : 'Already a member?'}
 
-              <button
-                type="button"
-                onClick={() => {
-                  setMode('signup');
-                  setMsg('');
-                }}
-              >
-                Join the club
-              </button>
-            </div>
-          )}
-
-          {mode === 'signup' && (
-            <div className="auth-switch">
-              Already a member?
-
-              <button
-                type="button"
-                onClick={() => {
-                  setMode('login');
-                  setMsg('');
-                }}
-              >
-                Log in
-              </button>
-            </div>
-          )}
+            <button
+              type="button"
+              onClick={() => {
+                setMode(
+                  mode === 'login'
+                    ? 'signup'
+                    : 'login'
+                );
+                setMsg('');
+              }}
+            >
+              {mode === 'login'
+                ? 'Join the club'
+                : 'Log in'}
+            </button>
+          </div>
 
         </div>
 
@@ -615,30 +554,20 @@ function Dashboard({
   reloadProfile
 }) {
   const [tab, setTab] = useState('home');
-
-  const [rewards, setRewards] =
-    useState([]);
-
-  const [transactions, setTransactions] =
-    useState([]);
-
-  const [birthdayReward, setBirthdayReward] =
-    useState(null);
+  const [rewards, setRewards] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [birthdayReward, setBirthdayReward] = useState(null);
 
   useEffect(() => {
     loadDashboard();
   }, [session.user.id]);
 
   useEffect(() => {
-    if (profile) {
-      checkBirthdayReward();
-    }
+    if (profile) checkBirthdayReward();
   }, [profile]);
 
   async function loadDashboard() {
-    const {
-      data: rewardsData
-    } = await supabase
+    const { data: rewardsData } = await supabase
       .from('rewards')
       .select('*')
       .eq('active', true)
@@ -646,15 +575,10 @@ function Dashboard({
 
     setRewards(rewardsData || []);
 
-    const {
-      data: txData
-    } = await supabase
+    const { data: txData } = await supabase
       .from('transactions')
       .select('*')
-      .eq(
-        'customer_id',
-        session.user.id
-      )
+      .eq('customer_id', session.user.id)
       .order('created_at', {
         ascending: false
       })
@@ -667,51 +591,34 @@ function Dashboard({
     if (!profile?.birthday) return;
 
     const today = new Date();
-    const birthday = new Date(
-      profile.birthday
-    );
+    const birthday = new Date(profile.birthday);
 
     const birthdayToday =
-      today.getMonth() ===
-        birthday.getMonth() &&
-      today.getDate() ===
-        birthday.getDate();
+      today.getMonth() === birthday.getMonth() &&
+      today.getDate() === birthday.getDate();
 
     if (!birthdayToday) return;
 
-    const year =
-      today.getFullYear();
+    const year = today.getFullYear();
 
-    const { data: claimed } =
-      await supabase
-        .from('birthday_claims')
-        .select('id')
-        .eq(
-          'customer_id',
-          profile.id
-        )
-        .eq(
-          'birthday_year',
-          year
-        )
-        .maybeSingle();
+    const { data: claimed } = await supabase
+      .from('birthday_claims')
+      .select('id')
+      .eq('customer_id', profile.id)
+      .eq('birthday_year', year)
+      .maybeSingle();
 
     if (claimed) return;
 
-    const { data: reward } =
-      await supabase
-        .from('birthday_rewards')
-        .select('*')
-        .eq('active', true)
-        .order('id', {
-          ascending: true
-        })
-        .limit(1)
-        .maybeSingle();
+    const { data: reward } = await supabase
+      .from('birthday_rewards')
+      .select('*')
+      .eq('active', true)
+      .order('id')
+      .limit(1)
+      .maybeSingle();
 
-    if (reward) {
-      setBirthdayReward(reward);
-    }
+    if (reward) setBirthdayReward(reward);
   }
 
   async function logout() {
@@ -720,9 +627,15 @@ function Dashboard({
 
   if (!profile) {
     return (
-      <LoadingScreen
-        text="Preparing your loyalty card"
-      />
+      <div className="loading-screen">
+        <div className="loading-mark">🍣</div>
+        <div className="loading-brand">
+          AT HOME SUSHI
+        </div>
+        <div className="loading-text">
+          Preparing your loyalty card
+        </div>
+      </div>
     );
   }
 
@@ -732,22 +645,12 @@ function Dashboard({
       <header className="app-header">
 
         <div className="header-brand">
-
-          <img
-            src={logo}
-            alt="At Home Sushi"
-          />
+          <img src={logo} alt="At Home Sushi" />
 
           <div>
-            <strong>
-              AT HOME SUSHI
-            </strong>
-
-            <span>
-              LOYALTY CLUB
-            </span>
+            <strong>AT HOME SUSHI</strong>
+            <span>LOYALTY CLUB</span>
           </div>
-
         </div>
 
         <button
@@ -763,25 +666,15 @@ function Dashboard({
 
         {birthdayReward && (
           <div className="birthday-card">
-
             <div className="birthday-icon">
               <Cake size={19} />
             </div>
 
             <div>
-              <span>
-                YOUR BIRTHDAY REWARD
-              </span>
-
-              <strong>
-                {birthdayReward.name}
-              </strong>
-
-              <p>
-                {birthdayReward.reward_text}
-              </p>
+              <span>YOUR BIRTHDAY REWARD</span>
+              <strong>{birthdayReward.name}</strong>
+              <p>{birthdayReward.reward_text}</p>
             </div>
-
           </div>
         )}
 
@@ -789,16 +682,12 @@ function Dashboard({
           <Home
             profile={profile}
             rewards={rewards}
-            onGoRewards={() =>
-              setTab('rewards')
-            }
+            onGoRewards={() => setTab('rewards')}
           />
         )}
 
         {tab === 'card' && (
-          <DigitalCard
-            profile={profile}
-          />
+          <DigitalCard profile={profile} />
         )}
 
         {tab === 'rewards' && (
@@ -810,20 +699,14 @@ function Dashboard({
         )}
 
         {tab === 'history' && (
-          <HistoryTab
-            transactions={
-              transactions
-            }
-          />
+          <HistoryTab transactions={transactions} />
         )}
 
         {tab === 'settings' && (
           <Settings
             session={session}
             profile={profile}
-            reloadProfile={
-              reloadProfile
-            }
+            reloadProfile={reloadProfile}
             onLogout={logout}
           />
         )}
@@ -833,70 +716,40 @@ function Dashboard({
       <nav className="bottom-nav">
 
         <button
-          className={
-            tab === 'home'
-              ? 'selected'
-              : ''
-          }
-          onClick={() =>
-            setTab('home')
-          }
+          className={tab === 'home' ? 'selected' : ''}
+          onClick={() => setTab('home')}
         >
           <Star size={20} />
           <span>Home</span>
         </button>
 
         <button
-          className={
-            tab === 'card'
-              ? 'selected'
-              : ''
-          }
-          onClick={() =>
-            setTab('card')
-          }
+          className={tab === 'card' ? 'selected' : ''}
+          onClick={() => setTab('card')}
         >
           <QrCode size={20} />
           <span>My Card</span>
         </button>
 
         <button
-          className={
-            tab === 'rewards'
-              ? 'selected'
-              : ''
-          }
-          onClick={() =>
-            setTab('rewards')
-          }
+          className={tab === 'rewards' ? 'selected' : ''}
+          onClick={() => setTab('rewards')}
         >
           <Gift size={20} />
           <span>Rewards</span>
         </button>
 
         <button
-          className={
-            tab === 'history'
-              ? 'selected'
-              : ''
-          }
-          onClick={() =>
-            setTab('history')
-          }
+          className={tab === 'history' ? 'selected' : ''}
+          onClick={() => setTab('history')}
         >
           <History size={20} />
           <span>History</span>
         </button>
 
         <button
-          className={
-            tab === 'settings'
-              ? 'selected'
-              : ''
-          }
-          onClick={() =>
-            setTab('settings')
-          }
+          className={tab === 'settings' ? 'selected' : ''}
+          onClick={() => setTab('settings')}
         >
           <SettingsIcon size={20} />
           <span>Settings</span>
@@ -909,7 +762,7 @@ function Dashboard({
 }
 
 /* =====================================================
-   HOME
+   CUSTOMER HOME
 ===================================================== */
 
 function Home({
@@ -917,35 +770,20 @@ function Home({
   rewards,
   onGoRewards
 }) {
-  const points =
-    Number(profile.points || 0);
+  const points = Number(profile.points || 0);
 
-  const [menu, setMenu] =
-    useState([]);
-
-  const [menuLoading, setMenuLoading] =
-    useState(true);
-
-  const [activeCategory, setActiveCategory] =
-    useState('all');
-
-  const [orderOpen, setOrderOpen] =
-    useState(false);
-
-  const [selectedMenuItem, setSelectedMenuItem] =
-    useState(null);
+  const [menu, setMenu] = useState([]);
+  const [menuLoading, setMenuLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [orderOpen, setOrderOpen] = useState(false);
+  const [selectedMenuItem, setSelectedMenuItem] = useState(null);
 
   useEffect(() => {
     loadMenu();
   }, []);
 
   async function loadMenu() {
-    setMenuLoading(true);
-
-    const {
-      data,
-      error
-    } = await supabase
+    const { data, error } = await supabase
       .from('menu_items')
       .select('*')
       .eq('active', true)
@@ -953,77 +791,37 @@ function Home({
         ascending: true
       });
 
-    if (error) {
-      console.error(
-        'Menu loading error:',
-        error
-      );
+    if (error) console.error(error);
 
-      setMenu([]);
-    } else {
-      setMenu(data || []);
-    }
-
+    setMenu(data || []);
     setMenuLoading(false);
   }
 
   const categories = [
-    { id: 'all', label: 'All' },
-    {
-      id: 'appetizers',
-      label: 'Appetizers'
-    },
-    {
-      id: 'classic',
-      label: 'Classic Rolls'
-    },
-    {
-      id: 'specialty',
-      label: 'Specialty Rolls'
-    },
-    {
-      id: 'signature',
-      label: 'Signature Rolls'
-    },
-    {
-      id: 'veggie',
-      label: 'Veggie'
-    },
-    {
-      id: 'nigiri',
-      label: 'Nigiri'
-    },
-    {
-      id: 'sashimi',
-      label: 'Sashimi'
-    },
-    {
-      id: 'platters',
-      label: 'Platters'
-    }
+    ['all', 'All'],
+    ['appetizers', 'Appetizers'],
+    ['classic', 'Classic Rolls'],
+    ['specialty', 'Specialty Rolls'],
+    ['signature', 'Signature Rolls'],
+    ['veggie', 'Veggie'],
+    ['nigiri', 'Nigiri'],
+    ['sashimi', 'Sashimi'],
+    ['platters', 'Platters']
   ];
 
   const filteredMenu =
     activeCategory === 'all'
       ? menu
       : menu.filter(
-          (item) =>
-            String(
-              item.category || ''
-            ).toLowerCase() ===
+          item =>
+            String(item.category || '').toLowerCase() ===
             activeCategory
         );
-
-  function openOrder(item) {
-    setSelectedMenuItem(item);
-    setOrderOpen(true);
-  }
 
   return (
     <div className="home-page">
 
       <section className="home-hero">
-
         <div className="hero-inner">
 
           <div className="hero-label">
@@ -1033,16 +831,12 @@ function Home({
           <h1>
             Good sushi.
             <br />
-            <span>
-              Better rewards.
-            </span>
+            <span>Better rewards.</span>
           </h1>
 
           <p>
-            Enjoy your favorites,
-            earn Sushi Points,
-            and make every order
-            count.
+            Enjoy your favorites, earn Sushi Points,
+            and make every order count.
           </p>
 
           <div className="hero-buttons">
@@ -1051,31 +845,23 @@ function Home({
               className="hero-button primary"
               onClick={() =>
                 document
-                  .getElementById(
-                    'menu-section'
-                  )
+                  .getElementById('menu-section')
                   ?.scrollIntoView({
-                    behavior:
-                      'smooth'
+                    behavior: 'smooth'
                   })
               }
             >
               Explore sushi
-              <ChevronRight
-                size={17}
-              />
+              <ChevronRight size={17} />
             </button>
 
             <button
               className="hero-button secondary"
               onClick={() =>
                 document
-                  .getElementById(
-                    'points-section'
-                  )
+                  .getElementById('points-section')
                   ?.scrollIntoView({
-                    behavior:
-                      'smooth'
+                    behavior: 'smooth'
                   })
               }
             >
@@ -1085,7 +871,6 @@ function Home({
           </div>
 
         </div>
-
       </section>
 
       <section
@@ -1097,38 +882,22 @@ function Home({
           YOUR LOYALTY
         </div>
 
-        <h2>
-          Your Sushi Points
-        </h2>
+        <h2>Your Sushi Points</h2>
 
         <p className="section-description">
-          Every order brings you
-          closer to something
-          delicious.
+          Every order brings you closer to something delicious.
         </p>
 
         <div className="points-card">
 
           <div>
-            <span>
-              POINT BALANCE
-            </span>
-
-            <strong>
-              {points.toFixed(0)}
-            </strong>
-
-            <small>
-              SUSHI POINTS
-            </small>
+            <span>POINT BALANCE</span>
+            <strong>{points.toFixed(0)}</strong>
+            <small>SUSHI POINTS</small>
           </div>
 
-          <button
-            onClick={onGoRewards}
-          >
-            <ChevronRight
-              size={20}
-            />
+          <button onClick={onGoRewards}>
+            <ChevronRight size={20} />
           </button>
 
         </div>
@@ -1137,40 +906,25 @@ function Home({
 
           <div>
             <b>01</b>
-
             <span>
-              <strong>
-                ORDER
-              </strong>
-
-              Enjoy your favorite
-              sushi.
+              <strong>ORDER</strong>
+              Enjoy your favorite sushi.
             </span>
           </div>
 
           <div>
             <b>02</b>
-
             <span>
-              <strong>
-                EARN
-              </strong>
-
-              ₱100 spent = 1
-              Sushi Point.
+              <strong>EARN</strong>
+              ₱100 spent = 1 Sushi Point.
             </span>
           </div>
 
           <div>
             <b>03</b>
-
             <span>
-              <strong>
-                REDEEM
-              </strong>
-
-              Turn points into
-              rewards.
+              <strong>REDEEM</strong>
+              Turn points into rewards.
             </span>
           </div>
 
@@ -1187,175 +941,80 @@ function Home({
           FROM OUR KITCHEN
         </div>
 
-        <h2>
-          Explore Our Menu
-        </h2>
+        <h2>Explore Our Menu</h2>
 
         <p className="section-description">
-          Find your favorite roll,
-          nigiri, sashimi or platter.
+          Find your favorite roll, nigiri, sashimi or platter.
         </p>
 
         <div className="menu-categories">
-
-          {categories.map(
-            (category) => (
-              <button
-                key={category.id}
-                type="button"
-                className={
-                  activeCategory ===
-                  category.id
-                    ? 'active'
-                    : ''
-                }
-                onClick={() =>
-                  setActiveCategory(
-                    category.id
-                  )
-                }
-              >
-                {category.label}
-              </button>
-            )
-          )}
-
+          {categories.map(([id, label]) => (
+            <button
+              key={id}
+              className={activeCategory === id ? 'active' : ''}
+              onClick={() => setActiveCategory(id)}
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
-        {menuLoading && (
+        {menuLoading ? (
           <div className="empty-card large">
-            <div className="loading-mark">
-              🍣
-            </div>
+            <div className="loading-mark">🍣</div>
+            <strong>Loading our menu...</strong>
+          </div>
+        ) : (
+          <div className="menu-grid">
 
-            <strong>
-              Loading our menu...
-            </strong>
+            {filteredMenu.map(item => (
+              <article
+                className="menu-item-card"
+                key={item.id}
+              >
 
-            <p>
-              Please wait a moment.
-            </p>
+                <div className="menu-item-image">
+
+                  {item.image_url ? (
+                    <img
+                      src={item.image_url}
+                      alt={item.name}
+                    />
+                  ) : (
+                    <div className="photo-fallback">
+                      <span>🍣</span>
+                      <small>AT HOME SUSHI</small>
+                    </div>
+                  )}
+
+                </div>
+
+                <div className="menu-item-content">
+
+                  <h3>{item.name}</h3>
+
+                  {item.description && (
+                    <p>{item.description}</p>
+                  )}
+
+                  <button
+                    className="order-button"
+                    onClick={() => {
+                      setSelectedMenuItem(item);
+                      setOrderOpen(true);
+                    }}
+                  >
+                    Order this
+                    <ChevronRight size={17} />
+                  </button>
+
+                </div>
+
+              </article>
+            ))}
+
           </div>
         )}
-
-        {!menuLoading &&
-          filteredMenu.length === 0 && (
-            <div className="empty-card large">
-              <div className="loading-mark">
-                🍣
-              </div>
-
-              <strong>
-                No menu items available.
-              </strong>
-
-              <p>
-                Check back soon for
-                our latest menu.
-              </p>
-            </div>
-          )}
-
-        {!menuLoading &&
-          filteredMenu.length > 0 && (
-            <div className="menu-grid">
-
-              {filteredMenu.map(
-                (item) => (
-                  <article
-                    className="menu-item-card"
-                    key={item.id}
-                  >
-
-                    <div className="menu-item-image">
-
-                      {item.image_url ? (
-                        <img
-                          src={
-                            item.image_url
-                          }
-                          alt={
-                            item.name
-                          }
-                          onError={(e) => {
-                            e.currentTarget.style.display =
-                              'none';
-
-                            e.currentTarget.parentElement.classList.add(
-                              'missing'
-                            );
-                          }}
-                        />
-                      ) : (
-                        <div className="photo-fallback">
-                          <span>
-                            🍣
-                          </span>
-
-                          <small>
-                            AT HOME
-                            SUSHI
-                          </small>
-                        </div>
-                      )}
-
-                    </div>
-
-                    <div className="menu-item-content">
-
-                      <div className="menu-item-top">
-
-                        <h3>
-                          {item.name}
-                        </h3>
-
-                        {item.price !==
-                          null &&
-                          item.price !==
-                            undefined && (
-                            <strong>
-                              ₱
-                              {Number(
-                                item.price
-                              ).toFixed(
-                                0
-                              )}
-                            </strong>
-                          )}
-
-                      </div>
-
-                      {item.description && (
-                        <p>
-                          {
-                            item.description
-                          }
-                        </p>
-                      )}
-
-                      <button
-                        type="button"
-                        className="order-button"
-                        onClick={() =>
-                          openOrder(
-                            item
-                          )
-                        }
-                      >
-                        Order this
-                        <ChevronRight
-                          size={17}
-                        />
-                      </button>
-
-                    </div>
-
-                  </article>
-                )
-              )}
-
-            </div>
-          )}
 
       </section>
 
@@ -1365,57 +1024,32 @@ function Home({
           YOUR BENEFITS
         </div>
 
-        <h2>
-          Rewards
-        </h2>
+        <h2>Rewards</h2>
 
         <p className="section-description">
-          A little something for
-          every sushi lover.
+          A little something for every sushi lover.
         </p>
 
         <div className="home-rewards">
 
-          {rewards
-            .slice(0, 3)
-            .map(
-              (reward, i) => (
-                <div
-                  className="home-reward"
-                  key={reward.id}
-                >
+          {rewards.slice(0, 3).map((reward, i) => (
+            <div
+              className="home-reward"
+              key={reward.id}
+            >
+              <span>0{i + 1}</span>
 
-                  <span>
-                    0{i + 1}
-                  </span>
+              <div>
+                <strong>{reward.name}</strong>
+                <p>
+                  {reward.description ||
+                    'Use your Sushi Points for this reward.'}
+                </p>
+              </div>
 
-                  <div>
-                    <strong>
-                      {reward.name}
-                    </strong>
-
-                    <p>
-                      {reward.description ||
-                        'Use your Sushi Points for this reward.'}
-                    </p>
-                  </div>
-
-                  <b>
-                    {
-                      reward.points_required
-                    }
-                  </b>
-
-                </div>
-              )
-            )}
-
-          {rewards.length === 0 && (
-            <div className="empty-card">
-              Rewards will appear
-              here once available.
+              <b>{reward.points_required}</b>
             </div>
-          )}
+          ))}
 
         </div>
 
@@ -1424,113 +1058,71 @@ function Home({
           onClick={onGoRewards}
         >
           View all rewards
-          <ChevronRight
-            size={17}
-          />
+          <ChevronRight size={17} />
         </button>
 
       </section>
 
-      {orderOpen &&
-        selectedMenuItem && (
+      {orderOpen && selectedMenuItem && (
+        <div
+          className="modal-overlay"
+          onClick={() => setOrderOpen(false)}
+        >
+
           <div
-            className="modal-overlay"
-            onClick={() =>
-              setOrderOpen(false)
-            }
+            className="order-modal"
+            onClick={e => e.stopPropagation()}
           >
 
-            <div
-              className="order-modal"
-              onClick={(e) =>
-                e.stopPropagation()
-              }
+            <button
+              className="modal-close"
+              onClick={() => setOrderOpen(false)}
             >
+              <X size={19} />
+            </button>
 
-              <button
-                className="modal-close"
-                onClick={() =>
-                  setOrderOpen(false)
-                }
-              >
-                <X size={19} />
-              </button>
-
-              <div className="section-label">
-                {
-                  selectedMenuItem.name
-                }
-              </div>
-
-              <h2>
-                How would you
-                like to order?
-              </h2>
-
-              <p>
-                Choose your preferred
-                way to order.
-              </p>
-
-              <a
-                className="order-choice"
-                href="https://www.ordermo.ph/restaurants/at-home-sushi/M8y6MG8S?n=QXQgSG9tZSBTdXNoaQ==&p=cG5n&c=anBn"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span className="choice-icon">
-                  <ShoppingBag
-                    size={19}
-                  />
-                </span>
-
-                <span>
-                  <strong>
-                    Order Online
-                  </strong>
-
-                  <small>
-                    OrderMo
-                  </small>
-                </span>
-
-                <ChevronRight
-                  size={18}
-                />
-              </a>
-
-              <a
-                className="order-choice"
-                href="https://www.facebook.com/athomesushibustos"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span className="choice-icon">
-                  <MessageCircle
-                    size={19}
-                  />
-                </span>
-
-                <span>
-                  <strong>
-                    Order via Facebook
-                  </strong>
-
-                  <small>
-                    Message At Home
-                    Sushi
-                  </small>
-                </span>
-
-                <ChevronRight
-                  size={18}
-                />
-              </a>
-
+            <div className="section-label">
+              {selectedMenuItem.name}
             </div>
 
+            <h2>How would you like to order?</h2>
+
+            <p>
+              Choose your preferred way to order.
+            </p>
+
+            <a
+              className="order-choice"
+              href="https://www.ordermo.ph/restaurants/at-home-sushi/M8y6MG8S"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ShoppingBag size={19} />
+              <span>
+                <strong>Order Online</strong>
+                <small>OrderMo</small>
+              </span>
+              <ChevronRight size={18} />
+            </a>
+
+            <a
+              className="order-choice"
+              href="https://www.facebook.com/athomesushibustos"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <MessageCircle size={19} />
+              <span>
+                <strong>Order via Facebook</strong>
+                <small>Message At Home Sushi</small>
+              </span>
+              <ChevronRight size={18} />
+            </a>
+
           </div>
-        )}
+
+        </div>
+      )}
 
     </div>
   );
@@ -1545,26 +1137,16 @@ function DigitalCard({ profile }) {
     <div className="page-container">
 
       <div className="page-heading">
-        <span className="section-label">
-          YOUR MEMBERSHIP
-        </span>
-
-        <h1>
-          My Card
-        </h1>
+        <span className="section-label">YOUR MEMBERSHIP</span>
+        <h1>My Card</h1>
       </div>
 
       <div className="digital-card">
 
         <div className="digital-top">
           <div>
-            <strong>
-              AT HOME SUSHI
-            </strong>
-
-            <span>
-              LOYALTY CLUB
-            </span>
+            <strong>AT HOME SUSHI</strong>
+            <span>LOYALTY CLUB</span>
           </div>
 
           <QrCode size={20} />
@@ -1572,60 +1154,36 @@ function DigitalCard({ profile }) {
 
         <div className="qr-box">
           <QRCodeSVG
-            value={
-              profile.customer_code ||
-              ''
-            }
+            value={profile.customer_code || ''}
             size={190}
             includeMargin
           />
         </div>
 
         <div className="digital-member">
-
-          <span>
-            MEMBER
-          </span>
-
-          <strong>
-            {profile.full_name}
-          </strong>
-
-          <small>
-            {profile.customer_code}
-          </small>
-
+          <span>MEMBER</span>
+          <strong>{profile.full_name}</strong>
+          <small>{profile.customer_code}</small>
         </div>
 
         <div className="digital-balances">
 
           <div>
-            <span>
-              POINTS
-            </span>
-
+            <span>POINTS</span>
             <strong>
-              {Number(
-                profile.points || 0
-              ).toFixed(0)}
+              {Number(profile.points || 0).toFixed(0)}
             </strong>
           </div>
 
           <div>
-            <span>
-              STAMPS
-            </span>
-
-            <strong>
-              {profile.stamps || 0}
-            </strong>
+            <span>STAMPS</span>
+            <strong>{profile.stamps || 0}</strong>
           </div>
 
         </div>
 
         <p className="digital-note">
-          Show this QR code to
-          staff at checkout.
+          Show this QR code to staff at checkout.
         </p>
 
       </div>
@@ -1643,33 +1201,20 @@ function Rewards({
   rewards,
   onRefresh
 }) {
-  const [selected, setSelected] =
-    useState(null);
+  const [selected, setSelected] = useState(null);
+  const [code, setCode] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState('');
 
-  const [code, setCode] =
-    useState('');
-
-  const [busy, setBusy] =
-    useState(false);
-
-  const [msg, setMsg] =
-    useState('');
-
-  const points =
-    Number(profile.points || 0);
+  const points = Number(profile.points || 0);
 
   async function redeem() {
     if (!selected) return;
 
-    const required =
-      Number(
-        selected.points_required
-      );
+    const required = Number(selected.points_required);
 
     if (points < required) {
-      setMsg(
-        'You do not have enough Sushi Points.'
-      );
+      setMsg('You do not have enough Sushi Points.');
       return;
     }
 
@@ -1683,52 +1228,26 @@ function Rewards({
         .substring(2, 7)
         .toUpperCase();
 
-    const {
-      data,
-      error
-    } = await supabase
+    const { data, error } = await supabase
       .from('point_redemptions')
       .insert({
-        customer_id:
-          profile.id,
-        reward_id:
-          selected.id,
-        points_used:
-          required,
-        redemption_code:
-          redemptionCode,
-        status:
-          'pending'
+        customer_id: profile.id,
+        reward_id: selected.id,
+        points_used: required,
+        redemption_code: redemptionCode,
+        status: 'pending'
       })
       .select()
       .single();
 
     if (error) {
-      console.error(error);
       setMsg(error.message);
       setBusy(false);
       return;
     }
 
-    setCode(
-      data.redemption_code
-    );
-
+    setCode(data.redemption_code);
     setBusy(false);
-  }
-
-  async function copyCode() {
-    try {
-      await navigator.clipboard.writeText(
-        code
-      );
-
-      setMsg('Code copied!');
-    } catch {
-      setMsg(
-        'Please copy the code manually.'
-      );
-    }
   }
 
   if (code) {
@@ -1743,14 +1262,11 @@ function Rewards({
             REDEMPTION CODE
           </span>
 
-          <h1>
-            Show this to staff
-          </h1>
+          <h1>Show this to staff</h1>
 
           <p>
-            Staff will confirm your
-            redemption before your
-            points are deducted.
+            Staff will confirm your redemption before
+            your points are deducted.
           </p>
 
           <div className="redemption-code">
@@ -1759,24 +1275,19 @@ function Rewards({
 
           <button
             className="primary-button"
-            onClick={copyCode}
+            onClick={() =>
+              navigator.clipboard.writeText(code)
+            }
           >
             <Copy size={17} />
             Copy code
           </button>
-
-          {msg && (
-            <div className="notice">
-              {msg}
-            </div>
-          )}
 
           <button
             className="text-button"
             onClick={() => {
               setCode('');
               setSelected(null);
-              setMsg('');
             }}
           >
             Back to rewards
@@ -1797,56 +1308,30 @@ function Rewards({
           YOUR BENEFITS
         </span>
 
-        <h1>
-          Rewards
-        </h1>
+        <h1>Rewards</h1>
 
         <p>
-          You have{' '}
-          <strong>
-            {points.toFixed(0)}
-            {' '}
-            Sushi Points
-          </strong>.
+          You have <strong>{points.toFixed(0)} Sushi Points</strong>.
         </p>
 
       </div>
 
       <div className="reward-list">
 
-        {rewards.map((reward) => {
+        {rewards.map(reward => {
 
-          const required =
-            Number(
-              reward.points_required
-            );
-
-          const available =
-            points >= required;
-
-          const isSelected =
-            selected?.id ===
-            reward.id;
+          const required = Number(reward.points_required);
+          const available = points >= required;
 
           return (
             <button
               type="button"
               key={reward.id}
-              className={`reward-card ${
-                isSelected
-                  ? 'selected'
-                  : ''
-              } ${
-                !available
-                  ? 'locked'
-                  : ''
-              }`}
               disabled={!available}
-              onClick={() =>
-                setSelected(
-                  reward
-                )
-              }
+              className={`reward-card ${
+                selected?.id === reward.id ? 'selected' : ''
+              } ${!available ? 'locked' : ''}`}
+              onClick={() => setSelected(reward)}
             >
 
               <span className="reward-number">
@@ -1855,43 +1340,22 @@ function Rewards({
 
               <span className="reward-content">
 
-                <strong>
-                  {reward.name}
-                </strong>
+                <strong>{reward.name}</strong>
 
                 <small>
                   {reward.description ||
                     'Use your Sushi Points for this reward.'}
                 </small>
 
-                <b>
-                  {required} points
-                </b>
+                <b>{required} points</b>
 
               </span>
 
-              <ChevronRight
-                size={18}
-              />
+              <ChevronRight size={18} />
 
             </button>
           );
         })}
-
-        {rewards.length === 0 && (
-          <div className="empty-card large">
-            <Gift size={25} />
-
-            <strong>
-              No rewards available yet
-            </strong>
-
-            <p>
-              Check back soon for
-              rewards.
-            </p>
-          </div>
-        )}
 
       </div>
 
@@ -1902,27 +1366,14 @@ function Rewards({
             CONFIRM REWARD
           </span>
 
-          <h2>
-            Redeem{' '}
-            {selected.name}?
-          </h2>
+          <h2>Redeem {selected.name}?</h2>
 
           <p>
-            This will create a
-            redemption code for{' '}
-            <strong>
-              {
-                selected.points_required
-              }{' '}
-              points.
-            </strong>
+            This will create a redemption code for{' '}
+            <strong>{selected.points_required} points.</strong>
           </p>
 
-          {msg && (
-            <div className="notice">
-              {msg}
-            </div>
-          )}
+          {msg && <div className="notice">{msg}</div>}
 
           <button
             className="primary-button"
@@ -1945,76 +1396,41 @@ function Rewards({
    HISTORY
 ===================================================== */
 
-function HistoryTab({
-  transactions
-}) {
+function HistoryTab({ transactions }) {
   return (
     <div className="page-container">
 
       <div className="page-heading">
-
-        <span className="section-label">
-          YOUR ACTIVITY
-        </span>
-
-        <h1>
-          History
-        </h1>
-
+        <span className="section-label">YOUR ACTIVITY</span>
+        <h1>History</h1>
       </div>
 
       {transactions.length === 0 ? (
         <div className="empty-card large">
-
           <History size={25} />
-
-          <strong>
-            No transactions yet
-          </strong>
-
-          <p>
-            Your activity will
-            appear here.
-          </p>
-
+          <strong>No transactions yet</strong>
+          <p>Your activity will appear here.</p>
         </div>
       ) : (
         <div className="history-list">
 
-          {transactions.map(
-            (tx) => (
-              <div
-                className="history-card"
-                key={tx.id}
-              >
+          {transactions.map(tx => (
+            <div
+              className="history-card"
+              key={tx.id}
+            >
 
-                <div>
-
-                  <strong>
-                    {
-                      tx.transaction_type
-                    }
-                  </strong>
-
-                  <small>
-                    {new Date(
-                      tx.created_at
-                    ).toLocaleString()}
-                  </small>
-
-                </div>
-
-                <b className="history-points">
-                  +
-                  {Number(
-                    tx.points_earned ||
-                      0
-                  ).toFixed(2)}
-                </b>
-
+              <div>
+                <strong>{tx.transaction_type}</strong>
+                <small>{formatDateTime(tx.created_at)}</small>
               </div>
-            )
-          )}
+
+              <b className="history-points">
+                +{Number(tx.points_earned || 0).toFixed(2)}
+              </b>
+
+            </div>
+          ))}
 
         </div>
       )}
@@ -2033,257 +1449,120 @@ function Settings({
   reloadProfile,
   onLogout
 }) {
-  const [name, setName] =
-    useState(
-      profile.full_name || ''
-    );
-
-  const [phone, setPhone] =
-    useState(
-      profile.phone || ''
-    );
-
-  const [birthday, setBirthday] =
-    useState(
-      profile.birthday || ''
-    );
-
-  const [newPassword, setNewPassword] =
-    useState('');
-
-  const [confirmPassword, setConfirmPassword] =
-    useState('');
-
-  const [profileBusy, setProfileBusy] =
-    useState(false);
-
-  const [passwordBusy, setPasswordBusy] =
-    useState(false);
-
-  const [profileMessage, setProfileMessage] =
-    useState('');
-
-  const [passwordMessage, setPasswordMessage] =
-    useState('');
-
-  useEffect(() => {
-    setName(
-      profile.full_name || ''
-    );
-
-    setPhone(
-      profile.phone || ''
-    );
-
-    setBirthday(
-      profile.birthday || ''
-    );
-  }, [profile]);
+  const [name, setName] = useState(profile.full_name || '');
+  const [phone, setPhone] = useState(profile.phone || '');
+  const [birthday, setBirthday] = useState(profile.birthday || '');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [message, setMessage] = useState('');
 
   async function saveProfile(e) {
     e.preventDefault();
 
-    if (!name.trim()) {
-      setProfileMessage(
-        'Please enter your full name.'
-      );
-      return;
-    }
+    if (!name.trim()) return;
 
-    setProfileBusy(true);
-    setProfileMessage('');
-
-    const updates = {
-      full_name: name.trim(),
-      phone:
-        phone.trim() || null,
-      birthday:
-        birthday || null
-    };
-
-    const { error } =
-      await supabase
-        .from('customers')
-        .update(updates)
-        .eq(
-          'id',
-          session.user.id
-        );
+    const { error } = await supabase
+      .from('customers')
+      .update({
+        full_name: name.trim(),
+        phone: phone.trim() || null,
+        birthday: birthday || null
+      })
+      .eq('id', session.user.id);
 
     if (error) {
-      setProfileMessage(
-        error.message
-      );
-
-      setProfileBusy(false);
+      setMessage(error.message);
       return;
     }
 
-    await supabase.auth.updateUser({
-      data: updates
-    });
-
     await reloadProfile();
-
-    setProfileMessage(
-      'Your profile has been updated.'
-    );
-
-    setProfileBusy(false);
+    setMessage('Your profile has been updated.');
   }
 
   async function changePassword(e) {
     e.preventDefault();
 
     if (newPassword.length < 8) {
-      setPasswordMessage(
-        'Your new password must be at least 8 characters.'
-      );
+      setMessage('Password must be at least 8 characters.');
       return;
     }
 
-    if (
-      newPassword !==
-      confirmPassword
-    ) {
-      setPasswordMessage(
-        'Your new passwords do not match.'
-      );
+    if (newPassword !== confirmPassword) {
+      setMessage('Passwords do not match.');
       return;
     }
 
-    setPasswordBusy(true);
-    setPasswordMessage('');
-
-    const { error } =
-      await supabase.auth.updateUser({
-        password:
-          newPassword
-      });
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
 
     if (error) {
-      setPasswordMessage(
-        error.message
-      );
-    } else {
-      setNewPassword('');
-      setConfirmPassword('');
-
-      setPasswordMessage(
-        'Your password has been changed.'
-      );
+      setMessage(error.message);
+      return;
     }
 
-    setPasswordBusy(false);
+    setNewPassword('');
+    setConfirmPassword('');
+    setMessage('Your password has been changed.');
   }
 
   return (
     <div className="page-container settings-page">
 
       <div className="page-heading">
-
-        <span className="section-label">
-          YOUR ACCOUNT
-        </span>
-
-        <h1>
-          Settings
-        </h1>
-
-        <p>
-          Manage your loyalty
-          club account.
-        </p>
-
+        <span className="section-label">YOUR ACCOUNT</span>
+        <h1>Settings</h1>
       </div>
 
       <section className="settings-card">
 
         <div className="settings-card-heading">
-
           <span className="settings-icon">
             <User size={18} />
           </span>
 
           <div>
-            <h2>
-              Profile information
-            </h2>
-
-            <p>
-              Keep your details up
-              to date.
-            </p>
+            <h2>Profile information</h2>
+            <p>Keep your details up to date.</p>
           </div>
-
         </div>
 
         <form onSubmit={saveProfile}>
 
           <div className="field">
-            <label>
-              Full name
-            </label>
-
+            <label>Full name</label>
             <input
               value={name}
-              onChange={(e) =>
-                setName(
-                  e.target.value
-                )
-              }
-              required
+              onChange={e => setName(e.target.value)}
             />
           </div>
 
           <div className="field">
-            <label>
-              Phone number
-            </label>
-
+            <label>Phone number</label>
             <input
               value={phone}
-              onChange={(e) =>
-                setPhone(
-                  e.target.value
-                )
-              }
-              placeholder="09xxxxxxxxx"
+              onChange={e => setPhone(e.target.value)}
             />
           </div>
 
           <div className="field">
-            <label>
-              Birthday
-            </label>
-
+            <label>Birthday</label>
             <input
               type="date"
               value={birthday}
-              onChange={(e) =>
-                setBirthday(
-                  e.target.value
-                )
-              }
+              onChange={e => setBirthday(e.target.value)}
             />
           </div>
 
-          {profileMessage && (
+          {message && (
             <div className="notice">
-              {profileMessage}
+              {message}
             </div>
           )}
 
-          <button
-            className="primary-button"
-            type="submit"
-            disabled={profileBusy}
-          >
+          <button className="primary-button">
             <Save size={16} />
-
-            {profileBusy
-              ? 'Saving...'
-              : 'Save changes'}
+            Save changes
           </button>
 
         </form>
@@ -2293,84 +1572,40 @@ function Settings({
       <section className="settings-card">
 
         <div className="settings-card-heading">
-
           <span className="settings-icon">
             <Lock size={18} />
           </span>
 
           <div>
-            <h2>
-              Change password
-            </h2>
-
-            <p>
-              Use at least 8
-              characters.
-            </p>
+            <h2>Change password</h2>
+            <p>Use at least 8 characters.</p>
           </div>
-
         </div>
 
         <form onSubmit={changePassword}>
 
           <div className="field">
-
-            <label>
-              New password
-            </label>
-
+            <label>New password</label>
             <input
               type="password"
               value={newPassword}
-              onChange={(e) =>
-                setNewPassword(
-                  e.target.value
-                )
-              }
-              placeholder="New password"
-              required
+              onChange={e => setNewPassword(e.target.value)}
               minLength={8}
             />
-
           </div>
 
           <div className="field">
-
-            <label>
-              Confirm new password
-            </label>
-
+            <label>Confirm new password</label>
             <input
               type="password"
-              value={
-                confirmPassword
-              }
-              onChange={(e) =>
-                setConfirmPassword(
-                  e.target.value
-                )
-              }
-              placeholder="Repeat new password"
-              required
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
               minLength={8}
             />
-
           </div>
 
-          {passwordMessage && (
-            <div className="notice">
-              {passwordMessage}
-            </div>
-          )}
-
-          <button
-            className="secondary-button"
-            type="submit"
-            disabled={passwordBusy}
-          >
-            {passwordBusy
-              ? 'Updating...'
-              : 'Update password'}
+          <button className="secondary-button">
+            Update password
           </button>
 
         </form>
@@ -2379,7 +1614,6 @@ function Settings({
 
       <button
         className="logout-button"
-        type="button"
         onClick={onLogout}
       >
         <LogOut size={17} />
@@ -2395,475 +1629,150 @@ function Settings({
 ===================================================== */
 
 function Staff() {
-  const [staffSession, setStaffSession] =
-    useState(null);
-
-  const [checking, setChecking] =
-    useState(true);
-
-  const [email, setEmail] =
-    useState('');
-
-  const [password, setPassword] =
-    useState('');
-
-  const [remember, setRemember] =
-    useState(
-      localStorage.getItem(
-        'staffRemember'
-      ) === 'true'
-    );
-
-  const [customerCode, setCustomerCode] =
-    useState('');
-
-  const [customer, setCustomer] =
-    useState(null);
-
-  const [amount, setAmount] =
-    useState('');
-
-  const [notes, setNotes] =
-    useState('');
-
-  const [msg, setMsg] =
-    useState('');
-
-  const [busy, setBusy] =
-    useState(false);
+  const [staffSession, setStaffSession] = useState(null);
+  const [checking, setChecking] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [customerCode, setCustomerCode] = useState('');
+  const [customer, setCustomer] = useState(null);
+  const [amount, setAmount] = useState('');
+  const [notes, setNotes] = useState('');
+  const [msg, setMsg] = useState('');
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    checkStaffSession();
+    checkSession();
   }, []);
 
-  async function checkStaffSession() {
-    const { data } =
-      await supabase.auth.getSession();
-
-    if (data.session) {
-      const { data: staff } =
-        await supabase
-          .from('staff_users')
-          .select('*')
-          .eq(
-            'id',
-            data.session.user.id
-          )
-          .eq('active', true)
-          .maybeSingle();
-
-      if (staff) {
-        setStaffSession(
-          data.session
-        );
-      } else {
-        setStaffSession(null);
-      }
-    }
-
+  async function checkSession() {
+    const { data } = await supabase.auth.getSession();
+    setStaffSession(data.session);
     setChecking(false);
   }
 
-  async function staffLogin(e) {
+  async function login(e) {
     e.preventDefault();
 
     setBusy(true);
     setMsg('');
 
-    const {
-      data,
-      error
-    } =
+    const { data, error } =
       await supabase.auth.signInWithPassword({
-        email:
-          email.trim(),
+        email,
         password
       });
 
     if (error) {
-      setMsg(
-        error.message
-      );
-
+      setMsg(error.message);
       setBusy(false);
       return;
     }
 
-    const { data: staff } =
-      await supabase
-        .from('staff_users')
-        .select('*')
-        .eq(
-          'id',
-          data.user.id
-        )
-        .eq(
-          'active',
-          true
-        )
-        .maybeSingle();
-
-    if (!staff) {
-      await supabase.auth.signOut();
-
-      setMsg(
-        'This account does not have staff access.'
-      );
-
-      setBusy(false);
-      return;
-    }
-
-    if (remember) {
-      localStorage.setItem(
-        'staffRemember',
-        'true'
-      );
-    } else {
-      localStorage.removeItem(
-        'staffRemember'
-      );
-    }
-
-    setStaffSession(
-      data.session
-    );
-
+    setStaffSession(data.session);
     setBusy(false);
   }
 
-  async function staffLogout() {
+  async function logout() {
     await supabase.auth.signOut();
     setStaffSession(null);
   }
 
   async function findCustomer() {
-    const code =
-      customerCode.trim();
-
+    setBusy(true);
     setMsg('');
     setCustomer(null);
 
-    if (!code) {
-      setMsg(
-        'Please enter the customer QR code.'
-      );
-      return;
-    }
-
-    setBusy(true);
-
-    const {
-      data,
-      error
-    } = await supabase
+    const { data, error } = await supabase
       .from('customers')
       .select('*')
-      .eq(
-        'customer_code',
-        code
-      )
+      .eq('customer_code', customerCode.trim())
       .maybeSingle();
 
-    setBusy(false);
-
     if (error) {
-      setMsg(
-        error.message
-      );
-      return;
+      setMsg(error.message);
+    } else if (!data) {
+      setMsg('Customer not found.');
+    } else {
+      setCustomer(data);
+      setNotes(data.notes || '');
     }
 
-    if (!data) {
-      setMsg(
-        'Customer not found.'
-      );
-      return;
-    }
-
-    setCustomer(data);
-    setNotes(
-      data.notes || ''
-    );
-
-    setMsg(
-      `Customer found: ${data.full_name}`
-    );
+    setBusy(false);
   }
 
   async function addPoints() {
-    if (!customer) {
-      setMsg(
-        'Find a customer first.'
-      );
+    if (!customer) return;
+
+    const purchase = Number(amount);
+
+    if (!purchase || purchase <= 0) {
+      setMsg('Enter a valid purchase amount.');
       return;
     }
 
-    const purchase =
-      parseFloat(amount);
-
-    if (
-      !Number.isFinite(
-        purchase
-      ) ||
-      purchase <= 0
-    ) {
-      setMsg(
-        'Enter a valid purchase amount.'
-      );
-      return;
-    }
-
-    const points =
-      purchase / 100;
-
+    const points = purchase / 100;
     const newPoints =
-      Number(
-        customer.points || 0
-      ) + points;
+      Number(customer.points || 0) + points;
 
     setBusy(true);
-    setMsg('');
 
-    const {
-      error: updateError
-    } = await supabase
+    const { error } = await supabase
       .from('customers')
-      .update({
-        points: newPoints
-      })
-      .eq(
-        'id',
-        customer.id
-      );
+      .update({ points: newPoints })
+      .eq('id', customer.id);
 
-    if (updateError) {
-      setMsg(
-        updateError.message
-      );
+    if (error) {
+      setMsg(error.message);
       setBusy(false);
       return;
     }
 
-    const {
-      error: transactionError
-    } = await supabase
+    await supabase
       .from('transactions')
       .insert({
-        customer_id:
-          customer.id,
-        transaction_type:
-          'purchase',
-        points_earned:
-          points
+        customer_id: customer.id,
+        transaction_type: 'purchase',
+        points_earned: points
       });
-
-    if (transactionError) {
-      setMsg(
-        transactionError.message
-      );
-      setBusy(false);
-      return;
-    }
 
     setCustomer({
       ...customer,
-      points:
-        newPoints
+      points: newPoints
     });
 
     setAmount('');
-
     setMsg(
-      `Success! ${points.toFixed(
-        2
-      )} Sushi Points added.`
+      `Success! ${points.toFixed(2)} Sushi Points added.`
     );
 
     setBusy(false);
   }
 
   async function saveNotes() {
-    if (!customer) {
-      setMsg(
-        'Find a customer first.'
-      );
-      return;
-    }
+    if (!customer) return;
 
-    setBusy(true);
-    setMsg('');
-
-    const { error } =
-      await supabase
-        .from('customers')
-        .update({
-          notes
-        })
-        .eq(
-          'id',
-          customer.id
-        );
+    const { error } = await supabase
+      .from('customers')
+      .update({ notes })
+      .eq('id', customer.id);
 
     if (error) {
-      setMsg(
-        error.message
-      );
-    } else {
-      setCustomer({
-        ...customer,
-        notes
-      });
-
-      setMsg(
-        'Customer notes saved.'
-      );
-    }
-
-    setBusy(false);
-  }
-
-  async function claimBirthdayReward() {
-    if (!customer) {
-      setMsg(
-        'Find a customer first.'
-      );
+      setMsg(error.message);
       return;
     }
 
-    if (!customer.birthday) {
-      setMsg(
-        'This customer has no birthday saved.'
-      );
-      return;
-    }
-
-    const today =
-      new Date();
-
-    const birthday =
-      new Date(
-        customer.birthday
-      );
-
-    const isBirthday =
-      today.getMonth() ===
-        birthday.getMonth() &&
-      today.getDate() ===
-        birthday.getDate();
-
-    if (!isBirthday) {
-      setMsg(
-        'Today is not this customer’s birthday.'
-      );
-      return;
-    }
-
-    const year =
-      today.getFullYear();
-
-    setBusy(true);
-    setMsg('');
-
-    const {
-      data: claimed,
-      error: checkError
-    } = await supabase
-      .from('birthday_claims')
-      .select('id')
-      .eq(
-        'customer_id',
-        customer.id
-      )
-      .eq(
-        'birthday_year',
-        year
-      )
-      .maybeSingle();
-
-    if (checkError) {
-      setMsg(
-        checkError.message
-      );
-      setBusy(false);
-      return;
-    }
-
-    if (claimed) {
-      setMsg(
-        'Birthday reward already claimed this year.'
-      );
-      setBusy(false);
-      return;
-    }
-
-    const {
-      data: reward,
-      error: rewardError
-    } = await supabase
-      .from(
-        'birthday_rewards'
-      )
-      .select('*')
-      .eq(
-        'active',
-        true
-      )
-      .order('id', {
-        ascending: true
-      })
-      .limit(1)
-      .maybeSingle();
-
-    if (rewardError) {
-      setMsg(
-        rewardError.message
-      );
-      setBusy(false);
-      return;
-    }
-
-    if (!reward) {
-      setMsg(
-        'No active birthday reward found.'
-      );
-      setBusy(false);
-      return;
-    }
-
-    const {
-      error: claimError
-    } = await supabase
-      .from(
-        'birthday_claims'
-      )
-      .insert({
-        customer_id:
-          customer.id,
-        birthday_year:
-          year
-      });
-
-    if (claimError) {
-      setMsg(
-        claimError.message
-      );
-      setBusy(false);
-      return;
-    }
-
-    setMsg(
-      `Birthday reward claimed: ${reward.reward_text}`
-    );
-
-    setBusy(false);
+    setMsg('Customer notes saved.');
   }
 
   if (checking) {
     return (
-      <LoadingScreen
-        text="Checking staff access"
-      />
+      <div className="loading-screen">
+        <div className="loading-mark">🍣</div>
+        <div className="loading-brand">AT HOME SUSHI</div>
+        <div className="loading-text">
+          Checking staff access
+        </div>
+      </div>
     );
   }
 
@@ -2874,90 +1783,37 @@ function Staff() {
         <div className="auth-shell">
 
           <div className="auth-brand">
-
-            <img
-              src={logo}
-              alt="At Home Sushi"
-            />
-
-            <h1>
-              AT HOME SUSHI
-            </h1>
-
-            <span>
-              STAFF ACCESS
-            </span>
-
+            <img src={logo} alt="At Home Sushi" />
+            <h1>AT HOME SUSHI</h1>
+            <span>STAFF ACCESS</span>
           </div>
 
           <div className="auth-card">
 
             <div className="auth-heading">
-
-              <h2>
-                Staff Login
-              </h2>
-
+              <h2>Staff Login</h2>
               <p>
-                Manage customer
-                points and rewards.
+                Manage customer points and rewards.
               </p>
-
             </div>
 
-            <form
-              onSubmit={
-                staffLogin
-              }
-            >
+            <form onSubmit={login}>
 
               <div className="field">
-
-                <label>
-                  Email
-                </label>
-
+                <label>Email</label>
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) =>
-                    setEmail(
-                      e.target.value
-                    )
-                  }
-                  placeholder="Staff email"
+                  onChange={e => setEmail(e.target.value)}
                   required
                 />
-
               </div>
 
               <PasswordField
                 value={password}
-                onChange={(e) =>
-                  setPassword(
-                    e.target.value
-                  )
-                }
+                onChange={e => setPassword(e.target.value)}
                 placeholder="Staff password"
               />
-
-              <label className="remember-row">
-
-                <input
-                  type="checkbox"
-                  checked={remember}
-                  onChange={(e) =>
-                    setRemember(
-                      e.target.checked
-                    )
-                  }
-                />
-
-                <span>
-                  Remember me
-                </span>
-
-              </label>
 
               {msg && (
                 <div className="notice">
@@ -2967,14 +1823,10 @@ function Staff() {
 
               <button
                 className="primary-button"
-                type="submit"
                 disabled={busy}
               >
                 <LogIn size={17} />
-
-                {busy
-                  ? 'Logging in...'
-                  : 'Log in'}
+                {busy ? 'Logging in...' : 'Log in'}
               </button>
 
             </form>
@@ -2982,7 +1834,6 @@ function Staff() {
           </div>
 
         </div>
-
       </div>
     );
   }
@@ -2993,29 +1844,17 @@ function Staff() {
       <header className="app-header">
 
         <div className="header-brand">
-
-          <img
-            src={logo}
-            alt="At Home Sushi"
-          />
+          <img src={logo} alt="At Home Sushi" />
 
           <div>
-
-            <strong>
-              AT HOME SUSHI
-            </strong>
-
-            <span>
-              STAFF PANEL
-            </span>
-
+            <strong>AT HOME SUSHI</strong>
+            <span>STAFF PANEL</span>
           </div>
-
         </div>
 
         <button
           className="header-action"
-          onClick={staffLogout}
+          onClick={logout}
         >
           <LogOut size={18} />
         </button>
@@ -3025,20 +1864,11 @@ function Staff() {
       <main className="staff-main">
 
         <div className="staff-heading">
-
-          <span>
-            STAFF
-          </span>
-
-          <h1>
-            Customer Points
-          </h1>
-
+          <span>STAFF</span>
+          <h1>Customer Points</h1>
           <p>
-            Scan or enter a customer's
-            loyalty code.
+            Scan or enter a customer's loyalty code.
           </p>
-
         </div>
 
         <div className="staff-card">
@@ -3048,35 +1878,21 @@ function Staff() {
           </div>
 
           <div className="field">
-
-            <label>
-              Customer QR / Code
-            </label>
-
+            <label>Customer QR / Code</label>
             <input
               value={customerCode}
-              onChange={(e) =>
-                setCustomerCode(
-                  e.target.value
-                )
-              }
+              onChange={e => setCustomerCode(e.target.value)}
               placeholder="Enter customer code"
             />
-
           </div>
 
           <button
             className="primary-button"
-            onClick={
-              findCustomer
-            }
+            onClick={findCustomer}
             disabled={busy}
           >
             <ScanLine size={18} />
-
-            {busy
-              ? 'Finding...'
-              : 'Find Customer'}
+            Find Customer
           </button>
 
         </div>
@@ -3088,9 +1904,7 @@ function Staff() {
               CUSTOMER
             </div>
 
-            <h2>
-              {customer.full_name}
-            </h2>
+            <h2>{customer.full_name}</h2>
 
             {customer.email && (
               <p className="staff-muted">
@@ -3107,52 +1921,22 @@ function Staff() {
             <div className="staff-balances">
 
               <div>
-
                 <Star size={18} />
-
-                <span>
-                  POINTS
-                </span>
-
+                <span>POINTS</span>
                 <strong>
-                  {Number(
-                    customer.points ||
-                      0
-                  ).toFixed(2)}
+                  {Number(customer.points || 0).toFixed(2)}
                 </strong>
-
               </div>
 
               <div>
-
                 <Ticket size={18} />
-
-                <span>
-                  STAMPS
-                </span>
-
+                <span>STAMPS</span>
                 <strong>
-                  {customer.stamps ||
-                    0}
+                  {customer.stamps || 0}
                 </strong>
-
               </div>
 
             </div>
-
-            {customer.birthday && (
-              <p className="staff-muted birthday-line">
-
-                <Cake size={15} />
-
-                Birthday:{' '}
-
-                {new Date(
-                  customer.birthday
-                ).toLocaleDateString()}
-
-              </p>
-            )}
 
             <div className="staff-divider" />
 
@@ -3161,64 +1945,31 @@ function Staff() {
             </div>
 
             <div className="field">
-
-              <label>
-                Purchase amount
-              </label>
-
+              <label>Purchase amount</label>
               <input
                 type="number"
-                min="0"
-                step="0.01"
                 value={amount}
-                onChange={(e) =>
-                  setAmount(
-                    e.target.value
-                  )
-                }
+                onChange={e => setAmount(e.target.value)}
                 placeholder="₱0.00"
               />
-
             </div>
 
-            {amount &&
-              Number(amount) >
-                0 && (
-                <p className="points-preview">
-                  Points to add:{' '}
-                  <strong>
-                    {(
-                      Number(
-                        amount
-                      ) / 100
-                    ).toFixed(2)}
-                  </strong>
-                </p>
-              )}
+            {amount && Number(amount) > 0 && (
+              <p className="points-preview">
+                Points to add:{' '}
+                <strong>
+                  {(Number(amount) / 100).toFixed(2)}
+                </strong>
+              </p>
+            )}
 
             <button
               className="primary-button"
-              onClick={
-                addPoints
-              }
+              onClick={addPoints}
               disabled={busy}
             >
               <PlusCircle size={18} />
-
-              {busy
-                ? 'Updating...'
-                : 'Add Points'}
-            </button>
-
-            <button
-              className="secondary-staff-button"
-              onClick={
-                claimBirthdayReward
-              }
-              disabled={busy}
-            >
-              <Cake size={17} />
-              Claim Birthday Reward
+              Add Points
             </button>
 
             <div className="staff-divider" />
@@ -3228,34 +1979,18 @@ function Staff() {
             </div>
 
             <div className="field">
-
-              <label>
-                <FileText size={14} />
-                Notes
-              </label>
-
               <textarea
                 value={notes}
-                onChange={(e) =>
-                  setNotes(
-                    e.target.value
-                  )
-                }
-                placeholder="Add notes about this customer..."
+                onChange={e => setNotes(e.target.value)}
+                placeholder="Add notes..."
               />
-
             </div>
 
             <button
               className="secondary-staff-button"
-              onClick={
-                saveNotes
-              }
-              disabled={busy}
+              onClick={saveNotes}
             >
-              {busy
-                ? 'Saving...'
-                : 'Save Notes'}
+              Save Notes
             </button>
 
           </div>
@@ -3277,92 +2012,88 @@ function Staff() {
    ADMIN LOGIN
 ===================================================== */
 
-function AdminLogin({
-  onLoggedIn
-}) {
-  const [email, setEmail] =
-    useState(
-      localStorage.getItem(
-        'adminLoginEmail'
-      ) || ''
-    );
+function Admin() {
+  const [session, setSession] = useState(null);
+  const [checking, setChecking] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
 
-  const [password, setPassword] =
-    useState('');
+  const [email, setEmail] = useState(
+    localStorage.getItem('adminEmail') || ''
+  );
 
-  const [remember, setRemember] =
-    useState(
-      localStorage.getItem(
-        'adminRemember'
-      ) === 'true'
-    );
+  const [password, setPassword] = useState('');
+  const [remember, setRemember] = useState(
+    localStorage.getItem('adminRemember') === 'true'
+  );
+  const [message, setMessage] = useState('');
+  const [busy, setBusy] = useState(false);
 
-  const [busy, setBusy] =
-    useState(false);
+  useEffect(() => {
+    checkAdminSession();
+  }, []);
 
-  const [msg, setMsg] =
-    useState('');
+  async function checkAdminSession() {
+    const { data } = await supabase.auth.getSession();
+
+    if (!data.session) {
+      setChecking(false);
+      return;
+    }
+
+    const ok = await verifyAdmin(data.session.user);
+
+    setSession(data.session);
+    setAuthorized(ok);
+    setChecking(false);
+  }
+
+  async function verifyAdmin(user) {
+    if (!user?.id) return false;
+
+    /*
+      This uses the admin_users table we created.
+      It checks the logged-in user's ID.
+    */
+
+    const { data, error } = await supabase
+      .from('admin_users')
+      .select('id,email')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Admin verification:', error);
+      return false;
+    }
+
+    return !!data;
+  }
 
   async function login(e) {
     e.preventDefault();
 
     setBusy(true);
-    setMsg('');
+    setMessage('');
 
-    const {
-      data,
-      error
-    } =
+    const { data, error } =
       await supabase.auth.signInWithPassword({
-        email:
-          email.trim(),
+        email: email.trim(),
         password
       });
 
     if (error) {
-      setMsg(
-        error.message
-      );
+      setMessage(error.message);
       setBusy(false);
       return;
     }
 
-    const {
-      data: staff,
-      error: staffError
-    } = await supabase
-      .from('staff_users')
-      .select('*')
-      .eq(
-        'id',
-        data.user.id
-      )
-      .eq(
-        'role',
-        'admin'
-      )
-      .eq(
-        'active',
-        true
-      )
-      .maybeSingle();
+    const ok = await verifyAdmin(data.user);
 
-    if (staffError) {
+    if (!ok) {
       await supabase.auth.signOut();
 
-      setMsg(
-        staffError.message
-      );
-
-      setBusy(false);
-      return;
-    }
-
-    if (!staff) {
-      await supabase.auth.signOut();
-
-      setMsg(
-        'This account does not have Admin access.'
+      setMessage(
+        'This account does not have administrator access.'
       );
 
       setBusy(false);
@@ -3370,147 +2101,144 @@ function AdminLogin({
     }
 
     if (remember) {
-      localStorage.setItem(
-        'adminRemember',
-        'true'
-      );
-
-      localStorage.setItem(
-        'adminLoginEmail',
-        email.trim()
-      );
+      localStorage.setItem('adminRemember', 'true');
+      localStorage.setItem('adminEmail', email.trim());
     } else {
-      localStorage.removeItem(
-        'adminRemember'
-      );
-
-      localStorage.removeItem(
-        'adminLoginEmail'
-      );
+      localStorage.removeItem('adminRemember');
+      localStorage.removeItem('adminEmail');
     }
 
-    setPassword('');
-    onLoggedIn(
-      data.session,
-      staff
-    );
-
+    setSession(data.session);
+    setAuthorized(true);
     setBusy(false);
   }
 
+  async function logout() {
+    await supabase.auth.signOut();
+    setSession(null);
+    setAuthorized(false);
+  }
+
+  if (checking) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-mark">🍣</div>
+        <div className="loading-brand">
+          AT HOME SUSHI
+        </div>
+        <div className="loading-text">
+          Checking administrator access
+        </div>
+      </div>
+    );
+  }
+
+  if (!session || !authorized) {
+    return (
+      <AdminLogin
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        remember={remember}
+        setRemember={setRemember}
+        message={message}
+        busy={busy}
+        onSubmit={login}
+      />
+    );
+  }
+
   return (
-    <div className="auth-page">
+    <AdminDashboard
+      session={session}
+      onLogout={logout}
+    />
+  );
+}
 
-      <div className="auth-shell">
+/* =====================================================
+   ADMIN LOGIN
+===================================================== */
 
-        <div className="auth-brand">
+function AdminLogin({
+  email,
+  setEmail,
+  password,
+  setPassword,
+  remember,
+  setRemember,
+  message,
+  busy,
+  onSubmit
+}) {
+  return (
+    <div className="admin-login-page">
 
-          <img
-            src={logo}
-            alt="At Home Sushi"
-          />
+      <div className="admin-login-card">
 
-          <h1>
-            AT HOME SUSHI
-          </h1>
-
-          <span>
-            ADMIN PORTAL
-          </span>
-
+        <div className="admin-login-logo">
+          <img src={logo} alt="At Home Sushi" />
         </div>
 
-        <div className="auth-card">
+        <div className="admin-login-eyebrow">
+          AT HOME SUSHI
+        </div>
 
-          <div className="auth-heading">
+        <h1>Admin Portal</h1>
 
-            <h2>
-              Admin Login
-            </h2>
+        <p>
+          Sign in to manage your loyalty club,
+          menu and business.
+        </p>
 
-            <p>
-              Manage your At Home
-              Sushi loyalty club.
-            </p>
+        <form onSubmit={onSubmit}>
 
-          </div>
-
-          <form
-            onSubmit={login}
-          >
-
-            <div className="field">
-
-              <label>
-                Admin email
-              </label>
-
-              <input
-                type="email"
-                value={email}
-                onChange={(e) =>
-                  setEmail(
-                    e.target.value
-                  )
-                }
-                placeholder="Admin email"
-                required
-              />
-
-            </div>
-
-            <PasswordField
-              value={password}
-              onChange={(e) =>
-                setPassword(
-                  e.target.value
-                )
-              }
-              placeholder="Admin password"
+          <div className="field">
+            <label>Email address</label>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="admin@email.com"
+              required
             />
-
-            <label className="remember-row">
-
-              <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) =>
-                  setRemember(
-                    e.target.checked
-                  )
-                }
-              />
-
-              <span>
-                Remember me
-              </span>
-
-            </label>
-
-            {msg && (
-              <div className="notice">
-                {msg}
-              </div>
-            )}
-
-            <button
-              className="primary-button"
-              type="submit"
-              disabled={busy}
-            >
-              <Lock size={17} />
-
-              {busy
-                ? 'Checking access...'
-                : 'Enter Admin'}
-            </button>
-
-          </form>
-
-          <div className="auth-footer">
-            Authorized staff only.
           </div>
 
+          <PasswordField
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            placeholder="Your password"
+          />
+
+          <label className="remember-row">
+            <input
+              type="checkbox"
+              checked={remember}
+              onChange={e => setRemember(e.target.checked)}
+            />
+            <span>Remember me</span>
+          </label>
+
+          {message && (
+            <div className="notice">
+              {message}
+            </div>
+          )}
+
+          <button
+            className="admin-login-button"
+            disabled={busy}
+          >
+            {busy ? 'Signing in...' : 'Sign in'}
+            <ChevronRight size={17} />
+          </button>
+
+        </form>
+
+        <div className="admin-login-footer">
+          <span>🍣</span>
+          At Home Sushi Management
         </div>
 
       </div>
@@ -3520,460 +2248,234 @@ function AdminLogin({
 }
 
 /* =====================================================
-   ADMIN
-===================================================== */
-
-function Admin() {
-  const [session, setSession] =
-    useState(null);
-
-  const [admin, setAdmin] =
-    useState(null);
-
-  const [checking, setChecking] =
-    useState(true);
-
-  useEffect(() => {
-    checkAdmin();
-
-    const {
-      data: {
-        subscription
-      }
-    } =
-      supabase.auth.onAuthStateChange(
-        async (_event, currentSession) => {
-          if (!currentSession) {
-            setSession(null);
-            setAdmin(null);
-            return;
-          }
-
-          await verifyAdmin(
-            currentSession
-          );
-        }
-      );
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  async function verifyAdmin(
-    currentSession
-  ) {
-    const {
-      data,
-      error
-    } = await supabase
-      .from('staff_users')
-      .select('*')
-      .eq(
-        'id',
-        currentSession.user.id
-      )
-      .eq(
-        'role',
-        'admin'
-      )
-      .eq(
-        'active',
-        true
-      )
-      .maybeSingle();
-
-    if (
-      error ||
-      !data
-    ) {
-      setSession(null);
-      setAdmin(null);
-      setChecking(false);
-      return;
-    }
-
-    setSession(
-      currentSession
-    );
-
-    setAdmin(data);
-    setChecking(false);
-  }
-
-  async function checkAdmin() {
-    setChecking(true);
-
-    const {
-      data
-    } =
-      await supabase.auth.getSession();
-
-    if (!data.session) {
-      setSession(null);
-      setAdmin(null);
-      setChecking(false);
-      return;
-    }
-
-    await verifyAdmin(
-      data.session
-    );
-  }
-
-  async function logout() {
-    await supabase.auth.signOut();
-    setSession(null);
-    setAdmin(null);
-  }
-
-  if (checking) {
-    return (
-      <LoadingScreen
-        text="Checking admin access"
-      />
-    );
-  }
-
-  if (!session || !admin) {
-    return (
-      <AdminLogin
-        onLoggedIn={(
-          newSession,
-          newAdmin
-        ) => {
-          setSession(
-            newSession
-          );
-          setAdmin(
-            newAdmin
-          );
-        }}
-      />
-    );
-  }
-
-  return (
-    <AdminDashboard
-      session={session}
-      admin={admin}
-      onLogout={logout}
-    />
-  );
-}
-
-/* =====================================================
    ADMIN DASHBOARD
 ===================================================== */
 
 function AdminDashboard({
   session,
-  admin,
   onLogout
 }) {
-  const [section, setSection] =
-    useState('dashboard');
+  const [page, setPage] = useState('overview');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  const [mobileMenu, setMobileMenu] =
-    useState(false);
-
-  const menu = [
+  const navigation = [
     {
-      id: 'dashboard',
-      label: 'Dashboard',
-      icon: BarChart3
+      title: 'Overview',
+      items: [
+        ['overview', 'Dashboard', LayoutDashboard]
+      ]
     },
     {
-      id: 'business',
-      label: 'Business',
-      icon: Store
+      title: 'Manage',
+      items: [
+        ['menu', 'Menu', UtensilsCrossed],
+        ['rewards', 'Rewards', Gift],
+        ['customers', 'Customers', Users],
+        ['transactions', 'Transactions', Receipt],
+        ['birthday', 'Birthday Rewards', CakeSlice]
+      ]
     },
     {
-      id: 'menu',
-      label: 'Menu Management',
-      icon: Utensils
+      title: 'Customize',
+      items: [
+        ['loyalty', 'Loyalty', Star],
+        ['homepage', 'Homepage', Home],
+        ['business', 'Business Info', Store],
+        ['images', 'Images', ImageIcon]
+      ]
     },
     {
-      id: 'rewards',
-      label: 'Rewards',
-      icon: Gift
-    },
-    {
-      id: 'loyalty',
-      label: 'Loyalty Settings',
-      icon: Star
-    },
-    {
-      id: 'customers',
-      label: 'Customers',
-      icon: Users
-    },
-    {
-      id: 'transactions',
-      label: 'Transactions',
-      icon: History
-    },
-    {
-      id: 'birthday',
-      label: 'Birthday Rewards',
-      icon: Cake
-    },
-    {
-      id: 'staff',
-      label: 'Staff & Admin',
-      icon: Shield
-    },
-    {
-      id: 'homepage',
-      label: 'Homepage',
-      icon: HomeIcon
-    },
-    {
-      id: 'images',
-      label: 'Images',
-      icon: ImageIcon
-    },
-    {
-      id: 'general',
-      label: 'General Settings',
-      icon: SlidersHorizontal
+      title: 'System',
+      items: [
+        ['staff', 'Admin & Staff', Shield],
+        ['settings', 'App Settings', SlidersHorizontal]
+      ]
     }
   ];
 
-  const current =
-    menu.find(
-      (item) =>
-        item.id === section
-    ) || menu[0];
-
-  function selectSection(id) {
-    setSection(id);
-    setMobileMenu(false);
-  }
+  const titles = {
+    overview: 'Dashboard',
+    menu: 'Menu Management',
+    rewards: 'Rewards',
+    customers: 'Customers',
+    transactions: 'Transactions',
+    birthday: 'Birthday Rewards',
+    loyalty: 'Loyalty Settings',
+    homepage: 'Homepage',
+    business: 'Business Information',
+    images: 'Image Library',
+    staff: 'Admin & Staff',
+    settings: 'App Settings'
+  };
 
   return (
-    <div className="admin-shell">
+    <div className="admin-layout">
 
       <aside
         className={`admin-sidebar ${
-          mobileMenu
-            ? 'open'
-            : ''
+          sidebarOpen ? 'open' : 'collapsed'
         }`}
       >
 
         <div className="admin-sidebar-brand">
 
-          <img
-            src={logo}
-            alt="At Home Sushi"
-          />
+          <img src={logo} alt="At Home Sushi" />
 
-          <div>
-            <strong>
-              AT HOME SUSHI
-            </strong>
-
-            <span>
-              ADMIN
-            </span>
-          </div>
+          {sidebarOpen && (
+            <div>
+              <strong>AT HOME SUSHI</strong>
+              <span>ADMIN</span>
+            </div>
+          )}
 
         </div>
 
-        <nav className="admin-nav">
+        <nav className="admin-navigation">
 
-          {menu.map(
-            (item) => {
-              const Icon =
-                item.icon;
+          {navigation.map(section => (
+            <div
+              className="admin-nav-section"
+              key={section.title}
+            >
 
-              return (
-                <button
-                  key={item.id}
-                  className={
-                    section ===
-                    item.id
-                      ? 'active'
-                      : ''
-                  }
-                  onClick={() =>
-                    selectSection(
-                      item.id
-                    )
-                  }
-                >
-                  <Icon
-                    size={18}
-                  />
+              {sidebarOpen && (
+                <div className="admin-nav-label">
+                  {section.title}
+                </div>
+              )}
 
-                  <span>
-                    {item.label}
-                  </span>
-                </button>
-              );
-            }
-          )}
+              {section.items.map(
+                ([id, label, Icon]) => (
+                  <button
+                    key={id}
+                    className={
+                      page === id
+                        ? 'active'
+                        : ''
+                    }
+                    onClick={() => setPage(id)}
+                    title={label}
+                  >
+                    <Icon size={18} />
+
+                    {sidebarOpen && (
+                      <span>{label}</span>
+                    )}
+
+                  </button>
+                )
+              )}
+
+            </div>
+          ))}
 
         </nav>
 
         <div className="admin-sidebar-bottom">
 
-          <div className="admin-user">
-
-            <div className="admin-user-icon">
-              <User
-                size={17}
-              />
-            </div>
-
-            <div>
-              <strong>
-                {admin.full_name ||
-                  'Admin'}
-              </strong>
-
-              <span>
-                {admin.email ||
-                  session.user.email}
-              </span>
-            </div>
-
-          </div>
-
           <button
-            className="admin-logout"
-            onClick={onLogout}
+            onClick={() =>
+              window.open('/', '_blank')
+            }
           >
-            <LogOut
-              size={17}
-            />
-            Log out
+            <Home size={18} />
+            {sidebarOpen && <span>View website</span>}
+          </button>
+
+          <button onClick={onLogout}>
+            <LogOut size={18} />
+            {sidebarOpen && <span>Sign out</span>}
           </button>
 
         </div>
 
       </aside>
 
-      {mobileMenu && (
-        <div
-          className="admin-sidebar-overlay"
-          onClick={() =>
-            setMobileMenu(false)
-          }
-        />
-      )}
+      <div className="admin-main">
 
-      <div className="admin-content">
+        <header className="admin-topbar">
 
-        <header className="admin-header">
+          <div className="admin-topbar-left">
 
-          <button
-            className="admin-mobile-button"
-            onClick={() =>
-              setMobileMenu(
-                (v) => !v
-              )
-            }
-          >
-            <SettingsIcon
-              size={20}
-            />
-          </button>
+            <button
+              className="sidebar-toggle"
+              onClick={() =>
+                setSidebarOpen(v => !v)
+              }
+            >
+              {sidebarOpen
+                ? <PanelLeftClose size={20} />
+                : <PanelLeftOpen size={20} />}
+            </button>
 
-          <div>
-
-            <span className="admin-breadcrumb">
-              ADMIN /{' '}
-              {current.label.toUpperCase()}
-            </span>
-
-            <h1>
-              {current.label}
-            </h1>
+            <div>
+              <span>ADMINISTRATION</span>
+              <h1>{titles[page]}</h1>
+            </div>
 
           </div>
 
-          <div className="admin-header-user">
+          <div className="admin-topbar-right">
 
-            <span>
-              Admin
-            </span>
+            <div className="admin-user">
 
-            <div>
-              <User
-                size={17}
-              />
+              <div className="admin-avatar">
+                {(session.user.email || 'A')
+                  .charAt(0)
+                  .toUpperCase()}
+              </div>
+
+              <div>
+                <strong>Administrator</strong>
+                <span>{session.user.email}</span>
+              </div>
+
             </div>
 
           </div>
 
         </header>
 
-        <main className="admin-main">
+        <main className="admin-content">
 
-          {section ===
-            'dashboard' && (
-            <AdminOverview
-              setSection={
-                setSection
-              }
-            />
-          )}
+          {page === 'overview' && <AdminOverview />}
 
-          {section ===
-            'business' && (
-            <AdminBusiness />
-          )}
+          {page === 'menu' && <AdminMenu />}
 
-          {section ===
-            'menu' && (
-            <AdminMenu />
-          )}
+          {page === 'rewards' && <AdminRewards />}
 
-          {section ===
-            'rewards' && (
-            <AdminRewards />
-          )}
+          {page === 'customers' && <AdminCustomers />}
 
-          {section ===
-            'loyalty' && (
-            <AdminLoyalty />
-          )}
-
-          {section ===
-            'customers' && (
-            <AdminCustomers />
-          )}
-
-          {section ===
-            'transactions' && (
+          {page === 'transactions' && (
             <AdminTransactions />
           )}
 
-          {section ===
-            'birthday' && (
+          {page === 'birthday' && (
             <AdminBirthday />
           )}
 
-          {section ===
-            'staff' && (
-            <AdminStaff />
+          {page === 'loyalty' && (
+            <AdminLoyalty />
           )}
 
-          {section ===
-            'homepage' && (
+          {page === 'homepage' && (
             <AdminHomepage />
           )}
 
-          {section ===
-            'images' && (
+          {page === 'business' && (
+            <AdminBusiness />
+          )}
+
+          {page === 'images' && (
             <AdminImages />
           )}
 
-          {section ===
-            'general' && (
-            <AdminGeneral />
+          {page === 'staff' && (
+            <AdminStaff />
+          )}
+
+          {page === 'settings' && (
+            <AdminAppSettings />
           )}
 
         </main>
@@ -3988,293 +2490,226 @@ function AdminDashboard({
    ADMIN OVERVIEW
 ===================================================== */
 
-function AdminOverview({
-  setSection
-}) {
-  const [stats, setStats] =
-    useState({
-      customers: 0,
-      menu: 0,
-      rewards: 0,
-      transactions: 0
-    });
+function AdminOverview() {
+  const [customers, setCustomers] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [rewards, setRewards] = useState([]);
+  const [menu, setMenu] = useState([]);
 
-  const [loading, setLoading] =
-    useState(true);
-
-  useEffect(() => {
-    loadStats();
-  }, []);
-
-  async function loadStats() {
-    setLoading(true);
-
+  async function load() {
     const [
-      customers,
-      menu,
-      rewards,
-      transactions
+      customerResult,
+      transactionResult,
+      rewardResult,
+      menuResult
     ] = await Promise.all([
-      supabase
-        .from('customers')
-        .select(
-          'id',
-          {
-            count:
-              'exact',
-            head: true
-          }
-        ),
-
-      supabase
-        .from('menu_items')
-        .select(
-          'id',
-          {
-            count:
-              'exact',
-            head: true
-          }
-        ),
-
-      supabase
-        .from('rewards')
-        .select(
-          'id',
-          {
-            count:
-              'exact',
-            head: true
-          }
-        ),
-
+      supabase.from('customers').select('*'),
       supabase
         .from('transactions')
-        .select(
-          'id',
-          {
-            count:
-              'exact',
-            head: true
-          }
-        )
+        .select('*')
+        .order('created_at', {
+          ascending: false
+        })
+        .limit(100),
+      supabase.from('rewards').select('*'),
+      supabase.from('menu_items').select('*')
     ]);
 
-    setStats({
-      customers:
-        customers.count ||
-        0,
-
-      menu:
-        menu.count ||
-        0,
-
-      rewards:
-        rewards.count ||
-        0,
-
-      transactions:
-        transactions.count ||
-        0
-    });
-
-    setLoading(false);
+    setCustomers(customerResult.data || []);
+    setTransactions(transactionResult.data || []);
+    setRewards(rewardResult.data || []);
+    setMenu(menuResult.data || []);
   }
 
-  const cards = [
-    {
-      id: 'customers',
-      label: 'Customers',
-      value:
-        stats.customers,
-      icon: Users
-    },
-    {
-      id: 'menu',
-      label: 'Menu Items',
-      value:
-        stats.menu,
-      icon: Utensils
-    },
-    {
-      id: 'rewards',
-      label: 'Rewards',
-      value:
-        stats.rewards,
-      icon: Gift
-    },
-    {
-      id: 'transactions',
-      label: 'Transactions',
-      value:
-        stats.transactions,
-      icon: History
-    }
-  ];
+  useEffect(() => {
+    load();
+  }, []);
+
+  const totalPoints = customers.reduce(
+    (sum, c) => sum + Number(c.points || 0),
+    0
+  );
+
+  const activeMenu = menu.filter(
+    item => item.active
+  ).length;
+
+  const activeRewards = rewards.filter(
+    reward => reward.active
+  ).length;
 
   return (
-    <div className="admin-page">
+    <div>
 
-      <div className="admin-page-heading">
+      <div className="admin-welcome">
 
-        <span>
-          OVERVIEW
-        </span>
+        <div>
+          <span>WELCOME BACK</span>
+          <h2>At Home Sushi overview</h2>
+          <p>
+            Here's what's happening with your loyalty club.
+          </p>
+        </div>
 
-        <h2>
-          Welcome to your Admin
-          Dashboard
-        </h2>
-
-        <p>
-          Manage At Home Sushi
-          from one place.
-        </p>
+        <button
+          className="admin-outline-button"
+          onClick={load}
+        >
+          <RefreshCw size={16} />
+          Refresh
+        </button>
 
       </div>
 
       <div className="admin-stat-grid">
 
-        {cards.map(
-          (card) => {
-            const Icon =
-              card.icon;
+        <AdminStat
+          icon={Users}
+          label="Total customers"
+          value={customers.length}
+          description="Registered members"
+        />
 
-            return (
-              <button
-                key={card.id}
-                className="admin-stat-card"
-                onClick={() =>
-                  setSection(
-                    card.id
-                  )
-                }
-              >
+        <AdminStat
+          icon={Star}
+          label="Sushi Points"
+          value={totalPoints.toFixed(0)}
+          description="Points currently held"
+        />
 
-                <div className="admin-stat-icon">
-                  <Icon
-                    size={20}
-                  />
-                </div>
+        <AdminStat
+          icon={UtensilsCrossed}
+          label="Active menu"
+          value={activeMenu}
+          description={`${menu.length} total items`}
+        />
 
-                <span>
-                  {card.label}
-                </span>
-
-                <strong>
-                  {loading
-                    ? '—'
-                    : card.value}
-                </strong>
-
-              </button>
-            );
-          }
-        )}
+        <AdminStat
+          icon={Gift}
+          label="Active rewards"
+          value={activeRewards}
+          description={`${rewards.length} total rewards`}
+        />
 
       </div>
 
-      <div className="admin-section-grid">
+      <div className="admin-two-column">
 
-        <button
-          className="admin-action-card"
-          onClick={() =>
-            setSection('menu')
-          }
-        >
-          <Utensils
-            size={22}
-          />
+        <section className="admin-panel">
 
-          <div>
-            <strong>
-              Manage Menu
-            </strong>
+          <div className="admin-panel-heading">
+            <div>
+              <span>RECENT ACTIVITY</span>
+              <h3>Latest transactions</h3>
+            </div>
 
-            <span>
-              Add, edit and
-              manage sushi items.
-            </span>
+            <Receipt size={19} />
           </div>
 
-          <ChevronRight
-            size={18}
-          />
-        </button>
+          {transactions.length === 0 ? (
+            <AdminEmpty text="No transactions yet." />
+          ) : (
+            <div className="admin-activity-list">
 
-        <button
-          className="admin-action-card"
-          onClick={() =>
-            setSection('rewards')
-          }
-        >
-          <Gift size={22} />
+              {transactions.slice(0, 7).map(tx => {
 
-          <div>
-            <strong>
-              Manage Rewards
-            </strong>
+                const customer = customers.find(
+                  c => c.id === tx.customer_id
+                );
 
-            <span>
-              Create and update
-              customer rewards.
-            </span>
+                return (
+                  <div
+                    className="admin-activity-row"
+                    key={tx.id}
+                  >
+
+                    <div className="activity-icon">
+                      <Star size={16} />
+                    </div>
+
+                    <div>
+                      <strong>
+                        {customer?.full_name ||
+                          'Customer'}
+                      </strong>
+
+                      <span>
+                        {tx.transaction_type}
+                        {' · '}
+                        {formatDateTime(
+                          tx.created_at
+                        )}
+                      </span>
+                    </div>
+
+                    <b>
+                      +{Number(
+                        tx.points_earned || 0
+                      ).toFixed(2)}
+                    </b>
+
+                  </div>
+                );
+              })}
+
+            </div>
+          )}
+
+        </section>
+
+        <section className="admin-panel">
+
+          <div className="admin-panel-heading">
+            <div>
+              <span>QUICK ACTIONS</span>
+              <h3>Manage your store</h3>
+            </div>
+
+            <Sparkles size={19} />
           </div>
 
-          <ChevronRight
-            size={18}
-          />
-        </button>
+          <div className="quick-action-grid">
 
-        <button
-          className="admin-action-card"
-          onClick={() =>
-            setSection('homepage')
-          }
-        >
-          <HomeIcon
-            size={22}
-          />
+            <button
+              onClick={() =>
+                document
+                  .querySelector('[data-admin-page="menu"]')
+              }
+            >
+              <UtensilsCrossed size={20} />
+              <span>
+                <strong>Menu</strong>
+                Update sushi items
+              </span>
+            </button>
 
-          <div>
-            <strong>
-              Edit Homepage
-            </strong>
+            <button>
+              <Gift size={20} />
+              <span>
+                <strong>Rewards</strong>
+                Manage rewards
+              </span>
+            </button>
 
-            <span>
-              Change your
-              homepage content.
-            </span>
+            <button>
+              <Users size={20} />
+              <span>
+                <strong>Customers</strong>
+                View members
+              </span>
+            </button>
+
+            <button>
+              <Store size={20} />
+              <span>
+                <strong>Business</strong>
+                Store information
+              </span>
+            </button>
+
           </div>
 
-          <ChevronRight
-            size={18}
-          />
-        </button>
-
-        <button
-          className="admin-action-card"
-          onClick={() =>
-            setSection('business')
-          }
-        >
-          <Store size={22} />
-
-          <div>
-            <strong>
-              Business Information
-            </strong>
-
-            <span>
-              Update contact
-              details and hours.
-            </span>
-          </div>
-
-          <ChevronRight
-            size={18}
-          />
-        </button>
+        </section>
 
       </div>
 
@@ -4282,256 +2717,34 @@ function AdminOverview({
   );
 }
 
-/* =====================================================
-   ADMIN BUSINESS
-===================================================== */
-
-function AdminBusiness() {
-  const [form, setForm] =
-    useState({
-      business_name:
-        'At Home Sushi',
-      location:
-        'Bustos, Bulacan',
-      contact_number:
-        '',
-      facebook_url:
-        '',
-      instagram_url:
-        '',
-      opening_hours:
-        ''
-    });
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [saving, setSaving] =
-    useState(false);
-
-  const [message, setMessage] =
-    useState('');
-
-  useEffect(() => {
-    load();
-  }, []);
-
-  async function load() {
-    const {
-      data,
-      error
-    } = await supabase
-      .from(
-        'business_settings'
-      )
-      .select('*')
-      .limit(1)
-      .maybeSingle();
-
-    if (!error && data) {
-      setForm({
-        business_name:
-          data.business_name ||
-          '',
-        location:
-          data.location ||
-          '',
-        contact_number:
-          data.contact_number ||
-          '',
-        facebook_url:
-          data.facebook_url ||
-          '',
-        instagram_url:
-          data.instagram_url ||
-          '',
-        opening_hours:
-          data.opening_hours ||
-          ''
-      });
-    }
-
-    setLoading(false);
-  }
-
-  function update(field, value) {
-    setForm((old) => ({
-      ...old,
-      [field]: value
-    }));
-  }
-
-  async function save(e) {
-    e.preventDefault();
-
-    setSaving(true);
-    setMessage('');
-
-    const {
-      data: existing
-    } = await supabase
-      .from(
-        'business_settings'
-      )
-      .select('id')
-      .limit(1)
-      .maybeSingle();
-
-    let error;
-
-    if (existing) {
-      ({
-        error
-      } = await supabase
-        .from(
-          'business_settings'
-        )
-        .update(form)
-        .eq(
-          'id',
-          existing.id
-        ));
-    } else {
-      ({
-        error
-      } = await supabase
-        .from(
-          'business_settings'
-        )
-        .insert(form));
-    }
-
-    setMessage(
-      error
-        ? error.message
-        : 'Business information saved.'
-    );
-
-    setSaving(false);
-  }
-
-  if (loading) {
-    return (
-      <AdminLoading />
-    );
-  }
-
+function AdminStat({
+  icon: Icon,
+  label,
+  value,
+  description
+}) {
   return (
-    <div className="admin-page">
+    <div className="admin-stat-card">
 
-      <AdminPageIntro
-        eyebrow="BUSINESS"
-        title="Business Information"
-        description="Keep your restaurant information up to date."
-      />
+      <div className="admin-stat-icon">
+        <Icon size={19} />
+      </div>
 
-      <form
-        className="admin-form-card"
-        onSubmit={save}
-      >
+      <div>
+        <span>{label}</span>
+        <strong>{value}</strong>
+        <small>{description}</small>
+      </div>
 
-        <div className="admin-form-grid">
+    </div>
+  );
+}
 
-          <AdminInput
-            label="Business name"
-            value={
-              form.business_name
-            }
-            onChange={(v) =>
-              update(
-                'business_name',
-                v
-              )
-            }
-          />
-
-          <AdminInput
-            label="Location"
-            value={
-              form.location
-            }
-            onChange={(v) =>
-              update(
-                'location',
-                v
-              )
-            }
-          />
-
-          <AdminInput
-            label="Contact number"
-            value={
-              form.contact_number
-            }
-            onChange={(v) =>
-              update(
-                'contact_number',
-                v
-              )
-            }
-          />
-
-          <AdminInput
-            label="Facebook"
-            value={
-              form.facebook_url
-            }
-            onChange={(v) =>
-              update(
-                'facebook_url',
-                v
-              )
-            }
-          />
-
-          <AdminInput
-            label="Instagram"
-            value={
-              form.instagram_url
-            }
-            onChange={(v) =>
-              update(
-                'instagram_url',
-                v
-              )
-            }
-          />
-
-          <AdminInput
-            label="Opening hours"
-            value={
-              form.opening_hours
-            }
-            onChange={(v) =>
-              update(
-                'opening_hours',
-                v
-              )
-            }
-          />
-
-        </div>
-
-        {message && (
-          <div className="notice">
-            {message}
-          </div>
-        )}
-
-        <button
-          className="primary-button"
-          type="submit"
-          disabled={saving}
-        >
-          <Save size={16} />
-
-          {saving
-            ? 'Saving...'
-            : 'Save business information'}
-        </button>
-
-      </form>
-
+function AdminEmpty({ text }) {
+  return (
+    <div className="admin-empty">
+      <Info size={20} />
+      <span>{text}</span>
     </div>
   );
 }
@@ -4541,665 +2754,432 @@ function AdminBusiness() {
 ===================================================== */
 
 function AdminMenu() {
-  const [items, setItems] =
-    useState([]);
+  const [items, setItems] = useState([]);
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('all');
+  const [editing, setEditing] = useState(null);
+  const [busy, setBusy] = useState(false);
 
-  const [loading, setLoading] =
-    useState(true);
-
-  const [editing, setEditing] =
-    useState(null);
-
-  const [showForm, setShowForm] =
-    useState(false);
-
-  const [message, setMessage] =
-    useState('');
+  const emptyItem = {
+    name: '',
+    category: 'classic',
+    price: '',
+    description: '',
+    ingredients: '',
+    image_url: '',
+    active: true,
+    sort_order: 0
+  };
 
   async function load() {
-    setLoading(true);
-
-    const {
-      data,
-      error
-    } = await supabase
+    const { data, error } = await supabase
       .from('menu_items')
       .select('*')
       .order('sort_order', {
         ascending: true
-      })
-      .order('id', {
-        ascending: true
       });
 
     if (error) {
-      setMessage(
-        error.message
-      );
-    } else {
-      setItems(
-        data || []
-      );
+      console.error(error);
+      return;
     }
 
-    setLoading(false);
+    setItems(data || []);
   }
 
   useEffect(() => {
     load();
   }, []);
 
-  async function deleteItem(id) {
-    if (
-      !window.confirm(
-        'Delete this menu item?'
-      )
-    ) {
-      return;
-    }
-
-    const {
-      error
-    } = await supabase
-      .from('menu_items')
-      .delete()
-      .eq(
-        'id',
-        id
-      );
-
-    if (error) {
-      setMessage(
-        error.message
-      );
-      return;
-    }
-
-    setMessage(
-      'Menu item deleted.'
-    );
-
-    load();
-  }
-
-  async function toggleItem(item) {
-    const {
-      error
-    } = await supabase
-      .from('menu_items')
-      .update({
-        active:
-          !item.active
-      })
-      .eq(
-        'id',
-        item.id
-      );
-
-    if (error) {
-      setMessage(
-        error.message
-      );
-      return;
-    }
-
-    load();
-  }
-
-  return (
-    <div className="admin-page">
-
-      <div className="admin-page-heading-row">
-
-        <AdminPageIntro
-          eyebrow="MENU"
-          title="Menu Management"
-          description="Add, edit and control the sushi shown to customers."
-        />
-
-        <button
-          className="primary-button"
-          onClick={() => {
-            setEditing(null);
-            setShowForm(true);
-          }}
-        >
-          <Plus size={17} />
-          Add sushi
-        </button>
-
-      </div>
-
-      {message && (
-        <div className="notice">
-          {message}
-        </div>
-      )}
-
-      {showForm && (
-        <MenuForm
-          item={editing}
-          onClose={() => {
-            setShowForm(false);
-            setEditing(null);
-          }}
-          onSaved={() => {
-            setShowForm(false);
-            setEditing(null);
-            load();
-          }}
-        />
-      )}
-
-      {loading ? (
-        <AdminLoading />
-      ) : (
-        <div className="admin-table-card">
-
-          <div className="admin-table-header">
-
-            <strong>
-              Menu items
-            </strong>
-
-            <button
-              className="icon-button"
-              onClick={load}
-            >
-              <RefreshCw
-                size={17}
-              />
-            </button>
-
-          </div>
-
-          {items.length === 0 ? (
-            <AdminEmpty
-              icon={
-                <Utensils
-                  size={24}
-                />
-              }
-              title="No menu items yet"
-              text="Add your first sushi item."
-            />
-          ) : (
-            <div className="admin-menu-list">
-
-              {items.map(
-                (item) => (
-                  <div
-                    className="admin-menu-row"
-                    key={item.id}
-                  >
-
-                    <div className="admin-menu-photo">
-
-                      {item.image_url ? (
-                        <img
-                          src={
-                            item.image_url
-                          }
-                          alt={
-                            item.name
-                          }
-                        />
-                      ) : (
-                        <span>
-                          🍣
-                        </span>
-                      )}
-
-                    </div>
-
-                    <div className="admin-menu-info">
-
-                      <strong>
-                        {item.name}
-                      </strong>
-
-                      <span>
-                        {
-                          item.category ||
-                          'Uncategorized'
-                        }
-                      </span>
-
-                      <small>
-                        ₱
-                        {Number(
-                          item.price ||
-                            0
-                        ).toFixed(
-                          2
-                        )}
-                      </small>
-
-                    </div>
-
-                    <span
-                      className={
-                        item.active
-                          ? 'status-badge active'
-                          : 'status-badge'
-                      }
-                    >
-                      {item.active
-                        ? 'Available'
-                        : 'Hidden'}
-                    </span>
-
-                    <div className="admin-row-actions">
-
-                      <button
-                        className="icon-button"
-                        title="Toggle availability"
-                        onClick={() =>
-                          toggleItem(
-                            item
-                          )
-                        }
-                      >
-                        {item.active ? (
-                          <ToggleRight
-                            size={19}
-                          />
-                        ) : (
-                          <ToggleLeft
-                            size={19}
-                          />
-                        )}
-                      </button>
-
-                      <button
-                        className="icon-button"
-                        onClick={() => {
-                          setEditing(
-                            item
-                          );
-                          setShowForm(
-                            true
-                          );
-                        }}
-                      >
-                        <Pencil
-                          size={17}
-                        />
-                      </button>
-
-                      <button
-                        className="icon-button danger"
-                        onClick={() =>
-                          deleteItem(
-                            item.id
-                          )
-                        }
-                      >
-                        <Trash2
-                          size={17}
-                        />
-                      </button>
-
-                    </div>
-
-                  </div>
-                )
-              )}
-
-            </div>
-          )}
-
-        </div>
-      )}
-
-    </div>
-  );
-}
-
-/* =====================================================
-   MENU FORM
-===================================================== */
-
-function MenuForm({
-  item,
-  onClose,
-  onSaved
-}) {
-  const [form, setForm] =
-    useState({
-      name:
-        item?.name || '',
-      category:
-        item?.category || 'classic',
-      description:
-        item?.description ||
-        '',
-      ingredients:
-        item?.ingredients ||
-        '',
-      price:
-        item?.price ?? '',
-      image_url:
-        item?.image_url ||
-        '',
-      active:
-        item?.active ??
-        true,
-      sort_order:
-        item?.sort_order ??
-        0
-    });
-
-  const [saving, setSaving] =
-    useState(false);
-
-  const [message, setMessage] =
-    useState('');
-
-  function update(field, value) {
-    setForm((old) => ({
-      ...old,
-      [field]: value
-    }));
-  }
-
-  async function save(e) {
+  async function saveItem(e) {
     e.preventDefault();
 
-    if (!form.name.trim()) {
-      setMessage(
-        'Please enter the sushi name.'
-      );
-      return;
-    }
-
-    setSaving(true);
-    setMessage('');
+    setBusy(true);
 
     const payload = {
-      name:
-        form.name.trim(),
-      category:
-        form.category,
-      description:
-        form.description.trim() ||
-        null,
-      ingredients:
-        form.ingredients.trim() ||
-        null,
-      price:
-        Number(form.price) ||
-        0,
-      image_url:
-        form.image_url.trim() ||
-        null,
-      active:
-        form.active,
-      sort_order:
-        Number(
-          form.sort_order
-        ) || 0
+      name: editing.name.trim(),
+      category: editing.category,
+      price: Number(editing.price || 0),
+      description: editing.description || null,
+      ingredients: editing.ingredients || null,
+      image_url: editing.image_url || null,
+      active: editing.active,
+      sort_order: Number(editing.sort_order || 0)
     };
 
     let error;
 
-    if (item?.id) {
-      ({
-        error
-      } = await supabase
+    if (editing.id) {
+      ({ error } = await supabase
         .from('menu_items')
-        .update(
-          payload
-        )
-        .eq(
-          'id',
-          item.id
-        ));
+        .update(payload)
+        .eq('id', editing.id));
     } else {
-      ({
-        error
-      } = await supabase
+      ({ error } = await supabase
         .from('menu_items')
-        .insert(
-          payload
-        ));
+        .insert(payload));
     }
 
     if (error) {
-      setMessage(
-        error.message
-      );
-      setSaving(false);
+      alert(error.message);
+    } else {
+      setEditing(null);
+      await load();
+    }
+
+    setBusy(false);
+  }
+
+  async function deleteItem(id) {
+    if (!confirm('Delete this menu item?')) return;
+
+    const { error } = await supabase
+      .from('menu_items')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      alert(error.message);
       return;
     }
 
-    onSaved();
+    load();
   }
 
+  const filtered = items.filter(item => {
+
+    const matchesSearch =
+      !search ||
+      item.name
+        ?.toLowerCase()
+        .includes(search.toLowerCase());
+
+    const matchesCategory =
+      category === 'all' ||
+      item.category === category;
+
+    return matchesSearch && matchesCategory;
+  });
+
   return (
-    <div className="admin-form-card">
+    <div>
 
-      <div className="admin-form-title-row">
+      <AdminSectionHeader
+        eyebrow="MENU"
+        title="Menu Management"
+        description="Manage the sushi items customers see in the app."
+        button={
+          <button
+            className="admin-primary-button"
+            onClick={() =>
+              setEditing({
+                ...emptyItem
+              })
+            }
+          >
+            <Plus size={17} />
+            Add sushi
+          </button>
+        }
+      />
 
-        <div>
-          <span>
-            MENU ITEM
-          </span>
+      <div className="admin-toolbar">
 
-          <h3>
-            {item
-              ? 'Edit sushi'
-              : 'Add sushi'}
-          </h3>
+        <div className="admin-search">
+          <Search size={17} />
+          <input
+            placeholder="Search menu..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
         </div>
 
-        <button
-          className="icon-button"
-          onClick={onClose}
+        <select
+          value={category}
+          onChange={e => setCategory(e.target.value)}
         >
-          <X size={18} />
-        </button>
+          <option value="all">All categories</option>
+          <option value="appetizers">Appetizers</option>
+          <option value="classic">Classic Rolls</option>
+          <option value="specialty">Specialty Rolls</option>
+          <option value="signature">Signature Rolls</option>
+          <option value="veggie">Veggie</option>
+          <option value="nigiri">Nigiri</option>
+          <option value="sashimi">Sashimi</option>
+          <option value="platters">Platters</option>
+        </select>
 
       </div>
 
-      <form onSubmit={save}>
+      <div className="admin-table-card">
 
-        <div className="admin-form-grid">
+        <div className="admin-table-wrap">
 
-          <AdminInput
-            label="Sushi name"
-            value={form.name}
-            onChange={(v) =>
-              update(
-                'name',
-                v
-              )
-            }
-          />
+          <table className="admin-table">
 
-          <div className="field">
-            <label>
-              Category
-            </label>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
 
-            <select
-              value={
-                form.category
-              }
-              onChange={(e) =>
-                update(
-                  'category',
-                  e.target.value
-                )
-              }
-            >
-              <option value="appetizers">
-                Appetizers
-              </option>
+            <tbody>
 
-              <option value="classic">
-                Classic Rolls
-              </option>
+              {filtered.map(item => (
+                <tr key={item.id}>
 
-              <option value="specialty">
-                Specialty Rolls
-              </option>
+                  <td>
+                    <div className="menu-table-item">
 
-              <option value="signature">
-                Signature Rolls
-              </option>
+                      <div className="menu-table-image">
 
-              <option value="veggie">
-                Veggie
-              </option>
+                        {item.image_url ? (
+                          <img
+                            src={item.image_url}
+                            alt=""
+                          />
+                        ) : (
+                          '🍣'
+                        )}
 
-              <option value="nigiri">
-                Nigiri
-              </option>
+                      </div>
 
-              <option value="sashimi">
-                Sashimi
-              </option>
+                      <div>
+                        <strong>{item.name}</strong>
+                        <span>
+                          {item.description || 'No description'}
+                        </span>
+                      </div>
 
-              <option value="platters">
-                Platters
-              </option>
-            </select>
-          </div>
+                    </div>
+                  </td>
 
-          <AdminInput
-            label="Price"
-            type="number"
-            value={form.price}
-            onChange={(v) =>
-              update(
-                'price',
-                v
-              )
-            }
-          />
+                  <td>
+                    <span className="admin-category">
+                      {item.category || '—'}
+                    </span>
+                  </td>
 
-          <AdminInput
-            label="Image URL"
-            value={
-              form.image_url
-            }
-            onChange={(v) =>
-              update(
-                'image_url',
-                v
-              )
-            }
-            placeholder="https://..."
-          />
+                  <td>
+                    <strong>{money(item.price)}</strong>
+                  </td>
 
-          <div className="field full">
-            <label>
-              Description
-            </label>
+                  <td>
+                    <AdminStatus
+                      active={item.active}
+                    />
+                  </td>
 
-            <textarea
-              value={
-                form.description
-              }
-              onChange={(e) =>
-                update(
-                  'description',
-                  e.target.value
-                )
-              }
-              placeholder="Describe this sushi..."
-            />
-          </div>
+                  <td>
+                    <div className="admin-row-actions">
 
-          <div className="field full">
-            <label>
-              Ingredients
-            </label>
+                      <button
+                        onClick={() =>
+                          setEditing({
+                            ...item
+                          })
+                        }
+                      >
+                        <Edit3 size={16} />
+                      </button>
 
-            <textarea
-              value={
-                form.ingredients
-              }
-              onChange={(e) =>
-                update(
-                  'ingredients',
-                  e.target.value
-                )
-              }
-              placeholder="Rice, nori, salmon..."
-            />
-          </div>
+                      <button
+                        className="danger"
+                        onClick={() =>
+                          deleteItem(item.id)
+                        }
+                      >
+                        <Trash2 size={16} />
+                      </button>
 
-          <AdminInput
-            label="Sort order"
-            type="number"
-            value={
-              form.sort_order
-            }
-            onChange={(v) =>
-              update(
-                'sort_order',
-                v
-              )
-            }
-          />
+                    </div>
+                  </td>
 
-          <label className="admin-checkbox">
+                </tr>
+              ))}
 
-            <input
-              type="checkbox"
-              checked={
-                form.active
-              }
-              onChange={(e) =>
-                update(
-                  'active',
-                  e.target.checked
-                )
-              }
-            />
+            </tbody>
 
-            <span>
-              Available on
-              customer menu
-            </span>
+          </table>
 
-          </label>
+          {filtered.length === 0 && (
+            <AdminEmpty text="No menu items found." />
+          )}
 
         </div>
 
-        {message && (
-          <div className="notice">
-            {message}
-          </div>
-        )}
+      </div>
 
-        <div className="admin-form-actions">
+      {editing && (
+        <AdminModal
+          title={editing.id ? 'Edit sushi' : 'Add sushi'}
+          onClose={() => setEditing(null)}
+        >
 
-          <button
-            type="button"
-            className="secondary-button"
-            onClick={onClose}
+          <form
+            className="admin-form"
+            onSubmit={saveItem}
           >
-            Cancel
-          </button>
 
-          <button
-            type="submit"
-            className="primary-button"
-            disabled={saving}
-          >
-            <Save size={16} />
+            <div className="admin-form-grid">
 
-            {saving
-              ? 'Saving...'
-              : 'Save sushi'}
-          </button>
+              <div className="field">
+                <label>Name</label>
+                <input
+                  value={editing.name}
+                  onChange={e =>
+                    setEditing({
+                      ...editing,
+                      name: e.target.value
+                    })
+                  }
+                  required
+                />
+              </div>
 
-        </div>
+              <div className="field">
+                <label>Category</label>
+                <select
+                  value={editing.category}
+                  onChange={e =>
+                    setEditing({
+                      ...editing,
+                      category: e.target.value
+                    })
+                  }
+                >
+                  <option value="appetizers">Appetizers</option>
+                  <option value="classic">Classic Rolls</option>
+                  <option value="specialty">Specialty Rolls</option>
+                  <option value="signature">Signature Rolls</option>
+                  <option value="veggie">Veggie</option>
+                  <option value="nigiri">Nigiri</option>
+                  <option value="sashimi">Sashimi</option>
+                  <option value="platters">Platters</option>
+                </select>
+              </div>
 
-      </form>
+              <div className="field">
+                <label>Price</label>
+                <input
+                  type="number"
+                  value={editing.price}
+                  onChange={e =>
+                    setEditing({
+                      ...editing,
+                      price: e.target.value
+                    })
+                  }
+                />
+              </div>
+
+              <div className="field">
+                <label>Sort order</label>
+                <input
+                  type="number"
+                  value={editing.sort_order}
+                  onChange={e =>
+                    setEditing({
+                      ...editing,
+                      sort_order: e.target.value
+                    })
+                  }
+                />
+              </div>
+
+            </div>
+
+            <div className="field">
+              <label>Description</label>
+              <textarea
+                value={editing.description || ''}
+                onChange={e =>
+                  setEditing({
+                    ...editing,
+                    description: e.target.value
+                  })
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Ingredients</label>
+              <textarea
+                value={editing.ingredients || ''}
+                onChange={e =>
+                  setEditing({
+                    ...editing,
+                    ingredients: e.target.value
+                  })
+                }
+                placeholder="e.g. Salmon, avocado, cream cheese..."
+              />
+            </div>
+
+            <div className="field">
+              <label>Photo URL</label>
+              <input
+                value={editing.image_url || ''}
+                onChange={e =>
+                  setEditing({
+                    ...editing,
+                    image_url: e.target.value
+                  })
+                }
+                placeholder="Paste image URL"
+              />
+            </div>
+
+            <label className="admin-toggle-row">
+
+              <input
+                type="checkbox"
+                checked={!!editing.active}
+                onChange={e =>
+                  setEditing({
+                    ...editing,
+                    active: e.target.checked
+                  })
+                }
+              />
+
+              <span>
+                <strong>Available on menu</strong>
+                <small>
+                  Customers can see this item.
+                </small>
+              </span>
+
+            </label>
+
+            <div className="admin-modal-actions">
+
+              <button
+                type="button"
+                className="admin-outline-button"
+                onClick={() => setEditing(null)}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="admin-primary-button"
+                disabled={busy}
+              >
+                <Save size={16} />
+                {busy ? 'Saving...' : 'Save sushi'}
+              </button>
+
+            </div>
+
+          </form>
+
+        </AdminModal>
+      )}
 
     </div>
   );
@@ -5210,866 +3190,257 @@ function MenuForm({
 ===================================================== */
 
 function AdminRewards() {
-  const [rewards, setRewards] =
-    useState([]);
-
-  const [editing, setEditing] =
-    useState(null);
-
-  const [showForm, setShowForm] =
-    useState(false);
-
-  const [message, setMessage] =
-    useState('');
+  const [rewards, setRewards] = useState([]);
+  const [editing, setEditing] = useState(null);
 
   async function load() {
-    const {
-      data,
-      error
-    } = await supabase
+    const { data } = await supabase
       .from('rewards')
       .select('*')
-      .order(
-        'points_required'
-      );
+      .order('points_required');
 
-    if (error) {
-      setMessage(
-        error.message
-      );
-    } else {
-      setRewards(
-        data || []
-      );
-    }
+    setRewards(data || []);
   }
 
   useEffect(() => {
     load();
   }, []);
 
-  async function toggle(reward) {
-    const {
-      error
-    } = await supabase
-      .from('rewards')
-      .update({
-        active:
-          !reward.active
-      })
-      .eq(
-        'id',
-        reward.id
-      );
-
-    if (error) {
-      setMessage(
-        error.message
-      );
-      return;
-    }
-
-    load();
-  }
-
-  async function remove(id) {
-    if (
-      !window.confirm(
-        'Delete this reward?'
-      )
-    ) {
-      return;
-    }
-
-    const {
-      error
-    } = await supabase
-      .from('rewards')
-      .delete()
-      .eq(
-        'id',
-        id
-      );
-
-    if (error) {
-      setMessage(
-        error.message
-      );
-      return;
-    }
-
-    load();
-  }
-
-  return (
-    <div className="admin-page">
-
-      <div className="admin-page-heading-row">
-
-        <AdminPageIntro
-          eyebrow="REWARDS"
-          title="Rewards Management"
-          description="Control what customers can redeem with Sushi Points."
-        />
-
-        <button
-          className="primary-button"
-          onClick={() => {
-            setEditing(null);
-            setShowForm(true);
-          }}
-        >
-          <Plus size={17} />
-          Add reward
-        </button>
-
-      </div>
-
-      {message && (
-        <div className="notice">
-          {message}
-        </div>
-      )}
-
-      {showForm && (
-        <RewardForm
-          reward={editing}
-          onClose={() => {
-            setShowForm(false);
-            setEditing(null);
-          }}
-          onSaved={() => {
-            setShowForm(false);
-            setEditing(null);
-            load();
-          }}
-        />
-      )}
-
-      <div className="admin-table-card">
-
-        {rewards.length === 0 ? (
-          <AdminEmpty
-            icon={
-              <Gift size={24} />
-            }
-            title="No rewards yet"
-            text="Create your first loyalty reward."
-          />
-        ) : (
-          <div className="admin-menu-list">
-
-            {rewards.map(
-              (reward) => (
-                <div
-                  className="admin-menu-row"
-                  key={reward.id}
-                >
-
-                  <div className="admin-menu-photo reward-photo">
-                    <Gift
-                      size={20}
-                    />
-                  </div>
-
-                  <div className="admin-menu-info">
-
-                    <strong>
-                      {
-                        reward.name
-                      }
-                    </strong>
-
-                    <span>
-                      {
-                        reward.description ||
-                        'No description'
-                      }
-                    </span>
-
-                    <small>
-                      {
-                        reward.points_required
-                      }{' '}
-                      Sushi Points
-                    </small>
-
-                  </div>
-
-                  <span
-                    className={
-                      reward.active
-                        ? 'status-badge active'
-                        : 'status-badge'
-                    }
-                  >
-                    {reward.active
-                      ? 'Active'
-                      : 'Inactive'}
-                  </span>
-
-                  <div className="admin-row-actions">
-
-                    <button
-                      className="icon-button"
-                      onClick={() =>
-                        toggle(
-                          reward
-                        )
-                      }
-                    >
-                      {reward.active ? (
-                        <ToggleRight
-                          size={
-                            19
-                          }
-                        />
-                      ) : (
-                        <ToggleLeft
-                          size={
-                            19
-                          }
-                        />
-                      )}
-                    </button>
-
-                    <button
-                      className="icon-button"
-                      onClick={() => {
-                        setEditing(
-                          reward
-                        );
-                        setShowForm(
-                          true
-                        );
-                      }}
-                    >
-                      <Pencil
-                        size={17}
-                      />
-                    </button>
-
-                    <button
-                      className="icon-button danger"
-                      onClick={() =>
-                        remove(
-                          reward.id
-                        )
-                      }
-                    >
-                      <Trash2
-                        size={17}
-                      />
-                    </button>
-
-                  </div>
-
-                </div>
-              )
-            )}
-
-          </div>
-        )}
-
-      </div>
-
-    </div>
-  );
-}
-
-/* =====================================================
-   REWARD FORM
-===================================================== */
-
-function RewardForm({
-  reward,
-  onClose,
-  onSaved
-}) {
-  const [name, setName] =
-    useState(
-      reward?.name || ''
-    );
-
-  const [description, setDescription] =
-    useState(
-      reward?.description ||
-        ''
-    );
-
-  const [points, setPoints] =
-    useState(
-      reward?.points_required ??
-        ''
-    );
-
-  const [active, setActive] =
-    useState(
-      reward?.active ??
-        true
-    );
-
-  const [saving, setSaving] =
-    useState(false);
-
-  const [message, setMessage] =
-    useState('');
-
   async function save(e) {
     e.preventDefault();
 
-    if (!name.trim()) {
-      setMessage(
-        'Enter a reward name.'
-      );
-      return;
-    }
-
-    setSaving(true);
-    setMessage('');
-
     const payload = {
-      name:
-        name.trim(),
-      description:
-        description.trim() ||
-        null,
-      points_required:
-        Number(points) ||
-        0,
-      active
+      name: editing.name,
+      description: editing.description || null,
+      points_required: Number(
+        editing.points_required || 0
+      ),
+      active: editing.active
     };
 
     let error;
 
-    if (reward?.id) {
-      ({
-        error
-      } = await supabase
+    if (editing.id) {
+      ({ error } = await supabase
         .from('rewards')
-        .update(
-          payload
-        )
-        .eq(
-          'id',
-          reward.id
-        ));
+        .update(payload)
+        .eq('id', editing.id));
     } else {
-      ({
-        error
-      } = await supabase
+      ({ error } = await supabase
         .from('rewards')
-        .insert(
-          payload
-        ));
+        .insert(payload));
     }
 
     if (error) {
-      setMessage(
-        error.message
-      );
-      setSaving(false);
+      alert(error.message);
       return;
     }
 
-    onSaved();
+    setEditing(null);
+    load();
+  }
+
+  async function remove(id) {
+    if (!confirm('Delete this reward?')) return;
+
+    const { error } = await supabase
+      .from('rewards')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    load();
   }
 
   return (
-    <div className="admin-form-card">
+    <div>
 
-      <div className="admin-form-title-row">
+      <AdminSectionHeader
+        eyebrow="LOYALTY"
+        title="Rewards"
+        description="Create and manage rewards customers can redeem."
+        button={
+          <button
+            className="admin-primary-button"
+            onClick={() =>
+              setEditing({
+                name: '',
+                description: '',
+                points_required: 100,
+                active: true
+              })
+            }
+          >
+            <Plus size={17} />
+            Add reward
+          </button>
+        }
+      />
 
-        <div>
-          <span>
-            REWARD
-          </span>
+      <div className="admin-reward-grid">
 
-          <h3>
-            {reward
-              ? 'Edit reward'
-              : 'Add reward'}
-          </h3>
-        </div>
+        {rewards.map(reward => (
+          <div
+            className="admin-reward-card"
+            key={reward.id}
+          >
 
-        <button
-          className="icon-button"
-          onClick={onClose}
-        >
-          <X size={18} />
-        </button>
+            <div className="admin-reward-top">
+
+              <div className="admin-reward-icon">
+                <Gift size={21} />
+              </div>
+
+              <AdminStatus active={reward.active} />
+
+            </div>
+
+            <h3>{reward.name}</h3>
+
+            <p>
+              {reward.description ||
+                'No description added.'}
+            </p>
+
+            <div className="admin-reward-points">
+              <strong>
+                {reward.points_required}
+              </strong>
+              <span>SUSHI POINTS</span>
+            </div>
+
+            <div className="admin-card-actions">
+
+              <button
+                onClick={() =>
+                  setEditing({
+                    ...reward
+                  })
+                }
+              >
+                <Edit3 size={15} />
+                Edit
+              </button>
+
+              <button
+                className="danger"
+                onClick={() =>
+                  remove(reward.id)
+                }
+              >
+                <Trash2 size={15} />
+                Delete
+              </button>
+
+            </div>
+
+          </div>
+        ))}
 
       </div>
 
-      <form onSubmit={save}>
+      {editing && (
+        <AdminModal
+          title={
+            editing.id
+              ? 'Edit reward'
+              : 'Add reward'
+          }
+          onClose={() => setEditing(null)}
+        >
 
-        <div className="admin-form-grid">
+          <form
+            className="admin-form"
+            onSubmit={save}
+          >
 
-          <AdminInput
-            label="Reward name"
-            value={name}
-            onChange={
-              setName
-            }
-          />
+            <div className="field">
+              <label>Reward name</label>
+              <input
+                value={editing.name}
+                onChange={e =>
+                  setEditing({
+                    ...editing,
+                    name: e.target.value
+                  })
+                }
+                required
+              />
+            </div>
 
-          <AdminInput
-            label="Points required"
-            type="number"
-            value={points}
-            onChange={
-              setPoints
-            }
-          />
+            <div className="field">
+              <label>Description</label>
+              <textarea
+                value={editing.description || ''}
+                onChange={e =>
+                  setEditing({
+                    ...editing,
+                    description: e.target.value
+                  })
+                }
+              />
+            </div>
 
-          <div className="field full">
-            <label>
-              Description
+            <div className="field">
+              <label>Points required</label>
+              <input
+                type="number"
+                value={editing.points_required}
+                onChange={e =>
+                  setEditing({
+                    ...editing,
+                    points_required: e.target.value
+                  })
+                }
+                required
+              />
+            </div>
+
+            <label className="admin-toggle-row">
+              <input
+                type="checkbox"
+                checked={!!editing.active}
+                onChange={e =>
+                  setEditing({
+                    ...editing,
+                    active: e.target.checked
+                  })
+                }
+              />
+
+              <span>
+                <strong>Reward is active</strong>
+                <small>
+                  Customers can redeem it.
+                </small>
+              </span>
             </label>
 
-            <textarea
-              value={
-                description
-              }
-              onChange={(e) =>
-                setDescription(
-                  e.target.value
-                )
-              }
-              placeholder="Describe the reward..."
-            />
-          </div>
+            <div className="admin-modal-actions">
 
-          <label className="admin-checkbox">
+              <button
+                type="button"
+                className="admin-outline-button"
+                onClick={() => setEditing(null)}
+              >
+                Cancel
+              </button>
 
-            <input
-              type="checkbox"
-              checked={active}
-              onChange={(e) =>
-                setActive(
-                  e.target.checked
-                )
-              }
-            />
+              <button className="admin-primary-button">
+                <Save size={16} />
+                Save reward
+              </button>
 
-            <span>
-              Active
-            </span>
-
-          </label>
-
-        </div>
-
-        {message && (
-          <div className="notice">
-            {message}
-          </div>
-        )}
-
-        <div className="admin-form-actions">
-
-          <button
-            type="button"
-            className="secondary-button"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
-
-          <button
-            className="primary-button"
-            type="submit"
-            disabled={saving}
-          >
-            <Save size={16} />
-
-            {saving
-              ? 'Saving...'
-              : 'Save reward'}
-          </button>
-
-        </div>
-
-      </form>
-
-    </div>
-  );
-}
-
-/* =====================================================
-   ADMIN LOYALTY
-===================================================== */
-
-function AdminLoyalty() {
-  const [form, setForm] =
-    useState({
-      points_per_peso:
-        0.01,
-      points_per_purchase:
-        0,
-      stamps_enabled:
-        true,
-      stamps_required:
-        8,
-      redemption_enabled:
-        true,
-      minimum_redemption_points:
-        0
-    });
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [saving, setSaving] =
-    useState(false);
-
-  const [message, setMessage] =
-    useState('');
-
-  useEffect(() => {
-    load();
-  }, []);
-
-  async function load() {
-    const {
-      data,
-      error
-    } = await supabase
-      .from(
-        'loyalty_settings'
-      )
-      .select('*')
-      .limit(1)
-      .maybeSingle();
-
-    if (!error && data) {
-      setForm({
-        points_per_peso:
-          data.points_per_peso,
-        points_per_purchase:
-          data.points_per_purchase,
-        stamps_enabled:
-          data.stamps_enabled,
-        stamps_required:
-          data.stamps_required,
-        redemption_enabled:
-          data.redemption_enabled,
-        minimum_redemption_points:
-          data.minimum_redemption_points
-      });
-    }
-
-    setLoading(false);
-  }
-
-  function update(
-    field,
-    value
-  ) {
-    setForm((old) => ({
-      ...old,
-      [field]: value
-    }));
-  }
-
-  async function save(e) {
-    e.preventDefault();
-
-    setSaving(true);
-    setMessage('');
-
-    const {
-      data: existing
-    } = await supabase
-      .from(
-        'loyalty_settings'
-      )
-      .select('id')
-      .limit(1)
-      .maybeSingle();
-
-    let error;
-
-    if (existing) {
-      ({
-        error
-      } = await supabase
-        .from(
-          'loyalty_settings'
-        )
-        .update({
-          points_per_peso:
-            Number(
-              form.points_per_peso
-            ) || 0,
-
-          points_per_purchase:
-            Number(
-              form.points_per_purchase
-            ) || 0,
-
-          stamps_enabled:
-            form.stamps_enabled,
-
-          stamps_required:
-            Number(
-              form.stamps_required
-            ) || 0,
-
-          redemption_enabled:
-            form.redemption_enabled,
-
-          minimum_redemption_points:
-            Number(
-              form.minimum_redemption_points
-            ) || 0
-        })
-        .eq(
-          'id',
-          existing.id
-        ));
-    } else {
-      ({
-        error
-      } = await supabase
-        .from(
-          'loyalty_settings'
-        )
-        .insert({
-          ...form,
-          points_per_peso:
-            Number(
-              form.points_per_peso
-            ) || 0
-        }));
-    }
-
-    setMessage(
-      error
-        ? error.message
-        : 'Loyalty settings saved.'
-    );
-
-    setSaving(false);
-  }
-
-  if (loading) {
-    return (
-      <AdminLoading />
-    );
-  }
-
-  return (
-    <div className="admin-page">
-
-      <AdminPageIntro
-        eyebrow="LOYALTY"
-        title="Loyalty Settings"
-        description="Control how customers earn and redeem Sushi Points."
-      />
-
-      <form
-        className="admin-form-card"
-        onSubmit={save}
-      >
-
-        <div className="admin-setting-block">
-
-          <div className="admin-setting-heading">
-
-            <Star size={20} />
-
-            <div>
-              <h3>
-                Points earning
-              </h3>
-
-              <p>
-                Set how many points
-                customers earn from
-                purchases.
-              </p>
             </div>
 
-          </div>
+          </form>
 
-          <div className="admin-form-grid">
-
-            <AdminInput
-              label="Points per ₱1"
-              type="number"
-              step="0.01"
-              value={
-                form.points_per_peso
-              }
-              onChange={(v) =>
-                update(
-                  'points_per_peso',
-                  v
-                )
-              }
-            />
-
-            <AdminInput
-              label="Fixed points per purchase"
-              type="number"
-              step="0.01"
-              value={
-                form.points_per_purchase
-              }
-              onChange={(v) =>
-                update(
-                  'points_per_purchase',
-                  v
-                )
-              }
-            />
-
-          </div>
-
-          <div className="admin-help">
-            Current customer
-            earning in the staff
-            panel is ₱100 = 1 point.
-            We can connect that
-            calculation to this
-            setting next.
-          </div>
-
-        </div>
-
-        <div className="admin-setting-block">
-
-          <div className="admin-setting-heading">
-
-            <Ticket size={20} />
-
-            <div>
-              <h3>
-                Stamps
-              </h3>
-
-              <p>
-                Control your digital
-                stamp card.
-              </p>
-            </div>
-
-          </div>
-
-          <label className="admin-checkbox">
-
-            <input
-              type="checkbox"
-              checked={
-                form.stamps_enabled
-              }
-              onChange={(e) =>
-                update(
-                  'stamps_enabled',
-                  e.target.checked
-                )
-              }
-            />
-
-            <span>
-              Enable stamps
-            </span>
-
-          </label>
-
-          <AdminInput
-            label="Stamps required"
-            type="number"
-            value={
-              form.stamps_required
-            }
-            onChange={(v) =>
-              update(
-                'stamps_required',
-                v
-              )
-            }
-          />
-
-        </div>
-
-        <div className="admin-setting-block">
-
-          <div className="admin-setting-heading">
-
-            <Gift size={20} />
-
-            <div>
-              <h3>
-                Redemption
-              </h3>
-
-              <p>
-                Control point
-                redemptions.
-              </p>
-            </div>
-
-          </div>
-
-          <label className="admin-checkbox">
-
-            <input
-              type="checkbox"
-              checked={
-                form.redemption_enabled
-              }
-              onChange={(e) =>
-                update(
-                  'redemption_enabled',
-                  e.target.checked
-                )
-              }
-            />
-
-            <span>
-              Enable reward
-              redemption
-            </span>
-
-          </label>
-
-          <AdminInput
-            label="Minimum redemption points"
-            type="number"
-            value={
-              form.minimum_redemption_points
-            }
-            onChange={(v) =>
-              update(
-                'minimum_redemption_points',
-                v
-              )
-            }
-          />
-
-        </div>
-
-        {message && (
-          <div className="notice">
-            {message}
-          </div>
-        )}
-
-        <button
-          className="primary-button"
-          type="submit"
-          disabled={saving}
-        >
-          <Save size={16} />
-
-          {saving
-            ? 'Saving...'
-            : 'Save loyalty settings'}
-        </button>
-
-      </form>
+        </AdminModal>
+      )}
 
     </div>
   );
@@ -6080,216 +3451,140 @@ function AdminLoyalty() {
 ===================================================== */
 
 function AdminCustomers() {
-  const [customers, setCustomers] =
-    useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [search, setSearch] = useState('');
 
-  const [search, setSearch] =
-    useState('');
+  async function load() {
+    const { data } = await supabase
+      .from('customers')
+      .select('*')
+      .order('created_at', {
+        ascending: false
+      });
 
-  const [loading, setLoading] =
-    useState(true);
+    setCustomers(data || []);
+  }
 
   useEffect(() => {
     load();
   }, []);
 
-  async function load() {
-    setLoading(true);
+  const filtered = useMemo(() => {
+    return customers.filter(customer => {
 
-    const {
-      data
-    } = await supabase
-      .from('customers')
-      .select('*')
-      .order(
-        'created_at',
-        {
-          ascending: false
-        }
-      );
+      const text = `${customer.full_name || ''} ${
+        customer.email || ''
+      } ${customer.phone || ''} ${
+        customer.customer_code || ''
+      }`.toLowerCase();
 
-    setCustomers(
-      data || []
-    );
-
-    setLoading(false);
-  }
-
-  const filtered =
-    customers.filter(
-      (customer) => {
-        const q =
-          search
-            .toLowerCase()
-            .trim();
-
-        if (!q) return true;
-
-        return (
-          String(
-            customer.full_name ||
-              ''
-          )
-            .toLowerCase()
-            .includes(q) ||
-          String(
-            customer.email ||
-              ''
-          )
-            .toLowerCase()
-            .includes(q) ||
-          String(
-            customer.phone ||
-              ''
-          )
-            .toLowerCase()
-            .includes(q) ||
-          String(
-            customer.customer_code ||
-              ''
-          )
-            .toLowerCase()
-            .includes(q)
-        );
-      }
-    );
+      return text.includes(search.toLowerCase());
+    });
+  }, [customers, search]);
 
   return (
-    <div className="admin-page">
+    <div>
 
-      <AdminPageIntro
-        eyebrow="CUSTOMERS"
-        title="Customer Management"
-        description="View your loyalty club members."
+      <AdminSectionHeader
+        eyebrow="MEMBERS"
+        title="Customers"
+        description="View your loyalty club members and their balances."
       />
 
       <div className="admin-toolbar">
 
         <div className="admin-search">
-
-          <Users size={17} />
-
+          <Search size={17} />
           <input
-            value={search}
-            onChange={(e) =>
-              setSearch(
-                e.target.value
-              )
-            }
             placeholder="Search customers..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
           />
-
         </div>
 
-        <button
-          className="icon-button"
-          onClick={load}
-        >
-          <RefreshCw
-            size={17}
-          />
-        </button>
+        <div className="admin-toolbar-count">
+          {filtered.length} customers
+        </div>
 
       </div>
 
       <div className="admin-table-card">
 
-        {loading ? (
-          <AdminLoading />
-        ) : filtered.length ===
-          0 ? (
-          <AdminEmpty
-            icon={
-              <Users
-                size={24}
-              />
-            }
-            title="No customers found"
-            text="Try a different search."
-          />
-        ) : (
-          <div className="admin-customer-list">
+        <div className="admin-table-wrap">
 
-            {filtered.map(
-              (customer) => (
-                <div
-                  className="admin-customer-row"
-                  key={
-                    customer.id
-                  }
-                >
+          <table className="admin-table">
 
-                  <div className="admin-customer-avatar">
-                    {(
-                      customer.full_name ||
-                      '?'
-                    )
-                      .charAt(0)
-                      .toUpperCase()}
-                  </div>
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Contact</th>
+                <th>Sushi Points</th>
+                <th>Stamps</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
 
-                  <div className="admin-customer-info">
+            <tbody>
 
-                    <strong>
-                      {
-                        customer.full_name ||
-                        'Unnamed customer'
-                      }
-                    </strong>
+              {filtered.map(customer => (
+                <tr key={customer.id}>
 
-                    <span>
-                      {
-                        customer.email ||
-                        'No email'
-                      }
-                    </span>
+                  <td>
+                    <div className="customer-table-item">
 
-                    <small>
-                      Code:{' '}
-                      {
-                        customer.customer_code ||
-                        '—'
-                      }
-                    </small>
+                      <div className="customer-avatar">
+                        {(customer.full_name || '?')
+                          .charAt(0)
+                          .toUpperCase()}
+                      </div>
 
-                  </div>
+                      <div>
+                        <strong>
+                          {customer.full_name || 'Unnamed'}
+                        </strong>
+                        <span>
+                          {customer.customer_code || 'No code'}
+                        </span>
+                      </div>
 
-                  <div className="admin-customer-balance">
+                    </div>
+                  </td>
 
-                    <span>
-                      POINTS
-                    </span>
+                  <td>
+                    <div className="table-contact">
+                      <span>
+                        {customer.email || '—'}
+                      </span>
+                      <span>
+                        {customer.phone || '—'}
+                      </span>
+                    </div>
+                  </td>
 
+                  <td>
                     <strong>
                       {Number(
-                        customer.points ||
-                          0
+                        customer.points || 0
                       ).toFixed(0)}
                     </strong>
+                  </td>
 
-                  </div>
+                  <td>
+                    {customer.stamps || 0}
+                  </td>
 
-                  <div className="admin-customer-balance">
+                  <td>
+                    {formatDate(customer.created_at)}
+                  </td>
 
-                    <span>
-                      STAMPS
-                    </span>
+                </tr>
+              ))}
 
-                    <strong>
-                      {
-                        customer.stamps ||
-                        0
-                      }
-                    </strong>
+            </tbody>
 
-                  </div>
+          </table>
 
-                </div>
-              )
-            )}
-
-          </div>
-        )}
+        </div>
 
       </div>
 
@@ -6302,138 +3597,135 @@ function AdminCustomers() {
 ===================================================== */
 
 function AdminTransactions() {
-  const [transactions, setTransactions] =
-    useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [search, setSearch] = useState('');
 
-  const [loading, setLoading] =
-    useState(true);
+  async function load() {
+    const [{ data: tx }, { data: customerData }] =
+      await Promise.all([
+        supabase
+          .from('transactions')
+          .select('*')
+          .order('created_at', {
+            ascending: false
+          })
+          .limit(300),
+
+        supabase
+          .from('customers')
+          .select('id,full_name,email')
+      ]);
+
+    setTransactions(tx || []);
+    setCustomers(customerData || []);
+  }
 
   useEffect(() => {
     load();
   }, []);
 
-  async function load() {
-    setLoading(true);
+  const filtered = transactions.filter(tx => {
 
-    const {
-      data,
-      error
-    } = await supabase
-      .from(
-        'transactions'
-      )
-      .select(`
-        *,
-        customers (
-          full_name,
-          email,
-          customer_code
-        )
-      `)
-      .order(
-        'created_at',
-        {
-          ascending: false
-        }
-      )
-      .limit(200);
-
-    if (error) {
-      console.error(
-        error
-      );
-    }
-
-    setTransactions(
-      data || []
+    const customer = customers.find(
+      c => c.id === tx.customer_id
     );
 
-    setLoading(false);
-  }
+    const text = `
+      ${tx.transaction_type || ''}
+      ${customer?.full_name || ''}
+      ${customer?.email || ''}
+    `.toLowerCase();
+
+    return text.includes(search.toLowerCase());
+  });
 
   return (
-    <div className="admin-page">
+    <div>
 
-      <div className="admin-page-heading-row">
+      <AdminSectionHeader
+        eyebrow="ACTIVITY"
+        title="Transactions"
+        description="Review customer purchases and Sushi Points activity."
+      />
 
-        <AdminPageIntro
-          eyebrow="ACTIVITY"
-          title="Transactions"
-          description="Review customer purchases and Sushi Point activity."
-        />
+      <div className="admin-toolbar">
 
-        <button
-          className="icon-button"
-          onClick={load}
-        >
-          <RefreshCw
-            size={17}
+        <div className="admin-search">
+          <Search size={17} />
+          <input
+            placeholder="Search transactions..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
           />
-        </button>
+        </div>
 
       </div>
 
       <div className="admin-table-card">
 
-        {loading ? (
-          <AdminLoading />
-        ) : transactions.length ===
-          0 ? (
-          <AdminEmpty
-            icon={
-              <History
-                size={24}
-              />
-            }
-            title="No transactions yet"
-            text="Customer activity will appear here."
-          />
-        ) : (
-          <div className="admin-transaction-list">
+        <div className="admin-table-wrap">
 
-            {transactions.map(
-              (tx) => (
-                <div
-                  className="admin-transaction-row"
-                  key={tx.id}
-                >
+          <table className="admin-table">
 
-                  <div>
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Type</th>
+                <th>Points</th>
+                <th>Date</th>
+              </tr>
+            </thead>
 
-                    <strong>
-                      {tx.customers
-                        ?.full_name ||
-                        'Customer'}
-                    </strong>
+            <tbody>
 
-                    <span>
-                      {
-                        tx.transaction_type
-                      }
-                    </span>
+              {filtered.map(tx => {
 
-                    <small>
-                      {new Date(
-                        tx.created_at
-                      ).toLocaleString()}
-                    </small>
+                const customer = customers.find(
+                  c => c.id === tx.customer_id
+                );
 
-                  </div>
+                return (
+                  <tr key={tx.id}>
 
-                  <b>
-                    +
-                    {Number(
-                      tx.points_earned ||
-                        0
-                    ).toFixed(2)}
-                  </b>
+                    <td>
+                      <strong>
+                        {customer?.full_name ||
+                          'Unknown customer'}
+                      </strong>
+                    </td>
 
-                </div>
-              )
-            )}
+                    <td>
+                      <span className="admin-category">
+                        {tx.transaction_type}
+                      </span>
+                    </td>
 
-          </div>
-        )}
+                    <td>
+                      <strong className="points-green">
+                        +{Number(
+                          tx.points_earned || 0
+                        ).toFixed(2)}
+                      </strong>
+                    </td>
+
+                    <td>
+                      {formatDateTime(tx.created_at)}
+                    </td>
+
+                  </tr>
+                );
+              })}
+
+            </tbody>
+
+          </table>
+
+          {filtered.length === 0 && (
+            <AdminEmpty text="No transactions found." />
+          )}
+
+        </div>
 
       </div>
 
@@ -6446,259 +3738,741 @@ function AdminTransactions() {
 ===================================================== */
 
 function AdminBirthday() {
-  const [rewards, setRewards] =
-    useState([]);
-
-  const [name, setName] =
-    useState('');
-
-  const [rewardText, setRewardText] =
-    useState('');
-
-  const [active, setActive] =
-    useState(true);
-
-  const [message, setMessage] =
-    useState('');
-
-  const [loading, setLoading] =
-    useState(true);
+  const [rewards, setRewards] = useState([]);
+  const [editing, setEditing] = useState(null);
 
   async function load() {
-    const {
-      data,
-      error
-    } = await supabase
-      .from(
-        'birthday_rewards'
-      )
+    const { data } = await supabase
+      .from('birthday_rewards')
       .select('*')
       .order('id');
 
-    if (error) {
-      setMessage(
-        error.message
-      );
-    }
-
-    setRewards(
-      data || []
-    );
-
-    setLoading(false);
+    setRewards(data || []);
   }
 
   useEffect(() => {
     load();
   }, []);
 
-  async function addReward(e) {
+  async function save(e) {
     e.preventDefault();
 
-    if (!name.trim() ||
-        !rewardText.trim()) {
-      setMessage(
-        'Please enter the birthday reward details.'
-      );
-      return;
-    }
+    const payload = {
+      name: editing.name,
+      reward_text: editing.reward_text,
+      active: editing.active
+    };
 
-    const {
-      error
-    } = await supabase
-      .from(
-        'birthday_rewards'
-      )
-      .insert({
-        name:
-          name.trim(),
-        reward_text:
-          rewardText.trim(),
-        active
-      });
+    let error;
+
+    if (editing.id) {
+      ({ error } = await supabase
+        .from('birthday_rewards')
+        .update(payload)
+        .eq('id', editing.id));
+    } else {
+      ({ error } = await supabase
+        .from('birthday_rewards')
+        .insert(payload));
+    }
 
     if (error) {
-      setMessage(
-        error.message
-      );
+      alert(error.message);
       return;
     }
 
-    setName('');
-    setRewardText('');
-
-    setMessage(
-      'Birthday reward added.'
-    );
-
-    load();
-  }
-
-  async function toggle(reward) {
-    const {
-      error
-    } = await supabase
-      .from(
-        'birthday_rewards'
-      )
-      .update({
-        active:
-          !reward.active
-      })
-      .eq(
-        'id',
-        reward.id
-      );
-
-    if (error) {
-      setMessage(
-        error.message
-      );
-      return;
-    }
-
+    setEditing(null);
     load();
   }
 
   return (
-    <div className="admin-page">
+    <div>
 
-      <AdminPageIntro
-        eyebrow="BIRTHDAY"
+      <AdminSectionHeader
+        eyebrow="CUSTOMER PERKS"
         title="Birthday Rewards"
-        description="Create special rewards for customers on their birthday."
+        description="Set the reward customers receive on their birthday."
+        button={
+          <button
+            className="admin-primary-button"
+            onClick={() =>
+              setEditing({
+                name: '',
+                reward_text: '',
+                active: true
+              })
+            }
+          >
+            <Plus size={17} />
+            Add birthday reward
+          </button>
+        }
       />
 
-      <form
-        className="admin-form-card"
-        onSubmit={addReward}
-      >
+      <div className="admin-reward-grid">
 
-        <div className="admin-form-grid">
+        {rewards.map(reward => (
+          <div
+            className="admin-reward-card"
+            key={reward.id}
+          >
 
-          <AdminInput
-            label="Reward name"
-            value={name}
-            onChange={setName}
-            placeholder="Birthday Sushi"
-          />
+            <div className="admin-reward-top">
 
-          <AdminInput
-            label="Reward text"
-            value={rewardText}
-            onChange={
-              setRewardText
-            }
-            placeholder="Enjoy a free classic roll on us!"
-          />
+              <div className="admin-reward-icon birthday">
+                <CakeSlice size={21} />
+              </div>
 
-        </div>
+              <AdminStatus active={reward.active} />
 
-        <label className="admin-checkbox">
+            </div>
 
-          <input
-            type="checkbox"
-            checked={active}
-            onChange={(e) =>
-              setActive(
-                e.target.checked
-              )
-            }
-          />
+            <h3>{reward.name}</h3>
 
-          <span>
-            Active
-          </span>
+            <p>{reward.reward_text}</p>
 
-        </label>
+            <button
+              className="admin-card-link"
+              onClick={() =>
+                setEditing({
+                  ...reward
+                })
+              }
+            >
+              <Edit3 size={15} />
+              Edit reward
+            </button>
 
-        {message && (
-          <div className="notice">
-            {message}
           </div>
-        )}
+        ))}
 
-        <button
-          className="primary-button"
-          type="submit"
+      </div>
+
+      {editing && (
+        <AdminModal
+          title={
+            editing.id
+              ? 'Edit birthday reward'
+              : 'Add birthday reward'
+          }
+          onClose={() => setEditing(null)}
         >
-          <Plus size={17} />
-          Add birthday reward
-        </button>
 
-      </form>
+          <form
+            className="admin-form"
+            onSubmit={save}
+          >
 
-      <div className="admin-table-card">
+            <div className="field">
+              <label>Reward name</label>
+              <input
+                value={editing.name}
+                onChange={e =>
+                  setEditing({
+                    ...editing,
+                    name: e.target.value
+                  })
+                }
+                required
+              />
+            </div>
 
-        {loading ? (
-          <AdminLoading />
-        ) : (
-          <div className="admin-menu-list">
+            <div className="field">
+              <label>Reward text</label>
+              <textarea
+                value={editing.reward_text}
+                onChange={e =>
+                  setEditing({
+                    ...editing,
+                    reward_text: e.target.value
+                  })
+                }
+                required
+              />
+            </div>
 
-            {rewards.map(
-              (reward) => (
-                <div
-                  className="admin-menu-row"
-                  key={reward.id}
-                >
+            <label className="admin-toggle-row">
+              <input
+                type="checkbox"
+                checked={!!editing.active}
+                onChange={e =>
+                  setEditing({
+                    ...editing,
+                    active: e.target.checked
+                  })
+                }
+              />
+              <span>
+                <strong>Active</strong>
+                <small>
+                  Customers can receive this birthday reward.
+                </small>
+              </span>
+            </label>
 
-                  <div className="admin-menu-photo reward-photo">
-                    <Cake
-                      size={20}
-                    />
-                  </div>
+            <button className="admin-primary-button">
+              <Save size={16} />
+              Save
+            </button>
 
-                  <div className="admin-menu-info">
+          </form>
 
-                    <strong>
-                      {reward.name}
-                    </strong>
+        </AdminModal>
+      )}
 
-                    <span>
-                      {
-                        reward.reward_text
-                      }
-                    </span>
+    </div>
+  );
+}
 
-                  </div>
+/* =====================================================
+   ADMIN LOYALTY
+===================================================== */
 
-                  <span
-                    className={
-                      reward.active
-                        ? 'status-badge active'
-                        : 'status-badge'
-                    }
-                  >
-                    {reward.active
-                      ? 'Active'
-                      : 'Inactive'}
-                  </span>
+function AdminLoyalty() {
+  const [pointsPerAmount, setPointsPerAmount] =
+    useState('100');
 
-                  <button
-                    className="icon-button"
-                    onClick={() =>
-                      toggle(
-                        reward
-                      )
-                    }
-                  >
-                    {reward.active ? (
-                      <ToggleRight
-                        size={19}
-                      />
-                    ) : (
-                      <ToggleLeft
-                        size={19}
-                      />
-                    )}
-                  </button>
+  const [stampsEnabled, setStampsEnabled] =
+    useState(true);
 
-                </div>
-              )
+  const [redemptionEnabled, setRedemptionEnabled] =
+    useState(true);
+
+  const [message, setMessage] = useState('');
+
+  return (
+    <div>
+
+      <AdminSectionHeader
+        eyebrow="LOYALTY PROGRAM"
+        title="Loyalty Settings"
+        description="Control how customers earn and redeem Sushi Points."
+      />
+
+      <div className="admin-settings-grid">
+
+        <section className="admin-panel">
+
+          <div className="admin-panel-heading">
+            <div>
+              <span>EARNING</span>
+              <h3>Points earning rules</h3>
+            </div>
+            <Star size={19} />
+          </div>
+
+          <div className="field">
+            <label>Purchase amount per point</label>
+
+            <div className="input-with-prefix">
+              <span>₱</span>
+              <input
+                type="number"
+                value={pointsPerAmount}
+                onChange={e =>
+                  setPointsPerAmount(e.target.value)
+                }
+              />
+            </div>
+
+            <small className="admin-help">
+              Example: ₱100 = 1 Sushi Point.
+            </small>
+          </div>
+
+        </section>
+
+        <section className="admin-panel">
+
+          <div className="admin-panel-heading">
+            <div>
+              <span>STAMPS</span>
+              <h3>Stamp card</h3>
+            </div>
+            <Ticket size={19} />
+          </div>
+
+          <label className="admin-toggle-row">
+
+            <input
+              type="checkbox"
+              checked={stampsEnabled}
+              onChange={e =>
+                setStampsEnabled(e.target.checked)
+              }
+            />
+
+            <span>
+              <strong>Enable stamps</strong>
+              <small>
+                Keep stamp tracking available for customers.
+              </small>
+            </span>
+
+          </label>
+
+        </section>
+
+        <section className="admin-panel">
+
+          <div className="admin-panel-heading">
+            <div>
+              <span>REDEMPTIONS</span>
+              <h3>Reward redemption</h3>
+            </div>
+            <Gift size={19} />
+          </div>
+
+          <label className="admin-toggle-row">
+
+            <input
+              type="checkbox"
+              checked={redemptionEnabled}
+              onChange={e =>
+                setRedemptionEnabled(e.target.checked)
+              }
+            />
+
+            <span>
+              <strong>Enable redemptions</strong>
+              <small>
+                Allow customers to generate reward codes.
+              </small>
+            </span>
+
+          </label>
+
+        </section>
+
+      </div>
+
+      {message && (
+        <div className="notice">
+          {message}
+        </div>
+      )}
+
+      <button
+        className="admin-primary-button"
+        onClick={() =>
+          setMessage(
+            'Loyalty settings are ready to connect to your app settings table.'
+          )
+        }
+      >
+        <Save size={16} />
+        Save loyalty settings
+      </button>
+
+    </div>
+  );
+}
+
+/* =====================================================
+   ADMIN BUSINESS
+===================================================== */
+
+function AdminBusiness() {
+  const [business, setBusiness] = useState({
+    name: 'At Home Sushi',
+    location: 'Bustos, Bulacan',
+    phone: '',
+    facebook: 'https://www.facebook.com/athomesushibustos',
+    instagram: '',
+    hours: '11:00 AM – 9:00 PM'
+  });
+
+  const [saved, setSaved] = useState(false);
+
+  function save(e) {
+    e.preventDefault();
+
+    localStorage.setItem(
+      'ahsBusinessInfo',
+      JSON.stringify(business)
+    );
+
+    setSaved(true);
+
+    setTimeout(() => setSaved(false), 2500);
+  }
+
+  useEffect(() => {
+    const stored =
+      localStorage.getItem('ahsBusinessInfo');
+
+    if (stored) {
+      setBusiness(JSON.parse(stored));
+    }
+  }, []);
+
+  return (
+    <div>
+
+      <AdminSectionHeader
+        eyebrow="BUSINESS"
+        title="Business Information"
+        description="Manage the information displayed across your loyalty app."
+      />
+
+      <section className="admin-panel admin-form-panel">
+
+        <form
+          className="admin-form"
+          onSubmit={save}
+        >
+
+          <div className="admin-form-grid">
+
+            <div className="field">
+              <label>Business name</label>
+              <input
+                value={business.name}
+                onChange={e =>
+                  setBusiness({
+                    ...business,
+                    name: e.target.value
+                  })
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Location</label>
+              <input
+                value={business.location}
+                onChange={e =>
+                  setBusiness({
+                    ...business,
+                    location: e.target.value
+                  })
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Contact number</label>
+              <input
+                value={business.phone}
+                onChange={e =>
+                  setBusiness({
+                    ...business,
+                    phone: e.target.value
+                  })
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Opening hours</label>
+              <input
+                value={business.hours}
+                onChange={e =>
+                  setBusiness({
+                    ...business,
+                    hours: e.target.value
+                  })
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Facebook</label>
+              <input
+                value={business.facebook}
+                onChange={e =>
+                  setBusiness({
+                    ...business,
+                    facebook: e.target.value
+                  })
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Instagram</label>
+              <input
+                value={business.instagram}
+                onChange={e =>
+                  setBusiness({
+                    ...business,
+                    instagram: e.target.value
+                  })
+                }
+              />
+            </div>
+
+          </div>
+
+          {saved && (
+            <div className="notice">
+              Business information saved.
+            </div>
+          )}
+
+          <button className="admin-primary-button">
+            <Save size={16} />
+            Save business information
+          </button>
+
+        </form>
+
+      </section>
+
+    </div>
+  );
+}
+
+/* =====================================================
+   ADMIN HOMEPAGE
+===================================================== */
+
+function AdminHomepage() {
+  const [heroTitle, setHeroTitle] =
+    useState('Good sushi. Better rewards.');
+
+  const [description, setDescription] =
+    useState(
+      'Enjoy your favorites, earn Sushi Points, and make every order count.'
+    );
+
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    const stored =
+      localStorage.getItem('ahsHomepage');
+
+    if (stored) {
+      const data = JSON.parse(stored);
+
+      setHeroTitle(
+        data.heroTitle ||
+          'Good sushi. Better rewards.'
+      );
+
+      setDescription(
+        data.description || ''
+      );
+    }
+  }, []);
+
+  function save(e) {
+    e.preventDefault();
+
+    localStorage.setItem(
+      'ahsHomepage',
+      JSON.stringify({
+        heroTitle,
+        description
+      })
+    );
+
+    setSaved(true);
+
+    setTimeout(() => setSaved(false), 2500);
+  }
+
+  return (
+    <div>
+
+      <AdminSectionHeader
+        eyebrow="WEBSITE"
+        title="Homepage"
+        description="Control the messaging customers see when they open the loyalty club."
+      />
+
+      <div className="admin-settings-grid">
+
+        <section className="admin-panel">
+
+          <div className="admin-panel-heading">
+            <div>
+              <span>HERO SECTION</span>
+              <h3>Main message</h3>
+            </div>
+
+            <Home size={19} />
+          </div>
+
+          <form
+            className="admin-form"
+            onSubmit={save}
+          >
+
+            <div className="field">
+              <label>Hero title</label>
+              <textarea
+                value={heroTitle}
+                onChange={e =>
+                  setHeroTitle(e.target.value)
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Hero description</label>
+              <textarea
+                value={description}
+                onChange={e =>
+                  setDescription(e.target.value)
+                }
+              />
+            </div>
+
+            {saved && (
+              <div className="notice">
+                Homepage content saved.
+              </div>
             )}
 
+            <button className="admin-primary-button">
+              <Save size={16} />
+              Save homepage
+            </button>
+
+          </form>
+
+        </section>
+
+        <section className="admin-panel">
+
+          <div className="admin-panel-heading">
+            <div>
+              <span>PREVIEW</span>
+              <h3>Hero preview</h3>
+            </div>
           </div>
-        )}
+
+          <div className="admin-hero-preview">
+
+            <span>AT HOME SUSHI</span>
+
+            <h2>
+              {heroTitle}
+            </h2>
+
+            <p>
+              {description}
+            </p>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </div>
+  );
+}
+
+/* =====================================================
+   ADMIN IMAGES
+===================================================== */
+
+function AdminImages() {
+  const [logoPreview, setLogoPreview] =
+    useState(null);
+
+  function handleLogo(e) {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+
+    setLogoPreview(url);
+
+    /*
+      This is a visual uploader for now.
+      We will connect it to Supabase Storage
+      next so the image becomes permanent.
+    */
+  }
+
+  return (
+    <div>
+
+      <AdminSectionHeader
+        eyebrow="MEDIA"
+        title="Image Library"
+        description="Manage your brand and menu imagery."
+      />
+
+      <div className="admin-settings-grid">
+
+        <section className="admin-panel">
+
+          <div className="admin-panel-heading">
+            <div>
+              <span>BRANDING</span>
+              <h3>Business logo</h3>
+            </div>
+
+            <ImageIcon size={19} />
+          </div>
+
+          <div className="admin-logo-upload">
+
+            <div className="admin-logo-preview">
+
+              <img
+                src={logoPreview || logo}
+                alt="Business logo"
+              />
+
+            </div>
+
+            <label className="admin-upload-button">
+
+              <Upload size={16} />
+              Choose logo
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleLogo}
+              />
+
+            </label>
+
+            <small>
+              Recommended: square JPG or PNG.
+            </small>
+
+          </div>
+
+        </section>
+
+        <section className="admin-panel">
+
+          <div className="admin-panel-heading">
+            <div>
+              <span>MENU PHOTOS</span>
+              <h3>Image uploading</h3>
+            </div>
+
+            <UtensilsCrossed size={19} />
+          </div>
+
+          <div className="admin-upload-dropzone">
+
+            <Upload size={28} />
+
+            <strong>
+              Upload menu photos
+            </strong>
+
+            <span>
+              JPG, PNG or WEBP
+            </span>
+
+            <button className="admin-outline-button">
+              Select images
+            </button>
+
+          </div>
+
+        </section>
 
       </div>
 
@@ -6711,738 +4485,94 @@ function AdminBirthday() {
 ===================================================== */
 
 function AdminStaff() {
-  const [staff, setStaff] =
-    useState([]);
+  const [admins, setAdmins] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [loading, setLoading] =
-    useState(true);
+  async function load() {
+    const { data, error } = await supabase
+      .from('admin_users')
+      .select('*')
+      .order('email');
 
-  const [message, setMessage] =
-    useState('');
+    if (error) {
+      console.error(error);
+    }
+
+    setAdmins(data || []);
+    setLoading(false);
+  }
 
   useEffect(() => {
     load();
   }, []);
 
-  async function load() {
-    setLoading(true);
-
-    const {
-      data,
-      error
-    } = await supabase
-      .from(
-        'staff_users'
-      )
-      .select('*')
-      .order(
-        'created_at',
-        {
-          ascending: true
-        }
-      );
-
-    if (error) {
-      setMessage(
-        error.message
-      );
-    }
-
-    setStaff(
-      data || []
-    );
-
-    setLoading(false);
-  }
-
-  async function toggle(user) {
-    const {
-      error
-    } = await supabase
-      .from(
-        'staff_users'
-      )
-      .update({
-        active:
-          !user.active
-      })
-      .eq(
-        'id',
-        user.id
-      );
-
-    if (error) {
-      setMessage(
-        error.message
-      );
-      return;
-    }
-
-    load();
-  }
-
   return (
-    <div className="admin-page">
+    <div>
 
-      <AdminPageIntro
-        eyebrow="ACCESS"
-        title="Staff & Admin"
-        description="Manage authorized staff accounts."
+      <AdminSectionHeader
+        eyebrow="ACCESS CONTROL"
+        title="Admin & Staff"
+        description="Manage the people who can access your business dashboard."
       />
 
-      <div className="admin-help-card">
+      <section className="admin-panel">
+
+        <div className="admin-panel-heading">
+
+          <div>
+            <span>AUTHORIZED USERS</span>
+            <h3>Administrators</h3>
+          </div>
+
+          <Shield size={19} />
+
+        </div>
+
+        {loading ? (
+          <AdminEmpty text="Loading administrators..." />
+        ) : admins.length === 0 ? (
+          <AdminEmpty text="No administrators found." />
+        ) : (
+          <div className="admin-staff-list">
+
+            {admins.map(admin => (
+              <div
+                className="admin-staff-row"
+                key={admin.id}
+              >
+
+                <div className="customer-avatar">
+                  {(admin.email || 'A')
+                    .charAt(0)
+                    .toUpperCase()}
+                </div>
+
+                <div>
+                  <strong>{admin.email}</strong>
+                  <span>Administrator</span>
+                </div>
+
+                <AdminStatus active />
+
+              </div>
+            ))}
+
+          </div>
+        )}
+
+      </section>
+
+      <div className="admin-info-box">
 
         <Shield size={20} />
 
         <div>
-
-          <strong>
-            Adding staff accounts
-          </strong>
-
+          <strong>Admin access is protected</strong>
           <p>
-            Create the user first in
-            Supabase Authentication,
-            then add their User ID
-            to the
-            <code>
-              staff_users
-            </code>
-            table.
+            Only accounts listed in the
+            <code> admin_users </code>
+            table can enter this dashboard.
           </p>
-
-        </div>
-
-      </div>
-
-      <div className="admin-table-card">
-
-        {loading ? (
-          <AdminLoading />
-        ) : staff.length ===
-          0 ? (
-          <AdminEmpty
-            icon={
-              <Shield
-                size={24}
-              />
-            }
-            title="No staff accounts"
-            text="Your admin account will appear here."
-          />
-        ) : (
-          <div className="admin-menu-list">
-
-            {staff.map(
-              (user) => (
-                <div
-                  className="admin-menu-row"
-                  key={user.id}
-                >
-
-                  <div className="admin-customer-avatar">
-                    <User
-                      size={18}
-                    />
-                  </div>
-
-                  <div className="admin-menu-info">
-
-                    <strong>
-                      {
-                        user.full_name ||
-                        'Staff'
-                      }
-                    </strong>
-
-                    <span>
-                      {
-                        user.email
-                      }
-                    </span>
-
-                    <small>
-                      Role:{' '}
-                      {
-                        user.role
-                      }
-                    </small>
-
-                  </div>
-
-                  <span
-                    className={
-                      user.active
-                        ? 'status-badge active'
-                        : 'status-badge'
-                    }
-                  >
-                    {user.active
-                      ? 'Active'
-                      : 'Disabled'}
-                  </span>
-
-                  <button
-                    className="icon-button"
-                    onClick={() =>
-                      toggle(
-                        user
-                      )
-                    }
-                  >
-                    {user.active ? (
-                      <ToggleRight
-                        size={19}
-                      />
-                    ) : (
-                      <ToggleLeft
-                        size={19}
-                      />
-                    )}
-                  </button>
-
-                </div>
-              )
-            )}
-
-          </div>
-        )}
-
-      </div>
-
-    </div>
-  );
-}
-
-/* =====================================================
-   ADMIN HOMEPAGE
-===================================================== */
-
-function AdminHomepage() {
-  const [form, setForm] =
-    useState({
-      hero_title:
-        'Good sushi. Better rewards.',
-      hero_description:
-        'Enjoy your favorites, earn Sushi Points, and make every order count.',
-      hero_button_text:
-        'Explore sushi',
-      loyalty_title:
-        'Your Sushi Points',
-      loyalty_description:
-        'Every order brings you closer to something delicious.',
-      menu_title:
-        'Explore Our Menu',
-      menu_description:
-        'Find your favorite roll, nigiri, sashimi or platter.',
-      rewards_title:
-        'Rewards',
-      rewards_description:
-        'A little something for every sushi lover.'
-    });
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [saving, setSaving] =
-    useState(false);
-
-  const [message, setMessage] =
-    useState('');
-
-  useEffect(() => {
-    load();
-  }, []);
-
-  async function load() {
-    const {
-      data,
-      error
-    } = await supabase
-      .from(
-        'homepage_content'
-      )
-      .select('*')
-      .limit(1)
-      .maybeSingle();
-
-    if (!error && data) {
-      setForm({
-        hero_title:
-          data.hero_title ||
-          '',
-        hero_description:
-          data.hero_description ||
-          '',
-        hero_button_text:
-          data.hero_button_text ||
-          '',
-        loyalty_title:
-          data.loyalty_title ||
-          '',
-        loyalty_description:
-          data.loyalty_description ||
-          '',
-        menu_title:
-          data.menu_title ||
-          '',
-        menu_description:
-          data.menu_description ||
-          '',
-        rewards_title:
-          data.rewards_title ||
-          '',
-        rewards_description:
-          data.rewards_description ||
-          ''
-      });
-    }
-
-    setLoading(false);
-  }
-
-  function update(
-    field,
-    value
-  ) {
-    setForm((old) => ({
-      ...old,
-      [field]: value
-    }));
-  }
-
-  async function save(e) {
-    e.preventDefault();
-
-    setSaving(true);
-    setMessage('');
-
-    const {
-      data: existing
-    } = await supabase
-      .from(
-        'homepage_content'
-      )
-      .select('id')
-      .limit(1)
-      .maybeSingle();
-
-    let error;
-
-    if (existing) {
-      ({
-        error
-      } = await supabase
-        .from(
-          'homepage_content'
-        )
-        .update(form)
-        .eq(
-          'id',
-          existing.id
-        ));
-    } else {
-      ({
-        error
-      } = await supabase
-        .from(
-          'homepage_content'
-        )
-        .insert(form));
-    }
-
-    setMessage(
-      error
-        ? error.message
-        : 'Homepage content saved.'
-    );
-
-    setSaving(false);
-  }
-
-  if (loading) {
-    return (
-      <AdminLoading />
-    );
-  }
-
-  return (
-    <div className="admin-page">
-
-      <AdminPageIntro
-        eyebrow="HOMEPAGE"
-        title="Homepage Content"
-        description="Change the text customers see on the loyalty homepage."
-      />
-
-      <form
-        className="admin-form-card"
-        onSubmit={save}
-      >
-
-        <div className="admin-setting-block">
-
-          <div className="admin-setting-heading">
-
-            <HomeIcon
-              size={20}
-            />
-
-            <div>
-              <h3>
-                Hero section
-              </h3>
-
-              <p>
-                The first section
-                customers see.
-              </p>
-            </div>
-
-          </div>
-
-          <div className="admin-form-grid">
-
-            <AdminInput
-              label="Hero title"
-              value={
-                form.hero_title
-              }
-              onChange={(v) =>
-                update(
-                  'hero_title',
-                  v
-                )
-              }
-            />
-
-            <AdminInput
-              label="Button text"
-              value={
-                form.hero_button_text
-              }
-              onChange={(v) =>
-                update(
-                  'hero_button_text',
-                  v
-                )
-              }
-            />
-
-            <div className="field full">
-
-              <label>
-                Hero description
-              </label>
-
-              <textarea
-                value={
-                  form.hero_description
-                }
-                onChange={(e) =>
-                  update(
-                    'hero_description',
-                    e.target.value
-                  )
-                }
-              />
-
-            </div>
-
-          </div>
-
-        </div>
-
-        <div className="admin-setting-block">
-
-          <div className="admin-setting-heading">
-
-            <Star size={20} />
-
-            <div>
-              <h3>
-                Loyalty section
-              </h3>
-
-              <p>
-                Content for the
-                Sushi Points section.
-              </p>
-            </div>
-
-          </div>
-
-          <AdminInput
-            label="Title"
-            value={
-              form.loyalty_title
-            }
-            onChange={(v) =>
-              update(
-                'loyalty_title',
-                v
-              )
-            }
-          />
-
-          <div className="field">
-
-            <label>
-              Description
-            </label>
-
-            <textarea
-              value={
-                form.loyalty_description
-              }
-              onChange={(e) =>
-                update(
-                  'loyalty_description',
-                  e.target.value
-                )
-              }
-            />
-
-          </div>
-
-        </div>
-
-        <div className="admin-setting-block">
-
-          <div className="admin-setting-heading">
-
-            <Utensils
-              size={20}
-            />
-
-            <div>
-              <h3>
-                Menu section
-              </h3>
-
-              <p>
-                Content above the
-                customer menu.
-              </p>
-            </div>
-
-          </div>
-
-          <AdminInput
-            label="Title"
-            value={
-              form.menu_title
-            }
-            onChange={(v) =>
-              update(
-                'menu_title',
-                v
-              )
-            }
-          />
-
-          <div className="field">
-
-            <label>
-              Description
-            </label>
-
-            <textarea
-              value={
-                form.menu_description
-              }
-              onChange={(e) =>
-                update(
-                  'menu_description',
-                  e.target.value
-                )
-              }
-            />
-
-          </div>
-
-        </div>
-
-        <div className="admin-setting-block">
-
-          <div className="admin-setting-heading">
-
-            <Gift size={20} />
-
-            <div>
-              <h3>
-                Rewards section
-              </h3>
-
-              <p>
-                Content above the
-                customer rewards.
-              </p>
-            </div>
-
-          </div>
-
-          <AdminInput
-            label="Title"
-            value={
-              form.rewards_title
-            }
-            onChange={(v) =>
-              update(
-                'rewards_title',
-                v
-              )
-            }
-          />
-
-          <div className="field">
-
-            <label>
-              Description
-            </label>
-
-            <textarea
-              value={
-                form.rewards_description
-              }
-              onChange={(e) =>
-                update(
-                  'rewards_description',
-                  e.target.value
-                )
-              }
-            />
-
-          </div>
-
-        </div>
-
-        {message && (
-          <div className="notice">
-            {message}
-          </div>
-        )}
-
-        <button
-          className="primary-button"
-          type="submit"
-          disabled={saving}
-        >
-          <Save size={16} />
-
-          {saving
-            ? 'Saving...'
-            : 'Save homepage'}
-        </button>
-
-      </form>
-
-    </div>
-  );
-}
-
-/* =====================================================
-   ADMIN IMAGES
-===================================================== */
-
-function AdminImages() {
-  return (
-    <div className="admin-page">
-
-      <AdminPageIntro
-        eyebrow="MEDIA"
-        title="Image Uploading"
-        description="Manage the images used throughout At Home Sushi."
-      />
-
-      <div className="admin-help-card">
-
-        <ImageIcon
-          size={21}
-        />
-
-        <div>
-
-          <strong>
-            Image storage
-          </strong>
-
-          <p>
-            Your menu currently
-            supports image URLs.
-            The next step is
-            connecting this section
-            to a Supabase Storage
-            bucket so you can upload
-            photos directly from
-            Admin.
-          </p>
-
-        </div>
-
-      </div>
-
-      <div className="admin-section-grid">
-
-        <div className="admin-action-card static">
-
-          <ImageIcon
-            size={22}
-          />
-
-          <div>
-
-            <strong>
-              Menu photos
-            </strong>
-
-            <span>
-              Upload photos for
-              individual sushi items.
-            </span>
-
-          </div>
-
-        </div>
-
-        <div className="admin-action-card static">
-
-          <Store size={22} />
-
-          <div>
-
-            <strong>
-              Business logo
-            </strong>
-
-            <span>
-              Manage the logo shown
-              across the app.
-            </span>
-
-          </div>
-
-        </div>
-
-        <div className="admin-action-card static">
-
-          <HomeIcon
-            size={22}
-          />
-
-          <div>
-
-            <strong>
-              Homepage images
-            </strong>
-
-            <span>
-              Prepare images for
-              homepage sections.
-            </span>
-
-          </div>
-
         </div>
 
       </div>
@@ -7452,371 +4582,191 @@ function AdminImages() {
 }
 
 /* =====================================================
-   ADMIN GENERAL
+   ADMIN APP SETTINGS
 ===================================================== */
 
-function AdminGeneral() {
-  const [form, setForm] =
-    useState({
-      app_name:
-        'At Home Sushi Loyalty Club',
-      maintenance_mode:
-        false,
-      customer_registration_enabled:
-        true,
-      ordering_enabled:
-        true,
-      facebook_enabled:
-        true,
-      ordermo_enabled:
-        true
-    });
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [saving, setSaving] =
-    useState(false);
-
-  const [message, setMessage] =
-    useState('');
-
-  useEffect(() => {
-    load();
-  }, []);
-
-  async function load() {
-    const {
-      data,
-      error
-    } = await supabase
-      .from(
-        'app_settings'
-      )
-      .select('*')
-      .limit(1)
-      .maybeSingle();
-
-    if (!error && data) {
-      setForm({
-        app_name:
-          data.app_name ||
-          '',
-        maintenance_mode:
-          data.maintenance_mode,
-        customer_registration_enabled:
-          data.customer_registration_enabled,
-        ordering_enabled:
-          data.ordering_enabled,
-        facebook_enabled:
-          data.facebook_enabled,
-        ordermo_enabled:
-          data.ordermo_enabled
-      });
-    }
-
-    setLoading(false);
-  }
-
-  function toggle(field) {
-    setForm((old) => ({
-      ...old,
-      [field]:
-        !old[field]
-    }));
-  }
-
-  async function save(e) {
-    e.preventDefault();
-
-    setSaving(true);
-    setMessage('');
-
-    const {
-      data: existing
-    } = await supabase
-      .from(
-        'app_settings'
-      )
-      .select('id')
-      .limit(1)
-      .maybeSingle();
-
-    let error;
-
-    if (existing) {
-      ({
-        error
-      } = await supabase
-        .from(
-          'app_settings'
-        )
-        .update(form)
-        .eq(
-          'id',
-          existing.id
-        ));
-    } else {
-      ({
-        error
-      } = await supabase
-        .from(
-          'app_settings'
-        )
-        .insert(form));
-    }
-
-    setMessage(
-      error
-        ? error.message
-        : 'General settings saved.'
-    );
-
-    setSaving(false);
-  }
-
-  if (loading) {
-    return (
-      <AdminLoading />
-    );
-  }
-
-  const switches = [
-    {
-      key:
-        'maintenance_mode',
-      title:
-        'Maintenance mode',
-      description:
-        'Temporarily place the app into maintenance mode.'
-    },
-    {
-      key:
-        'customer_registration_enabled',
-      title:
-        'Customer registration',
-      description:
-        'Allow new customers to join the loyalty club.'
-    },
-    {
-      key:
-        'ordering_enabled',
-      title:
-        'Online ordering',
-      description:
-        'Show ordering options to customers.'
-    },
-    {
-      key:
-        'facebook_enabled',
-      title:
-        'Facebook ordering',
-      description:
-        'Allow customers to order through Facebook.'
-    },
-    {
-      key:
-        'ordermo_enabled',
-      title:
-        'OrderMo',
-      description:
-        'Show the OrderMo ordering option.'
-    }
-  ];
+function AdminAppSettings() {
+  const [settings, setSettings] = useState({
+    maintenance: false,
+    customerSignup: true,
+    showMenu: true,
+    showRewards: true
+  });
 
   return (
-    <div className="admin-page">
+    <div>
 
-      <AdminPageIntro
-        eyebrow="GENERAL"
-        title="General App Settings"
-        description="Control the main behavior of the loyalty app."
+      <AdminSectionHeader
+        eyebrow="SYSTEM"
+        title="App Settings"
+        description="General controls for the At Home Sushi loyalty application."
       />
 
-      <form
-        className="admin-form-card"
-        onSubmit={save}
-      >
+      <div className="admin-settings-list">
 
-        <AdminInput
-          label="App name"
-          value={
-            form.app_name
-          }
-          onChange={(v) =>
-            setForm((old) => ({
-              ...old,
-              app_name: v
-            }))
+        <AdminSetting
+          icon={UserPlus}
+          title="Customer registration"
+          description="Allow new customers to join the loyalty club."
+          checked={settings.customerSignup}
+          onChange={value =>
+            setSettings({
+              ...settings,
+              customerSignup: value
+            })
           }
         />
 
-        <div className="admin-switch-list">
+        <AdminSetting
+          icon={UtensilsCrossed}
+          title="Show menu"
+          description="Display the sushi menu on the customer homepage."
+          checked={settings.showMenu}
+          onChange={value =>
+            setSettings({
+              ...settings,
+              showMenu: value
+            })
+          }
+        />
 
-          {switches.map(
-            (item) => (
-              <button
-                type="button"
-                className="admin-switch-row"
-                key={item.key}
-                onClick={() =>
-                  toggle(
-                    item.key
-                  )
-                }
-              >
+        <AdminSetting
+          icon={Gift}
+          title="Show rewards"
+          description="Display available rewards to customers."
+          checked={settings.showRewards}
+          onChange={value =>
+            setSettings({
+              ...settings,
+              showRewards: value
+            })
+          }
+        />
 
-                <div>
+        <AdminSetting
+          icon={SettingsIcon}
+          title="Maintenance mode"
+          description="Temporarily disable customer access while you make changes."
+          checked={settings.maintenance}
+          onChange={value =>
+            setSettings({
+              ...settings,
+              maintenance: value
+            })
+          }
+        />
 
-                  <strong>
-                    {item.title}
-                  </strong>
+      </div>
 
-                  <span>
-                    {
-                      item.description
-                    }
-                  </span>
+    </div>
+  );
+}
 
-                </div>
+function AdminSetting({
+  icon: Icon,
+  title,
+  description,
+  checked,
+  onChange
+}) {
+  return (
+    <div className="admin-setting-row">
 
-                {form[
-                  item.key
-                ] ? (
-                  <ToggleRight
-                    size={30}
-                  />
-                ) : (
-                  <ToggleLeft
-                    size={30}
-                  />
-                )}
+      <div className="admin-setting-icon">
+        <Icon size={19} />
+      </div>
 
-              </button>
-            )
-          )}
+      <div className="admin-setting-text">
+        <strong>{title}</strong>
+        <span>{description}</span>
+      </div>
 
-        </div>
-
-        {message && (
-          <div className="notice">
-            {message}
-          </div>
-        )}
-
-        <button
-          className="primary-button"
-          type="submit"
-          disabled={saving}
-        >
-          <Save size={16} />
-
-          {saving
-            ? 'Saving...'
-            : 'Save general settings'}
-        </button>
-
-      </form>
+      <button
+        type="button"
+        className={`admin-switch ${
+          checked ? 'on' : ''
+        }`}
+        onClick={() => onChange(!checked)}
+      >
+        <span />
+      </button>
 
     </div>
   );
 }
 
 /* =====================================================
-   ADMIN HELPERS
+   ADMIN COMPONENT HELPERS
 ===================================================== */
 
-function AdminPageIntro({
+function AdminSectionHeader({
   eyebrow,
   title,
-  description
+  description,
+  button
 }) {
   return (
-    <div className="admin-page-heading">
+    <div className="admin-section-header">
 
-      <span>
-        {eyebrow}
-      </span>
+      <div>
+        <span>{eyebrow}</span>
+        <h2>{title}</h2>
+        <p>{description}</p>
+      </div>
 
-      <h2>
-        {title}
-      </h2>
-
-      <p>
-        {description}
-      </p>
+      {button && button}
 
     </div>
   );
 }
 
-function AdminInput({
-  label,
-  value,
-  onChange,
-  type = 'text',
-  placeholder,
-  step
-}) {
+function AdminStatus({ active }) {
   return (
-    <div className="field">
-
-      <label>
-        {label}
-      </label>
-
-      <input
-        type={type}
-        value={
-          value ?? ''
-        }
-        onChange={(e) =>
-          onChange(
-            e.target.value
-          )
-        }
-        placeholder={
-          placeholder
-        }
-        step={step}
-      />
-
-    </div>
+    <span
+      className={`admin-status ${
+        active ? 'active' : 'inactive'
+      }`}
+    >
+      <span />
+      {active ? 'Active' : 'Inactive'}
+    </span>
   );
 }
 
-function AdminLoading() {
-  return (
-    <div className="admin-loading">
-      <RefreshCw
-        size={20}
-        className="spin"
-      />
-
-      <span>
-        Loading...
-      </span>
-    </div>
-  );
-}
-
-function AdminEmpty({
-  icon,
+function AdminModal({
   title,
-  text
+  children,
+  onClose
 }) {
   return (
-    <div className="admin-empty">
+    <div
+      className="admin-modal-overlay"
+      onClick={onClose}
+    >
 
-      {icon}
+      <div
+        className="admin-modal"
+        onClick={e => e.stopPropagation()}
+      >
 
-      <strong>
-        {title}
-      </strong>
+        <div className="admin-modal-header">
 
-      <p>
-        {text}
-      </p>
+          <div>
+            <span>EDIT</span>
+            <h3>{title}</h3>
+          </div>
+
+          <button onClick={onClose}>
+            <X size={19} />
+          </button>
+
+        </div>
+
+        <div className="admin-modal-body">
+          {children}
+        </div>
+
+      </div>
 
     </div>
   );
@@ -7826,13 +4776,10 @@ function AdminEmpty({
    ROUTING
 ===================================================== */
 
-const path =
-  window.location.pathname;
+const path = window.location.pathname;
 
 const rootElement =
-  document.getElementById(
-    'root'
-  );
+  document.getElementById('root');
 
 if (!rootElement) {
   throw new Error(
@@ -7840,9 +4787,7 @@ if (!rootElement) {
   );
 }
 
-createRoot(
-  rootElement
-).render(
+createRoot(rootElement).render(
   path === '/admin'
     ? <Admin />
     : path === '/staff'
