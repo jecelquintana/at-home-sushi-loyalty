@@ -1205,7 +1205,7 @@ function Rewards({
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
 
-  const points = Number(profile?points || 0);
+  const points = Number(profile?.points || 0);
 
   async function redeem() {
     if (!selected) return;
@@ -2496,29 +2496,34 @@ function AdminOverview() {
   const [menu, setMenu] = useState([]);
 
   async function load() {
-    const [
-      customerResult,
-      transactionResult,
-      rewardResult,
-      menuResult
-    ] = await Promise.all([
-      supabase.from('customers').select('*'),
-      supabase
-        .from('transactions')
-        .select('*')
-        .order('created_at', {
-          ascending: false
-        })
-        .limit(100),
-      supabase.from('rewards').select('*'),
-      supabase.from('menu_items').select('*')
-    ]);
+  const [
+    customerResult,
+    transactionResult,
+    rewardResult,
+    menuResult
+  ] = await Promise.all([
+    supabase.from('customers').select('*'),
+    supabase
+      .from('transactions')
+      .select('*')
+      .order('created_at', {
+        ascending: false
+      })
+      .limit(100),
+    supabase.from('rewards').select('*'),
+    supabase.from('menu_items').select('*')
+  ]);
 
-    setCustomers(customerResult.data || []);
-    setTransactions(transactionResult.data || []);
-    setRewards(rewardResult.data || []);
-    setMenu(menuResult.data || []);
-  }
+  console.log('ADMIN CUSTOMERS:', customerResult);
+  console.log('ADMIN TRANSACTIONS:', transactionResult);
+  console.log('ADMIN REWARDS:', rewardResult);
+  console.log('ADMIN MENU:', menuResult);
+
+  setCustomers(customerResult.data || []);
+  setTransactions(transactionResult.data || []);
+  setRewards(rewardResult.data || []);
+  setMenu(menuResult.data || []);
+}
 
   useEffect(() => {
     load();
