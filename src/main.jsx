@@ -4384,23 +4384,193 @@ function AdminHomepage() {
 ===================================================== */
 
 function AdminImages() {
-  const [logoPreview, setLogoPreview] =
-    useState(null);
+  const [images, setImages] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [uploadMessage, setUploadMessage] = useState('');
 
-  function handleLogo(e) {
-    const file = e.target.files?.[0];
+  const BUCKET = 'images';
 
-    if (!file) return;
+  async function loadImages() {
+    setLoading(true);
 
-    const url = URL.createObjectURL(file);
+    const { data, error } = await supabase
+      .storage
+      .from(BUCKET)
+      .list('', {
+        limit: 200,
+        sortBy: {
+          column: 'created_at',
+          order: 'desc'
+        }
+      });
 
-    setLogoPreview(url);
+    if (error) {
+      console.error('Image library error:', error);
+      setImages([]);
+      setLoading(false);
+      return;
+    }
 
-    /*
-      This is a visual uploader for now.
-      We will connect it to Supabase Storage
-      next so the image becomes permanent.
-    */
+    const files = (data || []).filter(
+      file =>
+        file.name &&
+        !file.name.endsWith('/')
+    );
+
+    const imageFiles = files.map(file => {
+      const {
+        data: publicData
+      } = supabase
+        .storage
+        .from(BUCKET)
+        .getPublicUrl(file.name);
+
+      return {
+        ...file,
+        publicUrl: publicData.publicUrl
+      };
+    });
+
+    setImages(imageFiles);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    loadImages();
+  }, []);
+
+  async function handleUpload(e) {
+    const files = Array.from(
+      e.target.files || []
+    );
+
+    if (!files.length) return;
+
+    setUploading(true);
+    setUploadMessage('');
+
+    try {
+      for (const file of files) {
+
+        if (!file.type.startsWith('image/')) {
+          continue;
+        }
+
+        /*
+          Create a unique filename so two uploads
+          with the same filename do not overwrite
+          each other.
+        */
+
+        const extension =
+          file.name.split('.').pop();
+
+        const originalName =
+          file.name
+            .replace(/\.[^/.]+$/, '')
+            .replace(/[^a-zA-Z0-9-_]/g, '-')
+            .toLowerCase();
+
+        const fileName =
+          `${Date.now()}-${originalName}.${extension}`;
+
+        const { error } = await supabase
+          .storage
+          .from(BUCKET)
+          .upload(
+            fileName,
+            file,
+            {
+              cacheControl: '3600',
+              upsert: false,
+              contentType: file.type
+            }
+          );
+
+        if (error) {
+          console.error(
+            'Upload error:',
+            error
+          );
+
+          throw error;
+        }
+      }
+
+      setUploadMessage(
+        files.length === 1
+          ? 'Image uploaded successfully.'
+          : `${files.length} images uploaded successfully.`
+      );
+
+      await loadImages();
+
+    } catch (error) {
+
+      console.error(error);
+
+      setUploadMessage(
+        error?.message ||
+        'Something went wrong while uploading.'
+      );
+
+    } finally {
+      setUploading(false);
+
+      /*
+        Reset the file input so the same image
+        can be selected again if needed.
+      */
+
+      e.target.value = '';
+    }
+  }
+
+  async function deleteImage(fileName) {
+
+    const confirmed = window.confirm(
+      'Delete this image from your library?'
+    );
+
+    if (!confirmed) return;
+
+    const { error } = await supabase
+      .storage
+      .from(BUCKET)
+      .remove([fileName]);
+
+    if (error) {
+      console.error(
+        'Delete image error:',
+        error
+      );
+
+      alert(error.message);
+      return;
+    }
+
+    await loadImages();
+  }
+
+  function copyImageUrl(url) {
+
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setUploadMessage(
+          'Image URL copied to clipboard.'
+        );
+
+        setTimeout(() => {
+          setUploadMessage('');
+        }, 2000);
+      })
+      .catch(() => {
+        alert(
+          'Could not copy the image URL.'
+        );
+      });
   }
 
   return (
@@ -4409,90 +4579,251 @@ function AdminImages() {
       <AdminSectionHeader
         eyebrow="MEDIA"
         title="Image Library"
-        description="Manage your brand and menu imagery."
+        description="Upload and manage the photos used throughout At Home Sushi."
       />
 
-      <div className="admin-settings-grid">
+      {/* =================================================
+          UPLOAD SECTION
+      ================================================= */}
 
-        <section className="admin-panel">
+      <section className="admin-panel">
 
-          <div className="admin-panel-heading">
-            <div>
-              <span>BRANDING</span>
-              <h3>Business logo</h3>
-            </div>
+        <div className="admin-panel-heading">
 
-            <ImageIcon size={19} />
+          <div>
+            <span>UPLOAD</span>
+            <h3>Add images</h3>
           </div>
 
-          <div className="admin-logo-upload">
+          <Upload size={19} />
 
-            <div className="admin-logo-preview">
+        </div>
 
-              <img
-                src={logoPreview || logo}
-                alt="Business logo"
-              />
+        <label className="admin-upload-dropzone">
 
-            </div>
+          <Upload size={30} />
 
-            <label className="admin-upload-button">
+          <strong>
+            {uploading
+              ? 'Uploading images...'
+              : 'Upload sushi photos'}
+          </strong>
 
-              <Upload size={16} />
-              Choose logo
+          <span>
+            PNG, JPG or WEBP
+          </span>
 
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogo}
-              />
+          <span>
+            You can select multiple images.
+          </span>
 
-            </label>
+          <div className="admin-outline-button">
+            {uploading
+              ? 'Uploading...'
+              : 'Choose images'}
+          </div>
 
-            <small>
-              Recommended: square JPG or PNG.
-            </small>
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            multiple
+            onChange={handleUpload}
+            disabled={uploading}
+            style={{
+              display: 'none'
+            }}
+          />
+
+        </label>
+
+        {uploadMessage && (
+          <div className="notice">
+            {uploadMessage}
+          </div>
+        )}
+
+      </section>
+
+      {/* =================================================
+          IMAGE LIBRARY
+      ================================================= */}
+
+      <section
+        className="admin-panel"
+        style={{
+          marginTop: '24px'
+        }}
+      >
+
+        <div className="admin-panel-heading">
+
+          <div>
+            <span>LIBRARY</span>
+            <h3>
+              Your images
+            </h3>
+          </div>
+
+          <ImageIcon size={19} />
+
+        </div>
+
+        {loading ? (
+
+          <AdminEmpty
+            text="Loading image library..."
+          />
+
+        ) : images.length === 0 ? (
+
+          <AdminEmpty
+            text="No images uploaded yet."
+          />
+
+        ) : (
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns:
+                'repeat(auto-fill, minmax(180px, 1fr))',
+              gap: '18px'
+            }}
+          >
+
+            {images.map(image => (
+
+              <div
+                key={image.name}
+                className="admin-image-library-card"
+              >
+
+                <div
+                  style={{
+                    aspectRatio: '1 / 1',
+                    borderRadius: '14px',
+                    overflow: 'hidden',
+                    background:
+                      'linear-gradient(45deg, #f1f1f1 25%, transparent 25%), linear-gradient(-45deg, #f1f1f1 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f1f1f1 75%), linear-gradient(-45deg, transparent 75%, #f1f1f1 75%)',
+                    backgroundSize:
+                      '16px 16px',
+                    backgroundPosition:
+                      '0 0, 0 8px, 8px -8px, -8px 0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+
+                  <img
+                    src={image.publicUrl}
+                    alt={image.name}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                      display: 'block'
+                    }}
+                  />
+
+                </div>
+
+                <div
+                  style={{
+                    paddingTop: '12px'
+                  }}
+                >
+
+                  <strong
+                    style={{
+                      display: 'block',
+                      fontSize: '13px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}
+                    title={image.name}
+                  >
+                    {image.name}
+                  </strong>
+
+                  <span
+                    style={{
+                      display: 'block',
+                      marginTop: '4px',
+                      fontSize: '11px',
+                      color: '#888'
+                    }}
+                  >
+                    {image.metadata?.size
+                      ? `${(
+                          image.metadata.size /
+                          1024 /
+                          1024
+                        ).toFixed(2)} MB`
+                      : 'Image'}
+                  </span>
+
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '8px',
+                    marginTop: '10px'
+                  }}
+                >
+
+                  <button
+                    type="button"
+                    className="admin-outline-button"
+                    style={{
+                      flex: 1,
+                      fontSize: '12px',
+                      padding: '8px 10px'
+                    }}
+                    onClick={() =>
+                      copyImageUrl(
+                        image.publicUrl
+                      )
+                    }
+                  >
+                    <Copy size={14} />
+                    Copy URL
+                  </button>
+
+                  <button
+                    type="button"
+                    className="admin-outline-button danger"
+                    style={{
+                      padding: '8px 10px'
+                    }}
+                    onClick={() =>
+                      deleteImage(
+                        image.name
+                      )
+                    }
+                  >
+                    <Trash2 size={14} />
+                  </button>
+
+                </div>
+
+              </div>
+
+            ))}
 
           </div>
 
-        </section>
+        )}
 
-        <section className="admin-panel">
-
-          <div className="admin-panel-heading">
-            <div>
-              <span>MENU PHOTOS</span>
-              <h3>Image uploading</h3>
-            </div>
-
-            <UtensilsCrossed size={19} />
-          </div>
-
-          <div className="admin-upload-dropzone">
-
-            <Upload size={28} />
-
-            <strong>
-              Upload menu photos
-            </strong>
-
-            <span>
-              JPG, PNG or WEBP
-            </span>
-
-            <button className="admin-outline-button">
-              Select images
-            </button>
-
-          </div>
-
-        </section>
-
-      </div>
+      </section>
 
     </div>
   );
 }
+
+
 
 /* =====================================================
    ADMIN STAFF
